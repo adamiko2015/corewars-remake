@@ -68,7 +68,9 @@ void load_players() {
         }
         else {
             team.is_zombie = false;
-            teams[current_team++] = team;
+            teams[current_team] = team;
+            teams[current_team].team_id = current_team;
+            current_team++;
         }
     }
 
@@ -82,4 +84,6 @@ void load_players() {
     if ((team_permutation = malloc(sizeof(int32_t)*(teams_per_round+1))) == 0) exit_angrily
     for (int i=0; i<teams_per_round; i++) team_permutation[i] = i;
     team_permutation[teams_per_round] = team_count;
+
+    init_opcode_table();
 }

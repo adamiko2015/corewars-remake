@@ -20,4 +20,8 @@ Team* teams_in_play; // Includes zombies.
 int32_t teams_alive; // Doesn't include zombies.
 int32_t* team_permutation;
 
+// globals.h also defines commands_per_round
+
+int8_t* opcode_lookup_table;
+
 struct Player_Tracker current_player;

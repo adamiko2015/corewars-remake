@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "*.html": "html",
+        "structs_libraries_and_macros.h": "c"
+    }
+}

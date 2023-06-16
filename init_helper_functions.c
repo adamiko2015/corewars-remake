@@ -72,3 +72,8 @@ void allocate_memory() {
 
     if (memory == 0) exit_angrily
 }
+
+void init_opcode_table() {
+    if ((opcode_lookup_table = calloc(0xFF, sizeof(int8_t))) == 0) exit_angrily
+    // TODO: initialize opcode table with functions in the right places
+}

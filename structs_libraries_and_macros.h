@@ -27,8 +27,9 @@ typedef struct  {
 
 typedef struct {
     Survivor survivors[2];
-    bool living_survivors[2];
+    int8_t living_survivors[2];
     uint16_t shared_memory_id;
+    uint16_t team_id; // ID of team in teams array
     char* name;
     double points;
     bool is_zombie;

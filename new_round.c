@@ -24,19 +24,21 @@ bool choose_teams() {
     for (int i=0; i<teams_per_round; i++) {
         teams_in_play[i] = teams[team_permutation[i]];
     }
+
     for (int i=0; i<zombie_count; i++) {
         teams_in_play[i+teams_per_round] = zombies[i];
     }
 
     teams_alive = teams_per_round;
+    
     return true;
 }
 
 void resurrect_players() {
     for(Team* team = teams_in_play; team < teams_in_play + total_team_count; team++) {
-        team->living_survivors[0] = true;
-        if (team->survivors[1].initialized) {team->living_survivors[1] = true;}
-        else {team->living_survivors[1] = false;}
+        team->living_survivors[0] = 1;
+        if (team->survivors[1].initialized) {team->living_survivors[1] = 1;}
+        else {team->living_survivors[1] = 1;}
     }
 }
 
@@ -46,8 +48,7 @@ void reset_segments() {
 }
 
 void insert_players() {
-    // TODO: EXTREMELY BAD IMPLEMENTATION!!! PLS FIX
-    // Implement adam's linked lists sol
+    // TODO: CHECK documentation for better implementation
     bool occupied[0x10000];
     for(Team* team = teams_in_play; team < teams_in_play + total_team_count; team++) {
         for(int i = 0; i < 2; i++) {

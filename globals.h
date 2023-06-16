@@ -25,4 +25,8 @@ extern Team* teams_in_play;
 extern int32_t teams_alive;
 extern int32_t* team_permutation;
 
+#define commands_per_round 80_000
+
+extern char* opcode_lookup_table;
+
 #endif //COREWARSINTERPRETER_GLOBALS_H
