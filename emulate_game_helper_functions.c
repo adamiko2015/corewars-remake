@@ -25,7 +25,7 @@ void run_current_opcode() {
     debug_print_statement
 }
 
-bool end_of_round() {
+bool round_end_check() {
     // TODO: What about zombies?
     if(commands_ran > commands_per_round) {
         int32_t alive_survivor_count = 0;
@@ -75,4 +75,11 @@ void advance_player_tracker() {
     current_player.survivor_position = (current_player.survivor_position + 1) & 1;} while (!(teams_in_play[team_id].living_survivors[0] | teams_in_play[team_id].living_survivors[1]))
 
     debug_print_statement
+}
+
+void emulation_loop() {
+    while (!round_end_check()) {
+        run_current_opcode();
+        advance_player_tracker();
+    }
 }
