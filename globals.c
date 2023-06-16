@@ -3,7 +3,7 @@
 int32_t team_count;
 int32_t zombie_count;
 int32_t survivor_count;
-
+//Adam glos looks like a horse
 int32_t commands_ran;
 
 //User input. TODO: change method of input when implementing GUI.
