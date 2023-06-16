@@ -5,7 +5,7 @@
 #ifndef COREWARSINTERPRETER_INIT_H
 #define COREWARSINTERPRETER_INIT_H
 
-void init_usr_input();
-void load_players();
+void init_usr_input(void);
+void load_players(void);
 
 #endif //COREWARSINTERPRETER_INIT_H
