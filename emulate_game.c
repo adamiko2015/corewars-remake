@@ -9,7 +9,6 @@ void kill_current_player()
 }
 
 void run_current_opcode() {
-
     Survivor* warrior = &(teams_in_play[current_player.team_id].survivors[current_player.survivor_position]);
     //if (survivor.CS != 0) {kill_current_player; return;} //TODO: check if this line is needed
     int8_t opcode_lookup_value = memory[0].values[warrior->IP];
@@ -19,8 +18,7 @@ void run_current_opcode() {
 
     debug_print_statement
 
-    if (!opcode(warrior)) { kill_current_player(); return; }
-
+    if (!opcode(warrior, teams_in_play[current_player.team_id].shared_memory_id)) { kill_current_player(); return; }
     commands_ran++;
 
     debug_print_statement
@@ -35,7 +33,7 @@ bool round_end_check() {
 
         for(Team* team = teams_in_play; team < teams_in_play + team_count; team++) {
             alive_survivor_count += team->living_survivors[0] + team->living_survivors[1];
-        } 
+        }
 
         debug_print_statement
 

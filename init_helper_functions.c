@@ -1,5 +1,6 @@
 #include "structs_libraries_and_macros.h"
 #include "globals.h"
+#include "opcodes.h"
 
 void init_survivor_and_team_count() {
     DIR* dir;
@@ -78,4 +79,6 @@ void allocate_memory() {
 void init_opcode_table() {
     if ((opcode_lookup_table = calloc(0xFF, sizeof(opcode_ptr))) == 0) exit_angrily
     // TODO: initialize opcode table with functions in the right places
+    opcode_lookup_table[0x00] = op_00;
+    opcode_lookup_table[0x01] = op_01;
 }

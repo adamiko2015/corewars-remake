@@ -36,7 +36,7 @@ typedef struct {
 } Team;
 
 typedef struct {
-    char values[0x10000];
+    uint8_t values[0x10000];
 } Segment;
 
 struct Player_Tracker {
@@ -44,6 +44,6 @@ struct Player_Tracker {
     int32_t survivor_position;
 };
 
-typedef bool (*opcode_ptr)(Survivor*);
+typedef bool (*opcode_ptr)(Survivor*, uint16_t);
 
 #endif //COREWARSINTERPRETER_INIT_GLOBALS_H

@@ -1,6 +1,8 @@
 {
     "files.associations": {
         "*.html": "html",
-        "structs_libraries_and_macros.h": "c"
-    }
+        "*.h": "c",
+        "*.c": "c"
+    },
+    "C_Cpp.errorSquiggles": "disable"
 }

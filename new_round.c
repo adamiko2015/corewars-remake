@@ -1,7 +1,6 @@
 #include "globals.h"
 #include "structs_libraries_and_macros.h"
 
-
 bool choose_teams() {
     static int32_t rounds_repeated = 0;
     if (rounds_repeated == num_of_rounds) return false;
