@@ -58,6 +58,7 @@ void load_players() {
             get_code(&survivor, survivor_entry->d_name, entry->d_name);
 
             survivor.stack_id = current_segment++;
+            survivor.CS = 0;
 
             add_survivor_to_team(&team, survivor);
         }

@@ -47,7 +47,7 @@ void get_code(Survivor* survivor, char* filename, char* dirname) { // TODO: vali
     uint16_t bin_size = ftell(fptr);
     fseek(fptr, 0, SEEK_SET);
 
-    if (bin_size == 0x1000) exit_angrily
+    if (bin_size == 0x100) exit_angrily
 
     fread(tcode, bin_size, 1, fptr);
     fclose(fptr);
@@ -76,6 +76,6 @@ void allocate_memory() {
 }
 
 void init_opcode_table() {
-    if ((opcode_lookup_table = calloc(0xFF, sizeof(int8_t))) == 0) exit_angrily
+    if ((opcode_lookup_table = calloc(0xFF, sizeof(opcode_ptr))) == 0) exit_angrily
     // TODO: initialize opcode table with functions in the right places
 }

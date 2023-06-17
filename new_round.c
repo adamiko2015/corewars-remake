@@ -37,8 +37,39 @@ bool choose_teams() {
 void resurrect_players() {
     for(Team* team = teams_in_play; team < teams_in_play + total_team_count; team++) {
         team->living_survivors[0] = 1;
-        if (team->survivors[1].initialized) {team->living_survivors[1] = 1;}
-        else {team->living_survivors[1] = 1;}
+        team->living_survivors[1] = 1;
+        team->survivors[0].BX = 0;
+        team->survivors[0].CX = 0;
+        team->survivors[0].DX = 0;
+        team->survivors[0].SI = 0;
+        team->survivors[0].DI = 0;
+        team->survivors[0].BP = 0;
+        team->survivors[0].SP = sizeof(Segment)-1;
+        team->survivors[0].DS = 0;
+        team->survivors[0].SS = team->survivors[0].stack_id*0x10000;
+        team->survivors[0].ES = team->shared_memory_id*0x10000;
+        team->survivors[0].Flags = 0;
+        team->survivors[0].Energy = 0;
+
+        if (team->survivors[1].initialized) {
+            team->living_survivors[1] = 1;
+            team->survivors[1].BX = 0;
+            team->survivors[1].CX = 0;
+            team->survivors[1].DX = 0;
+            team->survivors[1].SI = 0;
+            team->survivors[1].DI = 0;
+            team->survivors[1].BP = 0;
+            team->survivors[1].SP = sizeof(Segment)-1;
+            team->survivors[1].DS = 0;
+            team->survivors[1].SS = team->survivors[1].stack_id*0x10000;
+            team->survivors[1].ES = team->shared_memory_id*0x10000;
+            team->survivors[1].Flags = 0;
+            team->survivors[1].Energy = 0;
+
+        }
+        else {
+            team->living_survivors[1] = 0;
+        }
     }
 }
 
@@ -70,6 +101,9 @@ void insert_players() {
                     memory[0].values[location + k] = team->survivors[i].code[k];
                     occupied[location + k] = true;
                 }
+
+                team->survivors[i].AX = location;
+                team->survivors[i].IP = location;
 
                 skip:
                     continue;

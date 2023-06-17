@@ -40,9 +40,10 @@ typedef struct {
 } Segment;
 
 struct Player_Tracker {
-    bool is_zombie;
     int32_t team_id;
     int32_t survivor_position;
 };
+
+typedef bool (*opcode_ptr)(Survivor*);
 
 #endif //COREWARSINTERPRETER_INIT_GLOBALS_H
