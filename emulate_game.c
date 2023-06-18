@@ -5,23 +5,23 @@ void kill_current_player()
 {
     teams_in_play[current_player.team_id].living_survivors[current_player.survivor_position] = 0;
 
-    if(!teams_in_play[current_player.team_id].living_survivors[(current_player.survivor_position + 1) % 2]) teams_alive--;
+    if(!teams_in_play[current_player.team_id].living_survivors[(current_player.survivor_position + 1) % 2]
+        && !teams_in_play[current_player.team_id].is_zombie) teams_alive--;
 }
 
 void run_current_opcode() {
     Survivor* warrior = &(teams_in_play[current_player.team_id].survivors[current_player.survivor_position]);
     //if (survivor.CS != 0) {kill_current_player; return;} //TODO: check if this line is needed
-    int8_t opcode_lookup_value = memory[0].values[warrior->IP];
+    uint8_t opcode_lookup_value = memory[0].values[warrior->IP];
 
     opcode_ptr opcode = opcode_lookup_table[opcode_lookup_value];
     if (opcode == 0) { kill_current_player(); return; }
 
-    debug_print_statement
-
-    if (!opcode(warrior, teams_in_play[current_player.team_id].shared_memory_id)) { kill_current_player(); return; }
+    bool opcode_res = opcode(warrior, teams_in_play[current_player.team_id].shared_memory_id);
+    if (!opcode_res) {
+        kill_current_player(); return;
+    }
     commands_ran++;
-
-    debug_print_statement
 }
 
 bool round_end_check() {
@@ -61,12 +61,10 @@ bool round_end_check() {
 }
 
 void advance_player_tracker() {
-
     do {
         current_player.team_id = (current_player.survivor_position + current_player.team_id) % (teams_per_round+zombie_count);
         current_player.survivor_position = (current_player.survivor_position + 1) & 1;}
-    while (!(teams_in_play[current_player.team_id].living_survivors[0] | teams_in_play[current_player.team_id].living_survivors[1]));
-
+    while (!(teams_in_play[current_player.team_id].living_survivors[current_player.survivor_position]));
 }
 
 void emulation_loop() {

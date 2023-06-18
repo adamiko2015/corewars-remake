@@ -71,13 +71,14 @@ void add_survivor_to_team(Team* team, Survivor survivor) {
 
 void allocate_memory() {
     int segment_cnt = 1 + team_count + survivor_count;
-    memory = malloc(sizeof(Segment)*segment_cnt);
 
+    memory = malloc(sizeof(Segment)*segment_cnt);
     if (memory == 0) exit_angrily
 }
 
 void init_opcode_table() {
-    if ((opcode_lookup_table = calloc(0xFF, sizeof(opcode_ptr))) == 0) exit_angrily
+    if ((opcode_lookup_table = malloc(0x100*sizeof(opcode_ptr))) == 0) exit_angrily
+    memset(opcode_lookup_table, 0, 0x100*sizeof(opcode_ptr));
     // TODO: initialize opcode table with functions in the right places
     opcode_lookup_table[0x00] = op_00;
     opcode_lookup_table[0x01] = op_01;

@@ -2,8 +2,7 @@
 #include "structs_libraries_and_macros.h"
 
 bool choose_teams() {
-    static int32_t rounds_repeated = 0;
-    if (rounds_repeated == num_of_rounds) return false;
+    if (rounds_repeated > num_of_rounds) return false;
 
     int carry = 1;
     for (int i=teams_per_round-1; i>=0 && carry; i--) {
@@ -29,14 +28,14 @@ bool choose_teams() {
     }
 
     teams_alive = teams_per_round;
-    
+
+
     return true;
 }
 
 void resurrect_players() {
     for(Team* team = teams_in_play; team < teams_in_play + total_team_count; team++) {
         team->living_survivors[0] = 1;
-        team->living_survivors[1] = 1;
         team->survivors[0].BX = 0;
         team->survivors[0].CX = 0;
         team->survivors[0].DX = 0;
@@ -74,7 +73,7 @@ void resurrect_players() {
 
 void reset_segments() {
     // TODO: Figure out which segments to actually reset
-    if ((memset(&memory[0], 0, sizeof(Segment))) == 0) exit_angrily
+    if ((memset(&memory[0], 0xCC, sizeof(Segment))) == 0) exit_angrily
 }
 
 void insert_players() {
@@ -87,7 +86,7 @@ void insert_players() {
             bool found = false;
 
             while(!found) {
-                int32_t location = rand() % (0x10000 - team->survivors[i].code_size);
+                uint32_t location = rand() % (0x10000 - team->survivors[i].code_size);
 
                 for(int j = location; j < location + team->survivors[i].code_size; j++) {
                     if(occupied[j]) goto skip;

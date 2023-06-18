@@ -8,9 +8,12 @@ int main() {
     init_usr_input();
     load_players();
 
-    while (init_round()) // TODO: for testing purposes, in real game should run as a while loop condition.
+
+    while (init_round()) { // TODO: for testing purposes, in real game should run as a while loop condition.
         emulation_loop();
-    
+    }
+
+
     // TODO: display score
 
     return 0;
