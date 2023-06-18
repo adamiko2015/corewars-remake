@@ -1,7 +1,7 @@
 CC = gcc
 LNK = gcc
 NASM = nasm
-CFLAGS = -ggdb -Wall -m64 -O0 -c
+CFLAGS = -ggdb -Wall -O0 -c
 LNKFLAGS = $(CLFAGS)
 ASMFLAGS = -f elf64 -g -Wall
 SRCs = $(wildcard *.c)
@@ -17,7 +17,6 @@ all: main
 		$(NASM) $(ASMFLAGS) $< -o $@
 
 main : $(OBJs)
-		rm main.exe -f
 		$(LNK) $(LNKFLAGS) $^ -o $@
 
 clean:

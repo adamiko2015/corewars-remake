@@ -79,6 +79,8 @@ void reset_segments() {
 void insert_players() {
     // TODO: CHECK documentation for better implementation
     bool occupied[0x10000];
+    if ((memset(occupied, false, sizeof(bool)*0x10000)) == 0) exit_angrily
+
     for(Team* team = teams_in_play; team < teams_in_play + total_team_count; team++) {
         for(int i = 0; i < 2; i++) {
             if(!(team->living_survivors[i])) continue;
