@@ -7,8 +7,9 @@ ASMFLAGS = -f elf64 -g -Wall
 SRCs = $(wildcard *.c)
 OBJs := $(SRCs:%.c=%.o)
 
-
 all: main
+
+test:
 
 %.o: %.c
 		$(CC) $(CFLAGS) $^ -o $@

@@ -1,8 +1,0 @@
-{
-    "files.associations": {
-        "*.html": "html",
-        "*.h": "c",
-        "*.c": "c"
-    },
-    "C_Cpp.errorSquiggles": "disable"
-}
