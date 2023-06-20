@@ -9,8 +9,6 @@ OBJs := $(SRCs:%.c=%.o)
 
 all: main
 
-test:
-
 %.o: %.c
 		$(CC) $(CFLAGS) $^ -o $@
 
