@@ -16,6 +16,9 @@
                         exit(1);}
 #define debug_print_statement     printf("Hit file " __FILE__ " line %d\r\n", __LINE__);
 
+
+// might be a difference between our implementation and official implementation here.
+// in the official implementation stack size and shared memory size may differ.
 typedef struct  {
     bool initialized;
     uint16_t stack_id;

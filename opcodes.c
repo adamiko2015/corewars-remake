@@ -2,6 +2,8 @@
 #include "globals.h"
 #include "opcode_helper_functions.h"
 
+// TODO: add support for flags!!!
+
 bool op_00(Survivor* survivor, uint16_t shared_memory) // ADD [X], reg8
 {
     uint8_t address_byte = memory[0].values[survivor->IP+1];
@@ -13,7 +15,7 @@ bool op_00(Survivor* survivor, uint16_t shared_memory) // ADD [X], reg8
             uint16_t destination;
             destination = address_decoder_mode00(survivor, address_byte & 0b00000111, pos);
 
-            uint16_t segment = (survivor->DS && 0x1000) >> 12;
+            uint16_t segment = ((destination+0x10*survivor->DS) & 0xF0000) >> 16;
             if (segment != 0 && segment != survivor->stack_id && segment != shared_memory) {return false;}
 
             ((char*)memory)[(uint32_t) destination + survivor->DS*0x10] += *address;
@@ -25,7 +27,7 @@ bool op_00(Survivor* survivor, uint16_t shared_memory) // ADD [X], reg8
             uint16_t destination;
             destination = address_decoder_mode01(survivor, address_byte & 0b00000111, pos);
 
-            uint16_t segment = (survivor->DS && 0x1000) >> 12;
+            uint16_t segment = ((destination+0x10*survivor->DS) & 0xF0000) >> 16;
             if (segment != 0 && segment != survivor->stack_id && segment != shared_memory) {return false;}
 
             ((char*)memory)[(uint32_t) destination + survivor->DS*0x10] += *address;
@@ -37,7 +39,7 @@ bool op_00(Survivor* survivor, uint16_t shared_memory) // ADD [X], reg8
             uint16_t destination;
             destination = address_decoder_mode10(survivor, address_byte & 0b00000111, pos);
 
-            uint16_t segment = (survivor->DS && 0x1000) >> 12;
+            uint16_t segment = ((destination+0x10*survivor->DS) & 0xF0000) >> 16;
             if (segment != 0 && segment != survivor->stack_id && segment != shared_memory) {return false;}
 
             ((char*)memory)[(uint32_t) destination + survivor->DS*0x10] += *address;
@@ -56,8 +58,11 @@ bool op_00(Survivor* survivor, uint16_t shared_memory) // ADD [X], reg8
     return false;
 }
 
-// might be a difference between our implementation and official implementation here.
-// in the official implementation the shared memory loops back to stack, here it loops back to the shared memory.
+// Might be a difference between our implementation and official implementation here.
+// In the official implementation the shared memory loops back to stack, here it loops back to the shared memory.
+// in the official implementation the loopback works differently for 16-bit registers.
+// Unlike official implementation, here there is an exploit that allows survivors to access the first byte of
+// another survivor's private section.
 bool op_01(Survivor* survivor, uint16_t shared_memory) // ADD [X], reg16
 {
     uint8_t address_byte = memory[0].values[survivor->IP+1];
@@ -71,7 +76,7 @@ bool op_01(Survivor* survivor, uint16_t shared_memory) // ADD [X], reg16
             uint16_t destination; // it is important that destination is 16 bit!
             destination = address_decoder_mode00(survivor, address_byte & 0b00000111, pos);
 
-            uint16_t segment = (survivor->DS & 0x1000) >> 12;
+            uint16_t segment = ((destination+0x10*survivor->DS) & 0xF0000) >> 16;
             if (segment != 0 && segment != survivor->stack_id && segment != shared_memory) {return false;}
 
             ((char*)memory)[(uint32_t) destination + survivor->DS*0x10] += (*address) & 0xFF;
@@ -86,7 +91,7 @@ bool op_01(Survivor* survivor, uint16_t shared_memory) // ADD [X], reg16
             uint16_t destination; // it is important that destination is 16 bit!
             destination = address_decoder_mode01(survivor, address_byte & 0b00000111, pos);
 
-            uint16_t segment = (survivor->DS && 0x1000) >> 12;
+            uint16_t segment = ((destination+0x10*survivor->DS) & 0xF0000) >> 16;
             if (segment != 0 && segment != survivor->stack_id && segment != shared_memory) {return false;}
 
             ((char*)memory)[(uint32_t) destination + survivor->DS*0x10] += (*address) & 0xFF;
@@ -101,7 +106,7 @@ bool op_01(Survivor* survivor, uint16_t shared_memory) // ADD [X], reg16
             uint16_t destination; // it is important that destination is 16 bit!
             destination = address_decoder_mode10(survivor, address_byte & 0b00000111, pos);
 
-            uint16_t segment = (survivor->DS && 0x1000) >> 12;
+            uint16_t segment = ((destination+0x10*survivor->DS) & 0xF0000) >> 16;
             if (segment != 0 && segment != survivor->stack_id && segment != shared_memory) {return false;}
 
             ((char*)memory)[(uint32_t) destination + survivor->DS*0x10] += (*address) & 0xFF;
@@ -123,3 +128,47 @@ bool op_01(Survivor* survivor, uint16_t shared_memory) // ADD [X], reg16
     }
     return false;
 }
+
+// might be a difference between our implementation and official implementation here.
+// in the official implementation there is an exception when we push or pop from the end of the stack,
+// here we just loop to the beginning of the segment.
+bool op_06(Survivor* survivor, uint16_t shared_memory) {
+    debug_print_statement
+    survivor->SP -= 2;
+    uint16_t destination = survivor->SP;
+
+    uint16_t segment = ((destination+0x10*survivor->SS) & 0xF0000) >> 16;
+    if (segment != 0 && segment != survivor->stack_id && segment != shared_memory) {return false;}
+
+    ((char*)memory)[(uint32_t) destination + 0x10*survivor->SS] = (survivor->ES & 0xFF00) >> 8;
+
+    destination--;
+    ((char*)memory)[(uint32_t) destination + 0x10*survivor->SS] += survivor->ES & 0xFF;
+
+    survivor->IP += 1;
+
+    return true;
+
+}
+
+bool op_07(Survivor* survivor, uint16_t shared_memory) {
+    debug_print_statement
+    uint16_t address = survivor->SP;
+
+    uint16_t segment = ((address+0x10*survivor->SS) & 0xF0000) >> 16;
+    if (segment != 0 && segment != survivor->stack_id && segment != shared_memory) {return false;}
+
+    survivor->ES = ((char*)memory)[(uint32_t) address + 0x10*survivor->SS] << 8;
+
+    address--;
+    survivor->ES |= ((char*)memory)[(uint32_t) address + 0x10*survivor->SS];
+
+    survivor->SP += 2;
+
+    survivor->IP += 1;
+
+    return true;
+
+}
+
+void test_func(Survivor* survivor) {survivor->ES += 0x0110;}

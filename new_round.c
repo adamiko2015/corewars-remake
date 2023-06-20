@@ -43,9 +43,8 @@ void resurrect_players() {
         team->survivors[0].DI = 0;
         team->survivors[0].BP = 0;
         team->survivors[0].SP = sizeof(Segment)-1;
-        debug_print_statement
-        team->survivors[0].DS = 0x1000;
-        team->survivors[0].SS = team->survivors[0].stack_id*0x10000;
+        team->survivors[0].DS = 0;
+        team->survivors[0].SS = team->survivors[0].stack_id*0x1000;
         team->survivors[0].ES = team->shared_memory_id*0x10000;
         team->survivors[0].Flags = 0;
         team->survivors[0].Energy = 0;

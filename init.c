@@ -82,7 +82,8 @@ void load_players() {
     if ((teams_in_play = malloc(sizeof(Team)*(teams_per_round+zombie_count))) == 0) exit_angrily
 
     if ((teams_per_round > team_count)) exit_angrily
-    if ((team_permutation = malloc(sizeof(int32_t)*(teams_per_round+1))) == 0) exit_angrily
+    if ((team_permutation = malloc(sizeof(int32_t)*(teams_per_round+1) + 1)) == 0) exit_angrily // One more byte for
+                                                                                                // safety reason (op_01)
     for (int i=0; i<teams_per_round; i++) team_permutation[i] = i;
     team_permutation[teams_per_round] = team_count;
 

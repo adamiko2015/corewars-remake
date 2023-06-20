@@ -4,4 +4,7 @@
 bool op_00(Survivor* survivor, uint16_t shared_memory);
 bool op_01(Survivor* survivor, uint16_t shared_memory);
 
+bool op_06(Survivor* survivor, uint16_t shared_memory);
+bool op_07(Survivor* survivor, uint16_t shared_memory);
+
 #endif

@@ -82,4 +82,7 @@ void init_opcode_table() {
     // TODO: initialize opcode table with functions in the right places
     opcode_lookup_table[0x00] = op_00;
     opcode_lookup_table[0x01] = op_01;
+
+    opcode_lookup_table[0x06] = op_06;
+    opcode_lookup_table[0x07] = op_07;
 }
