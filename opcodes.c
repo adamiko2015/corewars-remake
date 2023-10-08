@@ -6,56 +6,6 @@
 
 bool op_00(Survivor* survivor, uint16_t shared_memory) // ADD [X], reg8
 {
-//    uint8_t address_byte = memory[0].values[survivor->IP+1];
-//    uint16_t pos = survivor->IP+2;
-//    uint8_t* address;
-//    address = reg8_decoder(survivor, (address_byte & 0b00111000) >> 3);
-//    switch (address_byte >> 6) {
-//        case 0b00: {
-//            uint16_t destination;
-//            destination = address_decoder_mode00(survivor, address_byte & 0b00000111, pos);
-//
-//            uint16_t segment = ((destination+0x10*survivor->DS) & 0xF0000) >> 16;
-//            if (segment != 0 && segment != survivor->stack_id && segment != shared_memory) {return false;}
-//
-//            ((char*)memory)[(uint32_t) destination + survivor->DS*0x10] += *address;
-//
-//            survivor->IP += 2;
-//            return true;
-//        }
-//        case 0b01: {
-//            uint16_t destination;
-//            destination = address_decoder_mode01(survivor, address_byte & 0b00000111, pos);
-//
-//            uint16_t segment = ((destination+0x10*survivor->DS) & 0xF0000) >> 16;
-//            if (segment != 0 && segment != survivor->stack_id && segment != shared_memory) {return false;}
-//
-//            ((char*)memory)[(uint32_t) destination + survivor->DS*0x10] += *address;
-//
-//            survivor->IP += 3;
-//            return true;
-//        }
-//        case 0b10: {
-//            uint16_t destination;
-//            destination = address_decoder_mode10(survivor, address_byte & 0b00000111, pos);
-//
-//            uint16_t segment = ((destination+0x10*survivor->DS) & 0xF0000) >> 16;
-//            if (segment != 0 && segment != survivor->stack_id && segment != shared_memory) {return false;}
-//
-//            ((char*)memory)[(uint32_t) destination + survivor->DS*0x10] += *address;
-//
-//            survivor->IP += 4;
-//            return true;
-//        }
-//        case 0b11: {
-//            uint8_t* destination;
-//            destination = reg8_decoder(survivor, (address_byte & 0b00000111));
-//            *destination += *address;
-//            survivor->IP += 2;
-//            return true;
-//        }
-//    }
-//    return false;
     uint8_t address_byte = memory[0].values[survivor->IP+1];
     uint16_t pos = survivor->IP+2;
     uint8_t* address;
