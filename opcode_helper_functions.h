@@ -11,4 +11,7 @@ uint16_t address_decoder_mode10(Survivor* survivor, uint8_t byte, uint16_t pos);
 uint8_t* reg8_decoder(Survivor* survivor, uint8_t byte);
 uint16_t* reg16_decoder(Survivor* survivor, uint8_t byte);
 
+void general_add(Survivor* survivor, bool is_16_bit, uint8_t* significant_from, uint8_t* insignificant_from,
+                 uint8_t* significant_to, uint8_t* insignificant_to);
+
 #endif //COREWARSINTERPRETER_OPCODE_MACROSS_H

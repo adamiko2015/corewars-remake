@@ -46,7 +46,7 @@ void resurrect_players() {
         team->survivors[0].DS = 0;
         team->survivors[0].SS = team->survivors[0].stack_id*0x1000;
         team->survivors[0].ES = team->shared_memory_id*0x10000;
-        team->survivors[0].Flags = 0;
+        *(uint16_t*)(&team->survivors[1].Flags) = 0;
         team->survivors[0].Energy = 0;
 
         if (team->survivors[1].initialized) {
@@ -61,7 +61,7 @@ void resurrect_players() {
             team->survivors[1].DS = 0;
             team->survivors[1].SS = team->survivors[1].stack_id*0x10000;
             team->survivors[1].ES = team->shared_memory_id*0x10000;
-            team->survivors[1].Flags = 0;
+            *(uint16_t*)(&team->survivors[1].Flags) = 0;
             team->survivors[1].Energy = 0;
 
         }

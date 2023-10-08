@@ -4,7 +4,7 @@
 #include "globals.h"
 
 void init_usr_input() {
-    printf("Please enter the number of survivors per round: ");
+    printf("Please enter the number of teams per round: ");
     scanf("%" SCNd32, &teams_per_round);
     printf("Please enter the number of rounds: ");
     scanf("%" SCNd32, &num_of_rounds);

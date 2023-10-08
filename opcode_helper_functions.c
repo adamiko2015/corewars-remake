@@ -1,5 +1,6 @@
 #include "globals.h"
 #include "structs_libraries_and_macros.h"
+#include "opcode_flag_helper_functions.h"
 
 // assume byte is of the form 0b00000xxx
 uint16_t address_decoder_mode00(Survivor* survivor, uint8_t byte, uint16_t pos) {
@@ -207,4 +208,19 @@ uint16_t* reg16_decoder(Survivor* survivor, uint8_t byte) {
         }
     }
     exit_angrily
+}
+
+
+// General function to add two addresses while taking care of Flags
+void general_add(Survivor* survivor, bool is_16_bit, uint8_t* significant_from, uint8_t* insignificant_from,
+                 uint8_t* significant_to, uint8_t* insignificant_to)
+{
+    if (is_16_bit) {
+
+    }
+    else {
+        int8_t result = *significant_to + *significant_from;
+        survivor->Flags = flags_8_bit_add(*significant_to, *significant_from);
+        *significant_to = result;
+    }
 }

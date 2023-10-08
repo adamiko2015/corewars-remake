@@ -51,7 +51,7 @@ bool round_end_check() {
     }
     else if(teams_alive == 1) {
         for(Team* team = teams_in_play; team < teams_in_play + team_count; team++) {
-            if (team->living_survivors[0] | team->living_survivors[1]) teams[team->team_id].points += 1;
+            if (team->living_survivors[0] | team->living_survivors[1]) team->points += 1;
         }
 
         return true;
