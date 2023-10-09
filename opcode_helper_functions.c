@@ -216,11 +216,22 @@ void general_add(Survivor* survivor, bool is_16_bit, uint8_t* significant_from, 
                  uint8_t* significant_to, uint8_t* insignificant_to)
 {
     if (is_16_bit) {
+        uint16_t num_a = (*significant_from<<8) + *insignificant_from;
+        uint16_t num_b = (*significant_to<<8) + *insignificant_to;
+
+        uint16_t result = num_a + num_b;
+
+        survivor->Flags = flags_16_bit_add(num_a, num_b);
+
+        *significant_to = (result&0xFF00)>>8;
+        *insignificant_to = result&0x00FF;
 
     }
     else {
         int8_t result = *significant_to + *significant_from;
+
         survivor->Flags = flags_8_bit_add(*significant_to, *significant_from);
+
         *significant_to = result;
     }
 }
