@@ -31,7 +31,11 @@ uint16_t address_decoder_mode00(Survivor* survivor, uint8_t byte, uint16_t pos) 
             return addr;
         }
         case 0b110: {
-            addr = memory[0].values[pos + 1] + memory[0].values[pos + 2] * 0x100;
+            addr = memory[0].values[pos] + memory[0].values[pos + 1] * 0x100;
+
+            // TODO: find a less hacky solution?
+            survivor->IP += 2;
+
             return addr;
         }
         case 0b111: {
