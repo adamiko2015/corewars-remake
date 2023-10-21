@@ -134,7 +134,8 @@ bool op_01(Survivor* survivor, uint16_t shared_memory) // ADD [X], reg16
 // might be a difference between our implementation and official implementation here.
 // in the official implementation there is an exception when we push or pop from the end of the stack,
 // here we just loop to the beginning of the segment.
-bool op_06(Survivor* survivor, uint16_t shared_memory) {
+bool op_06(Survivor* survivor, uint16_t shared_memory) // Push ES
+{
     debug_print_statement
     survivor->SP -= 2;
     uint16_t destination = survivor->SP;
@@ -153,7 +154,8 @@ bool op_06(Survivor* survivor, uint16_t shared_memory) {
 
 }
 
-bool op_07(Survivor* survivor, uint16_t shared_memory) {
+bool op_07(Survivor* survivor, uint16_t shared_memory) // Pop ES
+{
     debug_print_statement
     uint16_t address = survivor->SP;
 

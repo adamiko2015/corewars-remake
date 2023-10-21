@@ -220,7 +220,7 @@ void general_add(Survivor* survivor, bool is_16_bit, uint8_t* significant_from, 
     }
     else {
         int8_t result = *significant_to + *significant_from;
-        survivor->Flags = flags_8_bit_add(*significant_to, *significant_from);
+        survivor->Flags = flags_8_bit_add(*significant_to, *significant_from); // TODO: adam needs to make sure there is no funny business
         *significant_to = result;
     }
 }
