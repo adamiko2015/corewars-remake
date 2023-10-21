@@ -131,48 +131,16 @@ bool op_01(Survivor* survivor, uint16_t shared_memory) // ADD [X], reg16
     return false;
 }
 
-// might be a difference between our implementation and official implementation here.
-// in the official implementation there is an exception when we push or pop from the end of the stack,
-// here we just loop to the beginning of the segment.
 bool op_06(Survivor* survivor, uint16_t shared_memory) // Push ES
 {
     debug_print_statement
-    survivor->SP -= 2;
-    uint16_t destination = survivor->SP;
-
-    uint16_t segment = ((destination+0x10*survivor->SS) & 0xF0000) >> 16;
-    if (segment != 0 && segment != survivor->stack_id && segment != shared_memory) {return false;}
-
-    ((char*)memory)[(uint32_t) destination + 0x10*survivor->SS] = (survivor->ES & 0xFF00) >> 8;
-
-    destination--;
-    ((char*)memory)[(uint32_t) destination + 0x10*survivor->SS] += survivor->ES & 0xFF;
-
-    survivor->IP += 1;
-
-    return true;
-
+    return general_push(survivor, shared_memory, &survivor->ES);
 }
 
 bool op_07(Survivor* survivor, uint16_t shared_memory) // Pop ES
 {
     debug_print_statement
-    uint16_t address = survivor->SP;
-
-    uint16_t segment = ((address+0x10*survivor->SS) & 0xF0000) >> 16;
-    if (segment != 0 && segment != survivor->stack_id && segment != shared_memory) {return false;}
-
-    survivor->ES = ((char*)memory)[(uint32_t) address + 0x10*survivor->SS] << 8;
-
-    address--;
-    survivor->ES |= ((char*)memory)[(uint32_t) address + 0x10*survivor->SS];
-
-    survivor->SP += 2;
-
-    survivor->IP += 1;
-
-    return true;
-
+    return general_pop(survivor, shared_memory, &survivor->ES);
 }
 
 void test_func(Survivor* survivor) {survivor->ES += 0x0110;}
