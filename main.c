@@ -5,6 +5,8 @@
 #include "emulate_game.h"
 
 int main() {
+    setbuf(stdout, 0);
+
     init_usr_input();
     load_players();
 
