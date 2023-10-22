@@ -2,4 +2,5 @@ survivors
 main
 main.exe
 cmake-build-debug
+CMakeLists.txt
 .idea
