@@ -34,9 +34,6 @@
         }\
 }
 
-
-// TODO: add support for flags!!!
-
 bool op_00(Survivor* survivor, uint16_t shared_memory) // ADD [X], reg8
 {
     uint8_t address_byte = memory[0].values[survivor->IP+1];

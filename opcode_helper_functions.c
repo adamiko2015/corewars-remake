@@ -31,11 +31,7 @@ uint16_t address_decoder_mode00(Survivor* survivor, uint8_t byte, uint16_t pos) 
             return addr;
         }
         case 0b110: {
-            addr = memory[0].values[pos] + memory[0].values[pos + 1] * 0x100;
-
-            // TODO: find a less hacky solution?
-            survivor->IP += 2;
-
+            addr = memory[0].values[pos + 1] + memory[0].values[pos + 2] * 0x100;
             return addr;
         }
         case 0b111: {
@@ -220,6 +216,15 @@ void general_add(Survivor* survivor, bool is_16_bit, uint8_t* significant_from, 
                  uint8_t* significant_to, uint8_t* insignificant_to)
 {
     if (is_16_bit) {
+        uint16_t num_a = (*significant_from<<8) + *insignificant_from;
+        uint16_t num_b = (*significant_to<<8) + *insignificant_to;
+
+        uint16_t result = num_a + num_b;
+
+        survivor->Flags = flags_16_bit_add(num_a, num_b);
+
+        *significant_to = (result&0xFF00)>>8;
+        *insignificant_to = result&0x00FF;
 
     }
     else {
