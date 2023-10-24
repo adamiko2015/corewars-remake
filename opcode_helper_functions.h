@@ -17,4 +17,4 @@ void general_add(Survivor* survivor, bool is_16_bit, uint8_t* significant_from, 
 bool general_push(Survivor* survivor, uint16_t shared_memory, uint16_t* reg);
 bool general_pop(Survivor* survivor, uint16_t shared_memory, uint16_t* reg);
 
-#endif COREWARSINTERPRETER_OPCODE_MACROS_H
+#endif //COREWARSINTERPRETER_OPCODE_MACROS_H

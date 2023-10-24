@@ -277,8 +277,4 @@ bool general_pop(Survivor* survivor, uint16_t shared_memory, uint16_t* reg)
     survivor->IP += 1;
 
     return true;
-    survivor->Flags = flags_8_bit_add(*significant_to, *significant_from);
-
-    *significant_to = result;
-}
 }

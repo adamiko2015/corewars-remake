@@ -48,12 +48,11 @@ bool op_00(Survivor* survivor, uint16_t shared_memory) // ADD [X], reg8
     get_virtual_address(ip_progress, destination, destination_virtual_addr, survivor, address_byte)
 
     debug_print_statement // Test this code!
-    if (significant_destination == 0) {
+    if (destination == 0) {
         uint16_t segment = ((destination_virtual_addr + 0x10 * survivor->DS) & 0xF0000) >> 16;
         if (segment != 0 && segment != survivor->stack_id && segment != shared_memory) {return false;}
 
-        significant_destination = (uint8_t*)&((char *) memory)[(uint32_t) destination_virtual_addr + survivor->DS * 0x10];
-        insignificant_destination = (uint8_t*)&((char *) memory)[(uint32_t) ((destination_virtual_addr+1)&0xFFFF) + survivor->DS * 0x10];
+       destination = (uint8_t*)&((char *) memory)[(uint32_t) destination_virtual_addr + survivor->DS * 0x10];
     }
 
     general_add(survivor, 0, address, 0, destination, 0);
