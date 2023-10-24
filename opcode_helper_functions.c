@@ -1,6 +1,7 @@
 #include "globals.h"
 #include "structs_libraries_and_macros.h"
 #include "opcode_flag_helper_functions.h"
+#include "opcode_helper_functions.h"
 
 // assume byte is of the form 0b00000xxx
 uint16_t address_decoder_mode00(Survivor* survivor, uint8_t byte, uint16_t pos) {
@@ -212,6 +213,7 @@ uint16_t* reg16_decoder(Survivor* survivor, uint8_t byte) {
 
 
 // General function to add two addresses while taking care of Flags
+// might be different from og implementation, because we implemented AF.
 void general_add(Survivor* survivor, bool is_16_bit, uint8_t* significant_from, uint8_t* insignificant_from,
                  uint8_t* significant_to, uint8_t* insignificant_to)
 {
@@ -221,7 +223,8 @@ void general_add(Survivor* survivor, bool is_16_bit, uint8_t* significant_from, 
 
         uint16_t result = num_a + num_b;
 
-        survivor->Flags = flags_16_bit_add(num_a, num_b);
+        uint16_t flags_to_update = flags_16_bit_add(num_a, num_b);
+        update_specific_flags(survivor, survivor->Flags, flags_to_update, 0x08D5);
 
         *significant_to = (result&0xFF00)>>8;
         *insignificant_to = result&0x00FF;
@@ -230,10 +233,18 @@ void general_add(Survivor* survivor, bool is_16_bit, uint8_t* significant_from, 
     else {
         int8_t result = *significant_to + *significant_from;
 
-        survivor->Flags = flags_8_bit_add(*significant_to, *significant_from);
+        uint16_t flags_to_update = flags_8_bit_add(*significant_to, *significant_from);
+        update_specific_flags(survivor, survivor->Flags, flags_to_update, 0x08D5);
+
 
         *significant_to = result;
     }
+}
+
+void update_specific_flags(Survivor* survivor, uint16_t og_flags, uint16_t flags_after_change, uint16_t mask) {
+    uint16_t difference = og_flags ^ flags_after_change;
+    difference &= mask;
+    survivor->Flags = (og_flags ^ difference);
 }
 
 // might be a difference between our implementation and official implementation here.
@@ -241,7 +252,6 @@ void general_add(Survivor* survivor, bool is_16_bit, uint8_t* significant_from, 
 // here we just loop to the beginning of the segment.
 bool general_push(Survivor* survivor, uint16_t shared_memory, uint16_t* reg)
 {
-    debug_print_statement
     survivor->SP -= 2;
     uint16_t destination = survivor->SP;
 
@@ -261,16 +271,15 @@ bool general_push(Survivor* survivor, uint16_t shared_memory, uint16_t* reg)
 
 bool general_pop(Survivor* survivor, uint16_t shared_memory, uint16_t* reg)
 {
-    debug_print_statement
     uint16_t address = survivor->SP;
 
     uint16_t segment = ((address+0x10*survivor->SS) & 0xF0000) >> 16;
     if (segment != 0 && segment != survivor->stack_id && segment != shared_memory) {return false;}
 
-    *reg = ((char*)memory)[(uint32_t) address + 0x10*survivor->SS] << 8;
+    *reg = ((char*)memory)[(uint32_t) address + 0x10*survivor->SS] << 8; // Might look unnecessarily complicated, but is necessary to enable loopback
 
     address--;
-    *reg |= ((char*)memory)[(uint32_t) address + 0x10*survivor->SS];
+    *(char*)reg = ((char*)memory)[(uint32_t) address + 0x10*survivor->SS];
 
     survivor->SP += 2;
 

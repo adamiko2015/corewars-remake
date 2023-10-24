@@ -69,6 +69,8 @@ void add_survivor_to_team(Team* team, Survivor survivor) {
     printf("Please make sure there are at most 2 survivors per team."); exit(1);
 }
 
+// Might be a difference between official and our implementation, here memory starts at 0, and Adam Grose proclaims
+// it  should start at 0x7c00
 void allocate_memory() {
     int segment_cnt = 1 + team_count + survivor_count;
 
