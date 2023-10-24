@@ -14,4 +14,7 @@ uint16_t* reg16_decoder(Survivor* survivor, uint8_t byte);
 void general_add(Survivor* survivor, bool is_16_bit, uint8_t* significant_from, uint8_t* insignificant_from,
                  uint8_t* significant_to, uint8_t* insignificant_to);
 
+bool general_push(Survivor* survivor, uint16_t shared_memory, uint16_t* reg);
+bool general_pop(Survivor* survivor, uint16_t shared_memory, uint16_t* reg);
+
 #endif //COREWARSINTERPRETER_OPCODE_MACROSS_H
