@@ -5,5 +5,6 @@
 #define COREWARSINTERPRETER_EMULATE_GAME_H
 
 void emulation_loop(void);
+bool debug_progress_simulation(void);
 
 #endif

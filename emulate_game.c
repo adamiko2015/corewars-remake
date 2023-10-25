@@ -72,3 +72,10 @@ void emulation_loop() {
         advance_player_tracker();
     }
 }
+
+bool debug_progress_emulation() {
+    if(round_end_check()) return false;
+    run_current_opcode();
+    advance_player_tracker();
+    return true;
+}
