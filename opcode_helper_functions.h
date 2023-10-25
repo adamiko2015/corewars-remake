@@ -4,7 +4,7 @@
 #ifndef COREWARSINTERPRETER_OPCODE_MACROS_H
 #define COREWARSINTERPRETER_OPCODE_MACROS_H
 
-uint16_t address_decoder_mode00(Survivor* survivor, uint8_t byte, uint16_t pos);
+uint16_t address_decoder_mode00(Survivor* survivor, uint8_t byte, uint16_t pos, int* ip_progress);
 uint16_t address_decoder_mode01(Survivor* survivor, uint8_t byte, uint16_t pos);
 uint16_t address_decoder_mode10(Survivor* survivor, uint8_t byte, uint16_t pos);
 

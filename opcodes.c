@@ -5,7 +5,7 @@
 #define get_virtual_address(ip_progress, destination, destination_virtual_addr, survivor, address_byte) {\
     switch (address_byte >> 6) {\
             case 0b00: {\
-                destination_virtual_addr = address_decoder_mode00(survivor, address_byte & 0b00000111, pos);\
+                destination_virtual_addr = address_decoder_mode00(survivor, address_byte & 0b00000111, pos, &ip_progress);\
 \
                 ip_progress += 2;\
                 break;\
@@ -80,20 +80,20 @@ bool op_01(Survivor* survivor, uint16_t shared_memory) // ADD [X], reg16
     int ip_progress = 0;
 
     uint16_t destination_virtual_addr = 0;
-    uint8_t* significant_destination = 0;
-    uint8_t* insignificant_destination;
+    uint8_t* insignificant_destination = 0;
+    uint8_t* significant_destination;
 
-    get_virtual_address(ip_progress, significant_destination, destination_virtual_addr, survivor, address_byte)
+    get_virtual_address(ip_progress, insignificant_destination, destination_virtual_addr, survivor, address_byte)
 
-    if (significant_destination == 0) {
+    if (insignificant_destination == 0) {
         uint16_t segment = ((destination_virtual_addr + 0x10 * survivor->DS) & 0xF0000) >> 16;
         if (segment != 0 && segment != survivor->stack_id && segment != shared_memory) {return false;}
 
-        significant_destination = (uint8_t*)&((char *) memory)[(uint32_t) destination_virtual_addr + survivor->DS * 0x10];
-        insignificant_destination = (uint8_t*)&((char *) memory)[(uint32_t) ((destination_virtual_addr+1)&0xFFFF) + survivor->DS * 0x10];
+        insignificant_destination = (uint8_t*)&((char *) memory)[(uint32_t) destination_virtual_addr + survivor->DS * 0x10];
+        significant_destination = (uint8_t*)&((char *) memory)[(uint32_t) ((destination_virtual_addr+1)&0xFFFF) + survivor->DS * 0x10];
     }
     else {
-        insignificant_destination = significant_destination - 1;
+        significant_destination = insignificant_destination + 1;
     }
 
 
@@ -148,20 +148,20 @@ bool op_03(Survivor* survivor, uint16_t shared_memory) // ADD reg16, [X]
     int ip_progress = 0;
 
     uint16_t address_virtual_addr = 0;
-    uint8_t* significant_address = 0;
-    uint8_t* insignificant_address;
+    uint8_t* insignificant_address = 0;
+    uint8_t* significant_address;
 
-    get_virtual_address(ip_progress, significant_address, address_virtual_addr, survivor, address_byte)
+    get_virtual_address(ip_progress, insignificant_address, address_virtual_addr, survivor, address_byte)
 
-    if (significant_address == 0) {
+    if (insignificant_address == 0) {
         uint16_t segment = ((address_virtual_addr + 0x10 * survivor->DS) & 0xF0000) >> 16;
         if (segment != 0 && segment != survivor->stack_id && segment != shared_memory) {return false;}
 
-        significant_address = (uint8_t*)&((char *) memory)[(uint32_t) address_virtual_addr + survivor->DS * 0x10];
-        insignificant_address = (uint8_t*)&((char *) memory)[(uint32_t) ((address_virtual_addr+1)&0xFFFF) + survivor->DS * 0x10];
+        insignificant_address = (uint8_t*)&((char *) memory)[(uint32_t) address_virtual_addr + survivor->DS * 0x10];
+        significant_address = (uint8_t*)&((char *) memory)[(uint32_t) ((address_virtual_addr+1)&0xFFFF) + survivor->DS * 0x10];
     }
     else {
-        insignificant_destination = significant_destination - 1;
+        significant_destination = insignificant_destination - 1;
     }
 
 
@@ -175,11 +175,13 @@ bool op_03(Survivor* survivor, uint16_t shared_memory) // ADD reg16, [X]
 // might be a difference between our implementation and official implementation here.
 // in the official implementation there is an exception when we push or pop from the end of the stack,
 // here we just loop to the beginning of the segment.
-bool op_06(Survivor* survivor, uint16_t shared_memory) {
+bool op_06(Survivor* survivor, uint16_t shared_memory) // Push ES
+{
     return general_push(survivor, shared_memory, &survivor->ES);
 }
 
-bool op_07(Survivor* survivor, uint16_t shared_memory) {
+bool op_07(Survivor* survivor, uint16_t shared_memory) // Pop ES
+{
     return general_pop(survivor, shared_memory, &survivor->ES);
 }
 

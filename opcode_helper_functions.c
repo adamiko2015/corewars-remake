@@ -4,7 +4,7 @@
 #include "opcode_helper_functions.h"
 
 // assume byte is of the form 0b00000xxx
-uint16_t address_decoder_mode00(Survivor* survivor, uint8_t byte, uint16_t pos) {
+uint16_t address_decoder_mode00(Survivor* survivor, uint8_t byte, uint16_t pos, int* ip_progress) {
     uint16_t addr;
     switch (byte) {
         case 0b000: {
@@ -32,7 +32,8 @@ uint16_t address_decoder_mode00(Survivor* survivor, uint8_t byte, uint16_t pos) 
             return addr;
         }
         case 0b110: {
-            addr = memory[0].values[pos + 1] + memory[0].values[pos + 2] * 0x100;
+            addr = memory[0].values[pos] + memory[0].values[pos + 1] * 0x100;
+            *ip_progress += 2;
             return addr;
         }
         case 0b111: {
@@ -47,35 +48,35 @@ uint16_t address_decoder_mode01(Survivor* survivor, uint8_t byte, uint16_t pos) 
     uint16_t addr;
     switch (byte) {
         case 0b000: {
-            addr = survivor->BX + survivor->SI + memory[0].values[pos + 1];
+            addr = survivor->BX + survivor->SI + memory[0].values[pos];
             return addr;
         }
         case 0b001: {
-            addr = survivor->BX + survivor->DI + memory[0].values[pos + 1];
+            addr = survivor->BX + survivor->DI + memory[0].values[pos];
             return addr;
         }
         case 0b010: {
-            addr = survivor->BP + survivor->SI + memory[0].values[pos + 1];
+            addr = survivor->BP + survivor->SI + memory[0].values[pos];
             return addr;
         }
         case 0b011: {
-            addr = survivor->BP + survivor->DI + memory[0].values[pos + 1];
+            addr = survivor->BP + survivor->DI + memory[0].values[pos];
             return addr;
         }
         case 0b100: {
-            addr = survivor->SI + memory[0].values[pos + 1];
+            addr = survivor->SI + memory[0].values[pos];
             return addr;
         }
         case 0b101: {
-            addr = survivor->DI + memory[0].values[pos + 1];
+            addr = survivor->DI + memory[0].values[pos];
             return addr;
         }
         case 0b110: {
-            addr = survivor->BP + memory[0].values[pos + 1];
+            addr = survivor->BP + memory[0].values[pos];
             return addr;
         }
         case 0b111: {
-            addr = survivor->BX + memory[0].values[pos + 1];
+            addr = survivor->BX + memory[0].values[pos];
             return addr;
         }
     }
@@ -88,42 +89,42 @@ uint16_t address_decoder_mode10(Survivor* survivor, uint8_t byte, uint16_t pos) 
     switch (byte) {
         case 0b000:
             {
-            addr = survivor->BX + survivor->SI + memory[0].values[pos + 1] + memory[0].values[pos + 2] * 0x100;
+            addr = survivor->BX + survivor->SI + memory[0].values[pos] + memory[0].values[pos + 1] * 0x100;
             return addr;
             }
         case 0b001:
             {
-            addr = survivor->BX + survivor->DI + memory[0].values[pos+1] + memory[0].values[pos+2]*0x100;
+            addr = survivor->BX + survivor->DI + memory[0].values[pos] + memory[0].values[pos + 1]*0x100;
             return addr;
             }
         case 0b010:
             {
-            addr = survivor->BP + survivor->SI + memory[0].values[pos+1] + memory[0].values[pos+2]*0x100;
+            addr = survivor->BP + survivor->SI + memory[0].values[pos] + memory[0].values[pos + 1]*0x100;
             return addr;
             }
         case 0b011:
             {
-            addr = survivor->BP + survivor->DI + memory[0].values[pos+1] + memory[0].values[pos+2]*0x100;
+            addr = survivor->BP + survivor->DI + memory[0].values[pos] + memory[0].values[pos + 1]*0x100;
             return addr;
             }
         case 0b100:
             {
-            addr = survivor->SI + memory[0].values[pos+1] + memory[0].values[pos+2]*0x100;
+            addr = survivor->SI + memory[0].values[pos] + memory[0].values[pos + 1]*0x100;
             return addr;
             }
         case 0b101:
             {
-            addr = survivor->DI + memory[0].values[pos+1] + memory[0].values[pos+2]*0x100;
+            addr = survivor->DI + memory[0].values[pos] + memory[0].values[pos + 1]*0x100;
             return addr;
             }
         case 0b110:
             {
-            addr = survivor->BP + memory[0].values[pos+1] + memory[0].values[pos+2]*0x100;
+            addr = survivor->BP + memory[0].values[pos] + memory[0].values[pos + 1]*0x100;
             return addr;
             }
         case 0b111:
             {
-            addr = survivor->BX + memory[0].values[pos+1] + memory[0].values[pos+2]*0x100;
+            addr = survivor->BX + memory[0].values[pos] + memory[0].values[pos + 1]*0x100;
             return addr;
             }
     }
@@ -231,7 +232,7 @@ void general_add(Survivor* survivor, bool is_16_bit, uint8_t* significant_from, 
 
     }
     else {
-        int8_t result = *significant_to + *significant_from;
+        uint8_t result = *significant_to + *significant_from;
 
         uint16_t flags_to_update = flags_8_bit_add(*significant_to, *significant_from);
         update_specific_flags(survivor, survivor->Flags, flags_to_update, 0x08D5);
