@@ -4,9 +4,12 @@
 #ifndef COREWARSINTERPRETER_OPCODE_MACROS_H
 #define COREWARSINTERPRETER_OPCODE_MACROS_H
 
-uint16_t address_decoder_mode00(Survivor survivor[static 1], uint8_t byte, uint16_t pos, uint8_t ip_progress[static 1]);
-uint16_t address_decoder_mode01(Survivor survivor[static 1], uint8_t byte, uint16_t pos);
-uint16_t address_decoder_mode10(Survivor survivor[static 1], uint8_t byte, uint16_t pos);
+bool get_virtual_address(uint8_t ip_progress[static 1], uint8_t* destination[static 1], uint16_t destination_virtual_addr[static 1],
+                         Survivor survivor[static 1], uint8_t address_byte[static 1], uint16_t pos, uint16_t segment_register_virtual_addr[static 1]);
+
+uint16_t address_decoder_mode00(Survivor survivor[static 1], uint8_t byte, uint16_t pos, uint16_t segment_register_virtual_addr[static 1], uint8_t ip_progress[static 1]);
+uint16_t address_decoder_mode01(Survivor survivor[static 1], uint8_t byte, uint16_t segment_register_virtual_addr[static 1], uint16_t pos);
+uint16_t address_decoder_mode10(Survivor survivor[static 1], uint8_t byte, uint16_t segment_register_virtual_addr[static 1], uint16_t pos);
 
 uint8_t* reg8_decoder(Survivor survivor[static 1], uint8_t byte);
 uint16_t* reg16_decoder(Survivor survivor[static 1], uint8_t byte);

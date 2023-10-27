@@ -3,80 +3,131 @@
 #include "opcode_flag_helper_functions.h"
 #include "opcode_helper_functions.h"
 
+bool get_virtual_address(uint8_t ip_progress[static 1], uint8_t* destination[static 1],
+                         uint16_t destination_virtual_addr[static 1], Survivor survivor[static 1],
+                         uint8_t address_byte[static 1], uint16_t pos, uint16_t segment_register_virtual_addr[static 1])
+{
+    switch (*address_byte >> 6) {
+        case 0b00: {
+            *destination_virtual_addr = address_decoder_mode00(survivor, *address_byte & 0b00000111, pos, segment_register_virtual_addr, ip_progress);
+
+            *ip_progress += 2;
+            return true;
+        }
+        case 0b01: {
+            *destination_virtual_addr = address_decoder_mode01(survivor, *address_byte & 0b00000111, segment_register_virtual_addr, pos);
+
+            *ip_progress += 3;
+            return true;
+        }
+        case 0b10: {
+            *destination_virtual_addr = address_decoder_mode10(survivor, *address_byte & 0b00000111, segment_register_virtual_addr, pos);
+
+            *ip_progress += 4;
+            return true;
+        }
+        case 0b11: {
+            *destination = reg8_decoder(survivor, (*address_byte & 0b00000111));
+
+            *ip_progress += 2;
+            return true;
+        }
+        default: {
+            return false;
+        }
+    }
+}
+
 // assume byte is of the form 0b00000xxx
-uint16_t address_decoder_mode00(Survivor survivor[static 1], uint8_t byte, uint16_t pos, uint8_t ip_progress[static 1]) {
+uint16_t address_decoder_mode00(Survivor survivor[static 1], uint8_t byte, uint16_t pos, uint16_t segment_register_virtual_addr[static 1], uint8_t ip_progress[static 1]) {
     uint16_t addr;
     switch (byte) {
         case 0b000: {
             addr = sregs.BX + sregs.SI;
+            *segment_register_virtual_addr = sregs.DS;
             return addr;
         }
         case 0b001: {
             addr = sregs.BX + sregs.DI;
+            *segment_register_virtual_addr = sregs.DS;
             return addr;
         }
         case 0b010: {
             addr = sregs.BP + sregs.SI;
+            *segment_register_virtual_addr = sregs.SS;
             return addr;
         }
         case 0b011: {
             addr = sregs.BP + sregs.DI;
+            *segment_register_virtual_addr = sregs.SS;
             return addr;
         }
         case 0b100: {
             addr = sregs.SI;
+            *segment_register_virtual_addr = sregs.SS;
             return addr;
         }
         case 0b101: {
             addr = sregs.DI;
+            *segment_register_virtual_addr = sregs.DS;
             return addr;
         }
         case 0b110: {
             addr = memory[0].values[pos] + memory[0].values[pos + 1] * 0x100;
+            *segment_register_virtual_addr = sregs.DS;
             *ip_progress += 2;
             return addr;
         }
         case 0b111: {
             addr = sregs.BX;
+            *segment_register_virtual_addr = sregs.DS;
             return addr;
         }
     }
     exit_angrily
 }
 
-uint16_t address_decoder_mode01(Survivor survivor[static 1], uint8_t byte, uint16_t pos) {
+uint16_t address_decoder_mode01(Survivor survivor[static 1], uint8_t byte, uint16_t segment_register_virtual_addr[static 1], uint16_t pos) {
     uint16_t addr;
     switch (byte) {
         case 0b000: {
             addr = sregs.BX + sregs.SI + memory[0].values[pos];
+            *segment_register_virtual_addr = sregs.DS;
             return addr;
         }
         case 0b001: {
             addr = sregs.BX + sregs.DI + memory[0].values[pos];
+            *segment_register_virtual_addr = sregs.DS;
             return addr;
         }
         case 0b010: {
             addr = sregs.BP + sregs.SI + memory[0].values[pos];
+            *segment_register_virtual_addr = sregs.SS;
             return addr;
         }
         case 0b011: {
             addr = sregs.BP + sregs.DI + memory[0].values[pos];
+            *segment_register_virtual_addr = sregs.SS;
             return addr;
         }
         case 0b100: {
             addr = sregs.SI + memory[0].values[pos];
+            *segment_register_virtual_addr = sregs.DS;
             return addr;
         }
         case 0b101: {
             addr = sregs.DI + memory[0].values[pos];
+            *segment_register_virtual_addr = sregs.DS;
             return addr;
         }
         case 0b110: {
             addr = sregs.BP + memory[0].values[pos];
+            *segment_register_virtual_addr = sregs.SS;
             return addr;
         }
         case 0b111: {
             addr = sregs.BX + memory[0].values[pos];
+            *segment_register_virtual_addr = sregs.DS;
             return addr;
         }
     }
@@ -84,47 +135,55 @@ uint16_t address_decoder_mode01(Survivor survivor[static 1], uint8_t byte, uint1
 }
 
 
-uint16_t address_decoder_mode10(Survivor survivor[static 1], uint8_t byte, uint16_t pos) {
+uint16_t address_decoder_mode10(Survivor survivor[static 1], uint8_t byte, uint16_t segment_register_virtual_addr[static 1], uint16_t pos) {
     uint16_t addr;
     switch (byte) {
         case 0b000:
             {
             addr = sregs.BX + sregs.SI + memory[0].values[pos] + memory[0].values[pos + 1] * 0x100;
+                *segment_register_virtual_addr = sregs.DS;
             return addr;
             }
         case 0b001:
             {
             addr = sregs.BX + sregs.DI + memory[0].values[pos] + memory[0].values[pos + 1]*0x100;
+            *segment_register_virtual_addr = sregs.DS;
             return addr;
             }
         case 0b010:
             {
             addr = sregs.BP + sregs.SI + memory[0].values[pos] + memory[0].values[pos + 1]*0x100;
+            *segment_register_virtual_addr = sregs.SS;
             return addr;
             }
         case 0b011:
             {
             addr = sregs.BP + sregs.DI + memory[0].values[pos] + memory[0].values[pos + 1]*0x100;
+            *segment_register_virtual_addr = sregs.SS;
             return addr;
             }
         case 0b100:
             {
             addr = sregs.SI + memory[0].values[pos] + memory[0].values[pos + 1]*0x100;
+            *segment_register_virtual_addr = sregs.DS;
             return addr;
             }
         case 0b101:
             {
             addr = sregs.DI + memory[0].values[pos] + memory[0].values[pos + 1]*0x100;
+            *segment_register_virtual_addr = sregs.DS;
             return addr;
             }
         case 0b110:
             {
             addr = sregs.BP + memory[0].values[pos] + memory[0].values[pos + 1]*0x100;
+            *segment_register_virtual_addr = sregs.SS;
             return addr;
             }
         case 0b111:
             {
             addr = sregs.BX + memory[0].values[pos] + memory[0].values[pos + 1]*0x100;
+            *segment_register_virtual_addr = sregs.DS;
             return addr;
             }
     }
@@ -255,10 +314,10 @@ bool general_push(Survivor survivor[static 1], uint16_t shared_memory, uint16_t 
     uint16_t segment = ((destination+0x10*sregs.SS) & 0xF0000) >> 16; // stores the actual segment that will be written to, making sure it is legal
     if (segment != 0 && segment != survivor->stack_id && segment != shared_memory) {return false;}
 
-    ((char*)memory)[(uint32_t) destination + 0x10*sregs.SS] = (*reg & 0xFF00) >> 8; // set first byte
+    ((char*)memory)[(uint32_t) destination + 0x10*sregs.SS] = *reg & 0xFF; // set first byte
 
-    destination--;
-    ((char*)memory)[(uint32_t) destination + 0x10*sregs.SS] += *reg & 0xFF; // set second byte
+    destination++;
+    ((char*)memory)[(uint32_t) destination + 0x10*sregs.SS] = (*reg & 0xFF00) >> 8; // set second byte
 
     sregs.IP += 1;
 
@@ -273,6 +332,7 @@ bool general_pop(Survivor survivor[static 1], uint16_t shared_memory, uint16_t r
     uint16_t segment = ((address+0x10*sregs.SS) & 0xF0000) >> 16;
     if (segment != 0 && segment != survivor->stack_id && segment != shared_memory) {return false;}
 
+    address++;
     *reg = ((char*)memory)[(uint32_t) address + 0x10*sregs.SS] << 8; // Might look unnecessarily complicated, but is necessary to enable loopback
 
     address--;
