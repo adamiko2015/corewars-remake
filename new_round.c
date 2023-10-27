@@ -36,34 +36,21 @@ bool choose_teams(void) {
 void resurrect_players(void) {
     for(Team* team = teams_in_play; team < teams_in_play + total_team_count; team++) {
         team->living_survivors[0] = 1;
-        team->survivors[0].BX = 0;
-        team->survivors[0].CX = 0;
-        team->survivors[0].DX = 0;
-        team->survivors[0].SI = 0;
-        team->survivors[0].DI = 0;
-        team->survivors[0].BP = 0;
-        team->survivors[0].SP = sizeof(Segment)-1;
-        team->survivors[0].DS = 0;
-        team->survivors[0].SS = team->survivors[0].stack_id*0x1000;
-        team->survivors[0].ES = team->shared_memory_id*0x10000;
-        *(uint16_t*)(&team->survivors[1].Flags) = 0;
-        team->survivors[0].Energy = 0;
+        team->survivors[0].initialized = true;
+        team->survivors[0].registers = (Registers) {
+            .SP = sizeof(Segment)-1,
+            .SS = team->survivors[0].stack_id*0x1000,
+            .ES = team->shared_memory_id*0x1000,
+        };
 
         if (team->survivors[1].initialized) {
             team->living_survivors[1] = 1;
-            team->survivors[1].BX = 0;
-            team->survivors[1].CX = 0;
-            team->survivors[1].DX = 0;
-            team->survivors[1].SI = 0;
-            team->survivors[1].DI = 0;
-            team->survivors[1].BP = 0;
-            team->survivors[1].SP = sizeof(Segment)-1;
-            team->survivors[1].DS = 0;
-            team->survivors[1].SS = team->survivors[1].stack_id*0x10000;
-            team->survivors[1].ES = team->shared_memory_id*0x10000;
-            *(uint16_t*)(&team->survivors[1].Flags) = 0;
-            team->survivors[1].Energy = 0;
-
+            team->survivors[1].initialized = true;
+            team->survivors[1].registers = (Registers) {
+                    .SP = sizeof(Segment)-1,
+                    .SS = team->survivors[1].stack_id*0x1000,
+                    .ES = team->shared_memory_id*0x1000,
+            };
         }
         else {
             team->living_survivors[1] = 0;
@@ -72,11 +59,8 @@ void resurrect_players(void) {
 }
 
 void reset_segments(void) {
-    debug_print_statement
     // TODO: Figure out which segments to actually reset
 
-
-    //memory[0] = (Segment) {0}; TODO: figure out why this line doesn't (or does) work
     if ((memset(&memory[0], 0xCC, sizeof(Segment))) == 0) exit_angrily
 }
 
@@ -106,8 +90,8 @@ void insert_players(void) {
                     occupied[location + k] = true;
                 }
 
-                team->survivors[i].AX = location;
-                team->survivors[i].IP = location;
+                team->survivors[i].registers.AX = location;
+                team->survivors[i].registers.IP = location;
 
                 skip:
                     continue;
@@ -118,6 +102,8 @@ void insert_players(void) {
 
 bool init_round(void) {
     if (!choose_teams()) {return false;}
+
+    debug_print_statement
 
     resurrect_players();
     reset_segments();

@@ -16,14 +16,19 @@
                         exit(1);}
 #define debug_print_statement     printf("Hit file " __FILE__ " line %d\r\n", __LINE__);
 
+#define sregs survivor->registers
 
 // might be a difference between our implementation and official implementation here.
 // in the official implementation stack size and shared memory size may differ.
+typedef struct {
+    uint16_t AX, BX, CX, DX, SI, DI, BP, SP, CS, DS, SS, ES, IP, Energy, Flags; // Registers
+    uint8_t INT86h_used, INT87h_used;
+} Registers;
+
 typedef struct  {
     bool initialized;
     uint16_t stack_id;
-    uint16_t AX, BX, CX, DX, SI, DI, BP, SP, CS, DS, SS, ES, IP, Energy, Flags; // Registers
-    uint8_t INT86h_used, INT87h_used;
+    Registers registers;
     char* code;
     uint16_t code_size;
 } Survivor;
