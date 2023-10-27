@@ -22,9 +22,9 @@ void load_players() {
     dir = opendir("./survivors");
     if(dir == NULL) exit_angrily
 
-    int32_t current_segment = 1;
-    int32_t current_team = 0;
-    int32_t current_zombie_team = 0;
+    uint32_t current_segment = 1;
+    uint32_t current_team = 0;
+    uint32_t current_zombie_team = 0;
 
     while((entry = readdir(dir))) {
         if (entry->d_name[0] == '.') continue;
@@ -84,7 +84,7 @@ void load_players() {
     if ((teams_per_round > team_count)) exit_angrily
     if ((team_permutation = malloc(sizeof(int32_t)*(teams_per_round+1) + 1)) == 0) exit_angrily // One more byte for
                                                                                                 // safety reason (op_01)
-    for (int i=0; i<teams_per_round; i++) team_permutation[i] = i;
+    for (uint8_t i=0; i<teams_per_round; i++) team_permutation[i] = i;
     team_permutation[teams_per_round] = team_count;
 
     init_opcode_table();

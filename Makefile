@@ -3,7 +3,7 @@
 CC = gcc
 LNK = gcc
 NASM = nasm
-CFLAGS = -ggdb -Wall -O0 -c
+CFLAGS = -ggdb -Wall -Wextra -O0 -c -std=c2x
 LNKFLAGS = $(CLFAGS)
 ASMFLAGS = -f elf64 -g -Wall
 

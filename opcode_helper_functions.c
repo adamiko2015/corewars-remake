@@ -4,7 +4,7 @@
 #include "opcode_helper_functions.h"
 
 // assume byte is of the form 0b00000xxx
-uint16_t address_decoder_mode00(Survivor* survivor, uint8_t byte, uint16_t pos, int* ip_progress) {
+uint16_t address_decoder_mode00(Survivor survivor[static 1], uint8_t byte, uint16_t pos, uint8_t ip_progress[static 1]) {
     uint16_t addr;
     switch (byte) {
         case 0b000: {
@@ -44,7 +44,7 @@ uint16_t address_decoder_mode00(Survivor* survivor, uint8_t byte, uint16_t pos, 
     exit_angrily
 }
 
-uint16_t address_decoder_mode01(Survivor* survivor, uint8_t byte, uint16_t pos) {
+uint16_t address_decoder_mode01(Survivor survivor[static 1], uint8_t byte, uint16_t pos) {
     uint16_t addr;
     switch (byte) {
         case 0b000: {
@@ -84,7 +84,7 @@ uint16_t address_decoder_mode01(Survivor* survivor, uint8_t byte, uint16_t pos) 
 }
 
 
-uint16_t address_decoder_mode10(Survivor* survivor, uint8_t byte, uint16_t pos) {
+uint16_t address_decoder_mode10(Survivor survivor[static 1], uint8_t byte, uint16_t pos) {
     uint16_t addr;
     switch (byte) {
         case 0b000:
@@ -134,7 +134,7 @@ uint16_t address_decoder_mode10(Survivor* survivor, uint8_t byte, uint16_t pos) 
 
 // TODO: determine if little endian assumption is right
 // TODO: find way of implementing without switch case?
-uint8_t* reg8_decoder(Survivor* survivor, uint8_t byte) {
+uint8_t* reg8_decoder(Survivor survivor[static 1], uint8_t byte) {
     uint8_t *reg;
     switch (byte) {
         case 0b000: {
@@ -173,7 +173,7 @@ uint8_t* reg8_decoder(Survivor* survivor, uint8_t byte) {
     exit_angrily
 }
 
-uint16_t* reg16_decoder(Survivor* survivor, uint8_t byte) {
+uint16_t* reg16_decoder(Survivor survivor[static 1], uint8_t byte) {
     uint16_t* reg;
     switch (byte) {
         case 0b000: {
@@ -215,8 +215,8 @@ uint16_t* reg16_decoder(Survivor* survivor, uint8_t byte) {
 
 // General function to add two addresses while taking care of Flags
 // might be different from og implementation, because we implemented AF.
-void general_add(Survivor* survivor, bool is_16_bit, uint8_t* significant_from, uint8_t* insignificant_from,
-                 uint8_t* significant_to, uint8_t* insignificant_to)
+void general_add(Survivor survivor[static 1], bool is_16_bit, uint8_t significant_from[static 1], uint8_t* insignificant_from,
+                 uint8_t significant_to[static 1], uint8_t* insignificant_to)
 {
     if (is_16_bit) {
         uint16_t num_a = (*significant_from<<8) + *insignificant_from;
@@ -242,7 +242,7 @@ void general_add(Survivor* survivor, bool is_16_bit, uint8_t* significant_from, 
     }
 }
 
-void update_specific_flags(Survivor* survivor, uint16_t og_flags, uint16_t flags_after_change, uint16_t mask) {
+void update_specific_flags(Survivor survivor[static 1], uint16_t og_flags, uint16_t flags_after_change, uint16_t mask) {
     uint16_t difference = og_flags ^ flags_after_change;
     difference &= mask;
     survivor->Flags = (og_flags ^ difference);
@@ -251,7 +251,7 @@ void update_specific_flags(Survivor* survivor, uint16_t og_flags, uint16_t flags
 // might be a difference between our implementation and official implementation here.
 // in the official implementation there is an exception when we push or pop from the end of the stack,
 // here we just loop to the beginning of the segment.
-bool general_push(Survivor* survivor, uint16_t shared_memory, uint16_t* reg)
+bool general_push(Survivor survivor[static 1], uint16_t shared_memory, uint16_t reg[static 1])
 {
     survivor->SP -= 2;
     uint16_t destination = survivor->SP;
@@ -270,7 +270,7 @@ bool general_push(Survivor* survivor, uint16_t shared_memory, uint16_t* reg)
 
 }
 
-bool general_pop(Survivor* survivor, uint16_t shared_memory, uint16_t* reg)
+bool general_pop(Survivor survivor[static 1], uint16_t shared_memory, uint16_t reg[static 1])
 {
     uint16_t address = survivor->SP;
 

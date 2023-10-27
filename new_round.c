@@ -1,7 +1,7 @@
 #include "globals.h"
 #include "structs_libraries_and_macros.h"
 
-bool choose_teams() {
+bool choose_teams(void) {
     if (rounds_repeated > num_of_rounds) return false;
 
     int carry = 1;
@@ -10,20 +10,20 @@ bool choose_teams() {
             team_permutation[i]++;
             carry = 0;
 
-            for (int j=i+1; j<teams_per_round; j++) team_permutation[j] = team_permutation[j-1] + 1;
+            for (uint32_t j=i+1; j<teams_per_round; j++) team_permutation[j] = team_permutation[j-1] + 1;
         }
     }
 
     if (carry) {
         rounds_repeated++;
-        for (int i=0; i<teams_per_round; i++) team_permutation[i] = i;
+        for (uint32_t i=0; i<teams_per_round; i++) team_permutation[i] = i;
     }
 
-    for (int i=0; i<teams_per_round; i++) {
+    for (uint32_t i=0; i<teams_per_round; i++) {
         teams_in_play[i] = teams[team_permutation[i]];
     }
 
-    for (int i=0; i<zombie_count; i++) {
+    for (uint32_t i=0; i<zombie_count; i++) {
         teams_in_play[i+teams_per_round] = zombies[i];
     }
 
@@ -33,7 +33,7 @@ bool choose_teams() {
     return true;
 }
 
-void resurrect_players() {
+void resurrect_players(void) {
     for(Team* team = teams_in_play; team < teams_in_play + total_team_count; team++) {
         team->living_survivors[0] = 1;
         team->survivors[0].BX = 0;
@@ -71,18 +71,22 @@ void resurrect_players() {
     }
 }
 
-void reset_segments() {
+void reset_segments(void) {
+    debug_print_statement
     // TODO: Figure out which segments to actually reset
+
+
+    //memory[0] = (Segment) {0}; TODO: figure out why this line doesn't (or does) work
     if ((memset(&memory[0], 0xCC, sizeof(Segment))) == 0) exit_angrily
 }
 
-void insert_players() {
+void insert_players(void) {
     // TODO: CHECK documentation for better implementation
     bool occupied[0x10000];
     if ((memset(occupied, false, sizeof(bool)*0x10000)) == 0) exit_angrily
 
     for(Team* team = teams_in_play; team < teams_in_play + total_team_count; team++) {
-        for(int i = 0; i < 2; i++) {
+        for(uint16_t i = 0; i < 2; i++) {
             if(!(team->living_survivors[i])) continue;
 
             bool found = false;
@@ -90,14 +94,14 @@ void insert_players() {
             while(!found) {
                 uint32_t location = rand() % (0x10000 - team->survivors[i].code_size);
 
-                for(int j = location; j < location + team->survivors[i].code_size; j++) {
+                for(uint16_t j = location; j < location + team->survivors[i].code_size; j++) {
                     if(occupied[j]) goto skip;
                 }
 
                 found = true;
                 
                 // copy code to memory
-                for(int k = 0; k < team->survivors[i].code_size; k++) {
+                for(uint16_t k = 0; k < team->survivors[i].code_size; k++) {
                     memory[0].values[location + k] = team->survivors[i].code[k];
                     occupied[location + k] = true;
                 }
@@ -112,7 +116,7 @@ void insert_players() {
     }
 }
 
-bool init_round() {
+bool init_round(void) {
     if (!choose_teams()) {return false;}
 
     resurrect_players();

@@ -2,7 +2,7 @@
 #include "globals.h"
 #include "opcodes.h"
 
-void init_survivor_and_team_count() {
+void init_survivor_and_team_count(void) {
     DIR* dir;
     struct dirent* entry;
 
@@ -36,7 +36,7 @@ void init_survivor_and_team_count() {
     closedir(dir);
 }
 
-void get_code(Survivor* survivor, char* filename, char* dirname) { // TODO: validate
+void get_code(Survivor survivor[static 1], char* filename, char* dirname) { // TODO: validate
     char tpath[512];
     strcpy(tpath, "./survivors/");
     char* path = strcat(strcat(strcat(tpath, dirname), "/"), filename);
@@ -62,7 +62,7 @@ void get_code(Survivor* survivor, char* filename, char* dirname) { // TODO: vali
    survivor->code_size = bin_size;
 }
 
-void add_survivor_to_team(Team* team, Survivor survivor) {
+void add_survivor_to_team(Team team[static 1], Survivor survivor) {
     survivor.initialized = true;
     if (!(team->survivors[0].initialized)) {team->survivors[0] = survivor; return;}
     if (!(team->survivors[1].initialized)) {team->survivors[1] = survivor; return;}
@@ -71,14 +71,14 @@ void add_survivor_to_team(Team* team, Survivor survivor) {
 
 // Might be a difference between official and our implementation, here memory starts at 0, and Adam Grose proclaims
 // it  should start at 0x7c00
-void allocate_memory() {
+void allocate_memory(void) {
     int segment_cnt = 1 + team_count + survivor_count;
 
     memory = malloc(sizeof(Segment)*segment_cnt);
     if (memory == 0) exit_angrily
 }
 
-void init_opcode_table() {
+void init_opcode_table(void) {
     if ((opcode_lookup_table = malloc(0x100*sizeof(opcode_ptr))) == 0) exit_angrily
     memset(opcode_lookup_table, 0, 0x100*sizeof(opcode_ptr));
     // TODO: initialize opcode table with functions in the right places

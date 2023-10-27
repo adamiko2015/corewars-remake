@@ -4,7 +4,7 @@
 #include "new_round.h"
 #include "emulate_game.h"
 
-int main() {
+int main(void) {
     setbuf(stdout, 0);
 
     init_usr_input();

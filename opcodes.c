@@ -34,13 +34,13 @@
         }\
 }
 
-bool op_00(Survivor* survivor, uint16_t shared_memory) // ADD [X], reg8
+bool op_00(Survivor survivor[static 1], uint16_t shared_memory) // ADD [X], reg8
 {
     uint8_t address_byte = memory[0].values[survivor->IP+1];
     uint16_t pos = survivor->IP+2;
     uint8_t* address;
     address = reg8_decoder(survivor, (address_byte & 0b00111000) >> 3);
-    int ip_progress = 0;
+    uint8_t ip_progress = 0;
 
     uint16_t destination_virtual_addr = 0;
     uint8_t* destination = 0;
@@ -66,7 +66,7 @@ bool op_00(Survivor* survivor, uint16_t shared_memory) // ADD [X], reg8
 // in the official implementation the loopback works differently for 16-bit registers.
 // Unlike official implementation, here there is an exploit that allows survivors to access the first byte of
 // another survivor's private section.
-bool op_01(Survivor* survivor, uint16_t shared_memory) // ADD [X], reg16
+bool op_01(Survivor survivor[static 1], uint16_t shared_memory) // ADD [X], reg16
 {
 
     uint8_t address_byte = memory[0].values[survivor->IP+1];
@@ -77,7 +77,7 @@ bool op_01(Survivor* survivor, uint16_t shared_memory) // ADD [X], reg16
     insignificant_address = (uint8_t*)reg16_decoder(survivor, (address_byte & 0b00111000) >> 3);
     significant_address = insignificant_address + 1;
 
-    int ip_progress = 0;
+    uint8_t ip_progress = 0;
 
     uint16_t destination_virtual_addr = 0;
     uint8_t* insignificant_destination = 0;
@@ -103,13 +103,13 @@ bool op_01(Survivor* survivor, uint16_t shared_memory) // ADD [X], reg16
     return true;
 }
 
-bool op_02(Survivor* survivor, uint16_t shared_memory) // ADD reg8, [X]
+bool op_02(Survivor survivor[static 1], uint16_t shared_memory) // ADD reg8, [X]
 {
     uint8_t address_byte = memory[0].values[survivor->IP+1];
     uint16_t pos = survivor->IP+2;
     uint8_t* destination;
     destination = reg8_decoder(survivor, (address_byte & 0b00111000) >> 3);
-    int ip_progress = 0;
+    uint8_t ip_progress = 0;
 
     uint16_t address_virtual_addr = 0;
     uint8_t* address = 0;
@@ -134,7 +134,7 @@ bool op_02(Survivor* survivor, uint16_t shared_memory) // ADD reg8, [X]
 // in the official implementation the loopback works differently for 16-bit registers.
 // Unlike official implementation, here there is an exploit that allows survivors to access the first byte of
 // another survivor's private section.
-bool op_03(Survivor* survivor, uint16_t shared_memory) // ADD reg16, [X]
+bool op_03(Survivor survivor[static 1], uint16_t shared_memory) // ADD reg16, [X]
 {
 
     uint8_t address_byte = memory[0].values[survivor->IP+1];
@@ -145,7 +145,7 @@ bool op_03(Survivor* survivor, uint16_t shared_memory) // ADD reg16, [X]
     insignificant_destination = (uint8_t*)reg16_decoder(survivor, (address_byte & 0b00111000) >> 3);
     significant_destination = insignificant_destination + 1;
 
-    int ip_progress = 0;
+    uint8_t ip_progress = 0;
 
     uint16_t address_virtual_addr = 0;
     uint8_t* insignificant_address = 0;
@@ -175,12 +175,12 @@ bool op_03(Survivor* survivor, uint16_t shared_memory) // ADD reg16, [X]
 // might be a difference between our implementation and official implementation here.
 // in the official implementation there is an exception when we push or pop from the end of the stack,
 // here we just loop to the beginning of the segment.
-bool op_06(Survivor* survivor, uint16_t shared_memory) // Push ES
+bool op_06(Survivor survivor[static 1], uint16_t shared_memory) // Push ES
 {
     return general_push(survivor, shared_memory, &survivor->ES);
 }
 
-bool op_07(Survivor* survivor, uint16_t shared_memory) // Pop ES
+bool op_07(Survivor survivor[static 1], uint16_t shared_memory) // Pop ES
 {
     return general_pop(survivor, shared_memory, &survivor->ES);
 }
