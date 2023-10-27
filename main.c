@@ -11,7 +11,7 @@ int main(void) {
     load_players();
 
 
-    while (init_round()) { // TODO: for testing purposes, in real game should run as a while loop condition.
+    while (init_round()) {
         emulation_loop();
     }
 

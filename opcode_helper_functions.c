@@ -131,9 +131,6 @@ uint16_t address_decoder_mode10(Survivor survivor[static 1], uint8_t byte, uint1
     exit_angrily
 }
 
-
-// TODO: determine if little endian assumption is right
-// TODO: find way of implementing without switch case?
 uint8_t* reg8_decoder(Survivor survivor[static 1], uint8_t byte) {
     uint8_t *reg;
     switch (byte) {
@@ -211,7 +208,6 @@ uint16_t* reg16_decoder(Survivor survivor[static 1], uint8_t byte) {
     }
     exit_angrily
 }
-
 
 // General function to add two addresses while taking care of Flags
 // might be different from og implementation, because we implemented AF.

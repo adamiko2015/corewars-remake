@@ -36,7 +36,7 @@ void init_survivor_and_team_count(void) {
     closedir(dir);
 }
 
-void get_code(Survivor survivor[static 1], char* filename, char* dirname) { // TODO: validate
+void get_code(Survivor survivor[static 1], char* filename, char* dirname) { // TODO: make secure
     char tpath[512];
     strcpy(tpath, "./survivors/");
     char* path = strcat(strcat(strcat(tpath, dirname), "/"), filename);
@@ -79,15 +79,18 @@ void allocate_memory(void) {
 }
 
 void init_opcode_table(void) {
+    opcode_ptr tmp_opcode_lookup_table[0x100] = {
+            [0x00] = op_00,
+            [0x01] = op_01,
+            [0x02] = op_02,
+            [0x03] = op_03,
+
+            [0x06] = op_06,
+            [0x07] = op_07,
+
+            [0xff] = 0
+            };
+
     if ((opcode_lookup_table = malloc(0x100*sizeof(opcode_ptr))) == 0) exit_angrily
-    memset(opcode_lookup_table, 0, 0x100*sizeof(opcode_ptr));
-    // TODO: initialize opcode table with functions in the right places
-    opcode_lookup_table[0x00] = op_00;
-    opcode_lookup_table[0x01] = op_01;
-    opcode_lookup_table[0x02] = op_02;
-    opcode_lookup_table[0x03] = op_03;
-
-
-    opcode_lookup_table[0x06] = op_06;
-    opcode_lookup_table[0x07] = op_07;
+    memcpy(opcode_lookup_table, tmp_opcode_lookup_table, 0x100*sizeof(opcode_ptr));
 }

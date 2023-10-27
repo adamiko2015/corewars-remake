@@ -10,15 +10,14 @@ void kill_current_player()
 }
 
 void run_current_opcode() {
-    // TODO: change name "warrior" to "survivor"?
-    Survivor* warrior = &(teams_in_play[current_player.team_id].survivors[current_player.survivor_position]);
-    //if (survivor.CS != 0) {kill_current_player; return;} //TODO: check if this line is needed
-    uint8_t opcode_lookup_value = memory[0].values[warrior->registers.IP];
+    Survivor* survivor = &(teams_in_play[current_player.team_id].survivors[current_player.survivor_position]);
+
+    uint8_t opcode_lookup_value = memory[0].values[survivor->registers.IP];
 
     opcode_ptr opcode = opcode_lookup_table[opcode_lookup_value];
     if (opcode == 0) { kill_current_player(); return; }
 
-    bool opcode_res = opcode(warrior, teams_in_play[current_player.team_id].shared_memory_id);
+    bool opcode_res = opcode(survivor, teams_in_play[current_player.team_id].shared_memory_id);
     if (!opcode_res) {kill_current_player(); return;}
     commands_ran++;
 }

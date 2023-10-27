@@ -34,6 +34,7 @@
         }\
 }
 
+// TODO: check boundary condition checks
 bool op_00(Survivor survivor[static 1], uint16_t shared_memory) // ADD [X], reg8
 {
     uint8_t address_byte = memory[0].values[sregs.IP+1];
