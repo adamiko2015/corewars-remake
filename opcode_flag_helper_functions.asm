@@ -20,3 +20,23 @@ flags_16_bit_add:
     pop rax
 
     ret
+
+global flags_8_bit_or
+flags_8_bit_or:
+
+    or cl, dl ; oring the two inputs
+
+    pushf ; moving Flags register to rax (output)
+    pop rax
+
+    ret
+
+global flags_16_bit_or
+flags_16_bit_or:
+
+    or cx, dx ; oring the two inputs
+
+    pushf ; moving Flags register to rax (output)
+    pop rax
+
+    ret

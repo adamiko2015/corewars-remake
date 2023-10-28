@@ -54,6 +54,11 @@ struct Player_Tracker {
     int32_t survivor_position;
 };
 
-typedef bool (*opcode_ptr)(Survivor*, uint16_t);
+typedef bool (*opcode_ptr)(Survivor survivor[static 1], uint16_t shared_memory);
+
+typedef void (*operation_ptr)(Survivor survivor[static 1], bool is_16_bit, uint8_t significant_from[static 1], uint8_t* insignificant_from,
+                uint8_t significant_to[static 1], uint8_t* insignificant_to);
+
+typedef bool (*op_generalizer)(Survivor survivor[static 1], uint16_t shared_memory, operation_ptr general_op);
 
 #endif //COREWARSINTERPRETER_INIT_GLOBALS_H

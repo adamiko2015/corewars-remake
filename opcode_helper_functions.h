@@ -15,11 +15,21 @@ uint8_t* reg8_decoder(Survivor survivor[static 1], uint8_t byte);
 uint16_t* reg16_decoder(Survivor survivor[static 1], uint8_t byte);
 
 void general_add(Survivor survivor[static 1], bool is_16_bit, uint8_t significant_from[static 1], uint8_t* insignificant_from,
-                 uint8_t significant_to[static 1], uint8_t* insignificant_to);
+                uint8_t significant_to[static 1], uint8_t* insignificant_to);
+
+void general_or(Survivor survivor[static 1], bool is_16_bit, uint8_t significant_from[static 1], uint8_t* insignificant_from,
+                uint8_t significant_to[static 1], uint8_t* insignificant_to);
 
 void update_specific_flags(Survivor survivor[static 1], uint16_t og_flags, uint16_t flags_after_change, uint16_t mask);
 
 bool general_push(Survivor survivor[static 1], uint16_t shared_memory, uint16_t reg[static 1]);
 bool general_pop(Survivor survivor[static 1], uint16_t shared_memory, uint16_t reg[static 1]);
+
+bool general_op_0(Survivor survivor[static 1], uint16_t shared_memory, operation_ptr general_op);
+bool general_op_1(Survivor survivor[static 1], uint16_t shared_memory, operation_ptr general_op);
+bool general_op_2(Survivor survivor[static 1], uint16_t shared_memory, operation_ptr general_op);
+bool general_op_3(Survivor survivor[static 1], uint16_t shared_memory, operation_ptr general_op);
+bool general_op_4(Survivor survivor[static 1], uint16_t shared_memory, operation_ptr general_op);
+bool general_op_5(Survivor survivor[static 1], uint16_t shared_memory, operation_ptr general_op);
 
 #endif //COREWARSINTERPRETER_OPCODE_MACROS_H

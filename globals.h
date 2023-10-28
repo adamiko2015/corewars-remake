@@ -30,4 +30,7 @@ extern opcode_ptr* opcode_lookup_table;
 
 extern uint32_t rounds_repeated;
 
+extern operation_ptr* operators;
+extern op_generalizer* general_ops;
+
 #endif //COREWARSINTERPRETER_GLOBALS_H

@@ -344,3 +344,209 @@ bool general_pop(Survivor survivor[static 1], uint16_t shared_memory, uint16_t r
 
     return true;
 }
+
+void general_or(Survivor survivor[static 1], bool is_16_bit, uint8_t significant_from[static 1], uint8_t* insignificant_from,
+                 uint8_t significant_to[static 1], uint8_t* insignificant_to)
+{
+    if (is_16_bit) {
+        uint16_t num_a = (*significant_from<<8) + *insignificant_from;
+        uint16_t num_b = (*significant_to<<8) + *insignificant_to;
+
+        uint16_t result = num_a | num_b;
+
+        uint16_t flags_to_update = flags_16_bit_or(num_a, num_b);
+        update_specific_flags(survivor, sregs.Flags, flags_to_update, 0x08C4);
+
+        *significant_to = (result&0xFF00)>>8;
+        *insignificant_to = result&0x00FF;
+
+    }
+    else {
+        uint8_t result = *significant_to | *significant_from;
+
+        uint16_t flags_to_update = flags_8_bit_or(*significant_to, *significant_from);
+        update_specific_flags(survivor, sregs.Flags, flags_to_update, 0x08C4);
+
+
+        *significant_to = result;
+    }
+}
+
+bool general_op_0(Survivor survivor[static 1], uint16_t shared_memory, operation_ptr general_op) // OP [X], reg8
+{
+    uint8_t address_byte = memory[0].values[sregs.IP+1];
+    uint16_t pos = sregs.IP+2;
+    uint8_t* address;
+    address = reg8_decoder(survivor, (address_byte & 0b00111000) >> 3);
+    uint8_t ip_progress = 0;
+
+    uint16_t destination_virtual_addr = 0;
+    uint16_t segment_register_virtual_addr = 0;
+    uint8_t* destination = 0;
+
+    if (!get_virtual_address(&ip_progress, &destination, &destination_virtual_addr, survivor, &address_byte, pos, &segment_register_virtual_addr)) {return false;}
+
+    if (destination == 0) {
+        uint16_t segment = ((destination_virtual_addr + 0x10 * segment_register_virtual_addr) & 0xF0000) >> 16;
+        if (segment != 0 && segment != survivor->stack_id && segment != shared_memory) {return false;}
+
+       destination = (uint8_t*)&((char *) memory)[(uint32_t) destination_virtual_addr + segment_register_virtual_addr * 0x10];
+    }
+
+    general_op(survivor, 0, address, 0, destination, 0);
+
+    sregs.IP += ip_progress;
+    return true;
+}
+
+// Might be a difference between our implementation and official implementation here.
+// In the official implementation the shared memory loops back to stack, here it loops back to the shared memory.
+// in the official implementation the loopback works differently for 16-bit registers.
+// Unlike official implementation, here there is an exploit that allows survivors to access the first byte of
+// another survivor's private section.
+bool general_op_1(Survivor survivor[static 1], uint16_t shared_memory, operation_ptr general_op) // OP [X], reg16
+{
+
+    uint8_t address_byte = memory[0].values[sregs.IP+1];
+    uint16_t pos = sregs.IP+2;
+
+    uint8_t* significant_address,* insignificant_address;
+
+    insignificant_address = (uint8_t*)reg16_decoder(survivor, (address_byte & 0b00111000) >> 3);
+    significant_address = insignificant_address + 1;
+
+    uint8_t ip_progress = 0;
+
+    uint16_t destination_virtual_addr = 0;
+    uint16_t segment_register_virtual_addr = 0;
+    uint8_t* insignificant_destination = 0;
+    uint8_t* significant_destination;
+
+    if (!get_virtual_address(&ip_progress, &insignificant_destination, &destination_virtual_addr, survivor, &address_byte, pos, &segment_register_virtual_addr)) {return false;}
+
+    if (insignificant_destination == 0) {
+        uint16_t segment = ((destination_virtual_addr + 0x10 * segment_register_virtual_addr) & 0xF0000) >> 16;
+        if (segment != 0 && segment != survivor->stack_id && segment != shared_memory) {return false;}
+
+        insignificant_destination = (uint8_t*)&((char *) memory)[(uint32_t) destination_virtual_addr + segment_register_virtual_addr * 0x10];
+        significant_destination = (uint8_t*)&((char *) memory)[(uint32_t) ((destination_virtual_addr+1)&0xFFFF) + segment_register_virtual_addr * 0x10];
+    }
+    else {
+        significant_destination = insignificant_destination + 1;
+    }
+
+
+    general_op(survivor, 1, significant_address, insignificant_address, significant_destination, insignificant_destination);
+
+    sregs.IP += ip_progress;
+    return true;
+}
+
+bool general_op_2(Survivor survivor[static 1], uint16_t shared_memory, operation_ptr general_op) // OP reg8, [X]
+{
+    uint8_t address_byte = memory[0].values[sregs.IP+1];
+    uint16_t pos = sregs.IP+2;
+    uint8_t* destination;
+    destination = reg8_decoder(survivor, (address_byte & 0b00111000) >> 3);
+    uint8_t ip_progress = 0;
+
+    uint16_t address_virtual_addr = 0;
+    uint16_t segment_register_virtual_addr = 0;
+    uint8_t* address = 0;
+
+    if (!get_virtual_address(&ip_progress, &destination, &address_virtual_addr, survivor, &address_byte, pos, &segment_register_virtual_addr)) {return false;}
+
+    if (address == 0) {
+        uint16_t segment = ((address_virtual_addr + 0x10 * segment_register_virtual_addr) & 0xF0000) >> 16;
+        if (segment != 0 && segment != survivor->stack_id && segment != shared_memory) {return false;}
+
+        address = (uint8_t*)&((char *) memory)[(uint32_t) address_virtual_addr + segment_register_virtual_addr * 0x10];
+    }
+
+    general_op(survivor, 0, address, 0, destination, 0);
+
+    sregs.IP += ip_progress;
+    return true;
+}
+
+// Might be a difference between our implementation and official implementation here.
+// In the official implementation the shared memory loops back to stack, here it loops back to the shared memory.
+// in the official implementation the loopback works differently for 16-bit registers.
+// Unlike official implementation, here there is an exploit that allows survivors to access the first byte of
+// another survivor's private section.
+bool general_op_3(Survivor survivor[static 1], uint16_t shared_memory, operation_ptr general_op) // OP reg16, [X]
+{
+
+    uint8_t address_byte = memory[0].values[sregs.IP+1];
+    uint16_t pos = sregs.IP+2;
+
+    uint8_t* significant_destination,* insignificant_destination;
+
+    insignificant_destination = (uint8_t*)reg16_decoder(survivor, (address_byte & 0b00111000) >> 3);
+    significant_destination = insignificant_destination + 1;
+
+    uint8_t ip_progress = 0;
+
+    uint16_t address_virtual_addr = 0;
+    uint16_t segment_register_virtual_addr = 0;
+    uint8_t* insignificant_address = 0;
+    uint8_t* significant_address;
+
+    if (!get_virtual_address(&ip_progress, &insignificant_destination, &address_virtual_addr, survivor, &address_byte, pos, &segment_register_virtual_addr)) {return false;}
+
+    if (insignificant_address == 0) {
+        uint16_t segment = ((address_virtual_addr + 0x10 * segment_register_virtual_addr) & 0xF0000) >> 16;
+        if (segment != 0 && segment != survivor->stack_id && segment != shared_memory) {return false;}
+
+        insignificant_address = (uint8_t*)&((char *) memory)[(uint32_t) address_virtual_addr + segment_register_virtual_addr * 0x10];
+        significant_address = (uint8_t*)&((char *) memory)[(uint32_t) ((address_virtual_addr+1)&0xFFFF) + segment_register_virtual_addr * 0x10];
+    }
+    else {
+        significant_destination = insignificant_destination - 1;
+    }
+
+
+    general_op(survivor, 1, significant_address, insignificant_address, significant_destination, insignificant_destination);
+
+    sregs.IP += ip_progress;
+    return true;
+}
+
+bool general_op_4(Survivor survivor[static 1], uint16_t shared_memory, operation_ptr general_op) // OP AL, imm8
+{
+    debug_print_statement
+
+    shared_memory++;
+    
+    uint8_t address_byte = memory[0].values[sregs.IP+1];
+    uint8_t* destination;
+    destination = (uint8_t*)&sregs.AX;
+    uint8_t ip_progress = 2;
+
+    general_op(survivor, 0, &address_byte, 0, destination, 0);
+
+    sregs.IP += ip_progress;
+    return true;
+}
+
+bool general_op_5(Survivor survivor[static 1], uint16_t shared_memory, operation_ptr general_op) // OP AX, imm16
+{
+    debug_print_statement
+
+    shared_memory++;
+
+    uint8_t insignificant_address_byte = memory[0].values[sregs.IP+1];
+    uint8_t significant_address_byte = memory[0].values[sregs.IP+1];
+
+    uint8_t* significant_destination,* insignificant_destination;
+
+    insignificant_destination = (uint8_t*)&sregs.AX;
+    significant_destination = insignificant_destination + 1;
+
+    uint8_t ip_progress = 3;
+
+    general_op(survivor, 1, &significant_address_byte, &insignificant_address_byte, significant_destination, insignificant_destination);
+
+    sregs.IP += ip_progress;
+    return true;
+}

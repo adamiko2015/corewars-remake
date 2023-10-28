@@ -1,6 +1,7 @@
 #include "structs_libraries_and_macros.h"
 #include "globals.h"
 #include "opcodes.h"
+#include "opcode_helper_functions.h"
 
 void init_survivor_and_team_count(void) {
     DIR* dir;
@@ -80,17 +81,37 @@ void allocate_memory(void) {
 
 void init_opcode_table(void) {
     opcode_ptr tmp_opcode_lookup_table[0x100] = {
-            [0x00] = op_00,
-            [0x01] = op_01,
-            [0x02] = op_02,
-            [0x03] = op_03,
+            [0x00] = general_binary_operation,
+            [0x01] = general_binary_operation,
+            [0x02] = general_binary_operation,
+            [0x03] = general_binary_operation,
 
-            [0x06] = op_06,
-            [0x07] = op_07,
+            [0x06] = general_binary_operation,
+            [0x07] = general_binary_operation,
 
             [0xff] = 0
             };
 
-    if ((opcode_lookup_table = malloc(0x100*sizeof(opcode_ptr))) == 0) exit_angrily
-    memcpy(opcode_lookup_table, tmp_opcode_lookup_table, 0x100*sizeof(opcode_ptr));
+    if ((opcode_lookup_table = malloc(sizeof(tmp_opcode_lookup_table))) == 0) exit_angrily
+    memcpy(opcode_lookup_table, tmp_opcode_lookup_table, sizeof(tmp_opcode_lookup_table));
+
+    operation_ptr tmp_operators[0b11111] = {
+        [0x00] = general_add,
+        [0x01] = general_or
+        };
+
+    if ((operators = malloc(sizeof(tmp_operators))) == 0) exit_angrily
+    memcpy(operators, tmp_opcode_lookup_table, sizeof(tmp_operators));
+
+    op_generalizer tmp_general_ops[6] = {
+        [0] = general_op_0,
+        [1] = general_op_1,
+        [2] = general_op_2,
+        [3] = general_op_3,
+        [4] = general_op_4,
+        [5] = general_op_5
+    };
+
+    if ((general_ops = malloc(sizeof(tmp_general_ops))) == 0) exit_angrily
+    memcpy(general_ops, tmp_general_ops, sizeof(tmp_general_ops));
 }

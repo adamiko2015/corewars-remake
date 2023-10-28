@@ -27,3 +27,6 @@ uint8_t* opcode_lookup_table;
 uint32_t rounds_repeated = 0;
 
 struct Player_Tracker current_player;
+
+operation_ptr* operators;
+op_generalizer* general_ops;
