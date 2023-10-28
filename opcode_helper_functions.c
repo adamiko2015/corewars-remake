@@ -277,7 +277,12 @@ void general_add(Survivor survivor[static 1], bool is_16_bit, uint8_t significan
         uint16_t num_a = (*significant_from<<8) + *insignificant_from;
         uint16_t num_b = (*significant_to<<8) + *insignificant_to;
 
-        uint16_t result = num_a + num_b;
+        uint16_t result = num_b;
+
+        asm (   "add %0, %1"
+                : "=&r" (result)
+                : "r" (num_a)
+                );
 
         uint16_t flags_to_update = flags_16_bit_add(num_a, num_b);
         update_specific_flags(survivor, sregs.Flags, flags_to_update, 0x08D5);
@@ -287,7 +292,15 @@ void general_add(Survivor survivor[static 1], bool is_16_bit, uint8_t significan
 
     }
     else {
-        uint8_t result = *significant_to + *significant_from;
+
+        uint8_t result = *significant_to;
+
+        asm (   "add %0, %1"
+                : "=&r" (result)
+                : "r" (*significant_from)
+                );
+
+        *significant_to = result;
 
         uint16_t flags_to_update = flags_8_bit_add(*significant_to, *significant_from);
         update_specific_flags(survivor, sregs.Flags, flags_to_update, 0x08D5);
@@ -296,6 +309,376 @@ void general_add(Survivor survivor[static 1], bool is_16_bit, uint8_t significan
         *significant_to = result;
     }
 }
+
+void general_or(Survivor survivor[static 1], bool is_16_bit, uint8_t significant_from[static 1], uint8_t* insignificant_from,
+                uint8_t significant_to[static 1], uint8_t* insignificant_to)
+{
+    if (is_16_bit) {
+        uint16_t num_a = (*significant_from<<8) + *insignificant_from;
+        uint16_t num_b = (*significant_to<<8) + *insignificant_to;
+
+        uint16_t result = num_b;
+
+        asm (
+                "or %1, %0\n\t"
+
+                : "=&r" (result)
+                : "r" (num_a)
+                );
+
+        uint16_t flags_to_update = flags_16_bit_add(num_a, num_b);
+        update_specific_flags(survivor, sregs.Flags, flags_to_update, 0x08D5);
+
+        *significant_to = (result&0xFF00)>>8;
+        *insignificant_to = result&0x00FF;
+
+    }
+    else {
+        uint8_t result = *significant_to;
+
+        asm (   "or %0, %1"
+                : "=&r" (result)
+                : "r" (*significant_from)
+                );
+
+        *significant_to = result;
+
+        uint16_t flags_to_update = flags_8_bit_add(*significant_to, *significant_from);
+        update_specific_flags(survivor, sregs.Flags, flags_to_update, 0x08D5);
+
+
+        *significant_to = result;
+    }
+}
+
+void general_adc(Survivor survivor[static 1], bool is_16_bit, uint8_t significant_from[static 1], uint8_t* insignificant_from,
+                 uint8_t significant_to[static 1], uint8_t* insignificant_to)
+{
+    if (is_16_bit) {
+        uint16_t num_a = (*significant_from<<8) + *insignificant_from;
+        uint16_t num_b = (*significant_to<<8) + *insignificant_to;
+
+        uint16_t result = num_b;
+
+        asm (
+                "adc %1, %0\n\t"
+
+                : "=&r" (result)
+                : "r" (num_a)
+                );
+
+        uint16_t flags_to_update = flags_16_bit_add(num_a, num_b);
+        update_specific_flags(survivor, sregs.Flags, flags_to_update, 0x08D5);
+
+        *significant_to = (result&0xFF00)>>8;
+        *insignificant_to = result&0x00FF;
+
+    }
+    else {
+        uint8_t result = *significant_to;
+
+        asm (   "adc %0, %1"
+                : "=&r" (result)
+                : "r" (*significant_from)
+                );
+
+        *significant_to = result;
+
+        uint16_t flags_to_update = flags_8_bit_add(*significant_to, *significant_from);
+        update_specific_flags(survivor, sregs.Flags, flags_to_update, 0x08D5);
+
+
+        *significant_to = result;
+    }
+}
+
+void general_sbb(Survivor survivor[static 1], bool is_16_bit, uint8_t significant_from[static 1], uint8_t* insignificant_from,
+                 uint8_t significant_to[static 1], uint8_t* insignificant_to)
+{
+    if (is_16_bit) {
+        uint16_t num_a = (*significant_from<<8) + *insignificant_from;
+        uint16_t num_b = (*significant_to<<8) + *insignificant_to;
+
+        uint16_t result = num_b;
+
+        asm (
+                "sbb %1, %0\n\t"
+
+                : "=&r" (result)
+                : "r" (num_a)
+                );
+
+        uint16_t flags_to_update = flags_16_bit_add(num_a, num_b);
+        update_specific_flags(survivor, sregs.Flags, flags_to_update, 0x08D5);
+
+        *significant_to = (result&0xFF00)>>8;
+        *insignificant_to = result&0x00FF;
+
+    }
+    else {
+        uint8_t result = *significant_to;
+
+        asm (   "sbb %0, %1"
+                : "=&r" (result)
+                : "r" (*significant_from)
+                );
+
+        *significant_to = result;
+
+        uint16_t flags_to_update = flags_8_bit_add(*significant_to, *significant_from);
+        update_specific_flags(survivor, sregs.Flags, flags_to_update, 0x08D5);
+
+
+        *significant_to = result;
+    }
+}
+
+void general_and(Survivor survivor[static 1], bool is_16_bit, uint8_t significant_from[static 1], uint8_t* insignificant_from,
+                 uint8_t significant_to[static 1], uint8_t* insignificant_to)
+{
+    if (is_16_bit) {
+        uint16_t num_a = (*significant_from<<8) + *insignificant_from;
+        uint16_t num_b = (*significant_to<<8) + *insignificant_to;
+
+        uint16_t result = num_b;
+
+        asm (
+                "and %1, %0\n\t"
+
+                : "=&r" (result)
+                : "r" (num_a)
+                );
+
+        uint16_t flags_to_update = flags_16_bit_add(num_a, num_b);
+        update_specific_flags(survivor, sregs.Flags, flags_to_update, 0x08D5);
+
+        *significant_to = (result&0xFF00)>>8;
+        *insignificant_to = result&0x00FF;
+
+    }
+    else {
+        uint8_t result = *significant_to;
+
+        asm (   "and %0, %1"
+                : "=&r" (result)
+                : "r" (*significant_from)
+                );
+
+        *significant_to = result;
+
+        uint16_t flags_to_update = flags_8_bit_add(*significant_to, *significant_from);
+        update_specific_flags(survivor, sregs.Flags, flags_to_update, 0x08D5);
+
+
+        *significant_to = result;
+    }
+}
+
+void general_sub(Survivor survivor[static 1], bool is_16_bit, uint8_t significant_from[static 1], uint8_t* insignificant_from,
+                 uint8_t significant_to[static 1], uint8_t* insignificant_to)
+{
+    if (is_16_bit) {
+        uint16_t num_a = (*significant_from<<8) + *insignificant_from;
+        uint16_t num_b = (*significant_to<<8) + *insignificant_to;
+
+        uint16_t result = num_b;
+
+        asm (
+                "sub %1, %0\n\t"
+
+                : "=&r" (result)
+                : "r" (num_a)
+                );
+
+        uint16_t flags_to_update = flags_16_bit_add(num_a, num_b);
+        update_specific_flags(survivor, sregs.Flags, flags_to_update, 0x08D5);
+
+        *significant_to = (result&0xFF00)>>8;
+        *insignificant_to = result&0x00FF;
+
+    }
+    else {
+        uint8_t result = *significant_to;
+
+        asm (   "sub %0, %1"
+                : "=&r" (result)
+                : "r" (*significant_from)
+                );
+
+        *significant_to = result;
+
+        uint16_t flags_to_update = flags_8_bit_add(*significant_to, *significant_from);
+        update_specific_flags(survivor, sregs.Flags, flags_to_update, 0x08D5);
+
+
+        *significant_to = result;
+    }
+}
+
+void general_xor(Survivor survivor[static 1], bool is_16_bit, uint8_t significant_from[static 1], uint8_t* insignificant_from,
+                 uint8_t significant_to[static 1], uint8_t* insignificant_to)
+{
+    if (is_16_bit) {
+        uint16_t num_a = (*significant_from<<8) + *insignificant_from;
+        uint16_t num_b = (*significant_to<<8) + *insignificant_to;
+
+        uint16_t result = num_b;
+
+        asm (
+                "xor %1, %0\n\t"
+
+                : "=&r" (result)
+                : "r" (num_a)
+                );
+
+        uint16_t flags_to_update = flags_16_bit_add(num_a, num_b);
+        update_specific_flags(survivor, sregs.Flags, flags_to_update, 0x08D5);
+
+        *significant_to = (result&0xFF00)>>8;
+        *insignificant_to = result&0x00FF;
+
+    }
+    else {
+        uint8_t result = *significant_to;
+
+        asm (   "xor %0, %1"
+                : "=&r" (result)
+                : "r" (*significant_from)
+                );
+
+        *significant_to = result;
+
+        uint16_t flags_to_update = flags_8_bit_add(*significant_to, *significant_from);
+        update_specific_flags(survivor, sregs.Flags, flags_to_update, 0x08D5);
+
+
+        *significant_to = result;
+    }
+}
+
+void general_cmp(Survivor survivor[static 1], bool is_16_bit, uint8_t significant_from[static 1], uint8_t* insignificant_from,
+                 uint8_t significant_to[static 1], uint8_t* insignificant_to)
+{
+    if (is_16_bit) {
+        uint16_t num_a = (*significant_from<<8) + *insignificant_from;
+        uint16_t num_b = (*significant_to<<8) + *insignificant_to;
+
+        uint16_t result = num_b;
+
+        asm (
+                "cmp %1, %0\n\t"
+
+                : "=&r" (result)
+                : "r" (num_a)
+                );
+
+        uint16_t flags_to_update = flags_16_bit_add(num_a, num_b);
+        update_specific_flags(survivor, sregs.Flags, flags_to_update, 0x08D5);
+
+        *significant_to = (result&0xFF00)>>8;
+        *insignificant_to = result&0x00FF;
+
+    }
+    else {
+        uint8_t result = *significant_to;
+
+        asm (   "cmp %0, %1"
+                : "=&r" (result)
+                : "r" (*significant_from)
+                );
+
+        *significant_to = result;
+
+        uint16_t flags_to_update = flags_8_bit_add(*significant_to, *significant_from);
+        update_specific_flags(survivor, sregs.Flags, flags_to_update, 0x08D5);
+
+
+        *significant_to = result;
+    }
+}
+
+void general_mov(Survivor survivor[static 1], bool is_16_bit, uint8_t significant_from[static 1], uint8_t* insignificant_from,
+                 uint8_t significant_to[static 1], uint8_t* insignificant_to)
+{
+    if (is_16_bit) {
+        uint16_t num_a = (*significant_from<<8) + *insignificant_from;
+        uint16_t num_b = (*significant_to<<8) + *insignificant_to;
+
+        uint16_t result = num_b;
+
+        asm (
+                "mov %1, %0\n\t"
+
+                : "=&r" (result)
+                : "r" (num_a)
+                );
+
+        uint16_t flags_to_update = flags_16_bit_add(num_a, num_b);
+        update_specific_flags(survivor, sregs.Flags, flags_to_update, 0x08D5);
+
+        *significant_to = (result&0xFF00)>>8;
+        *insignificant_to = result&0x00FF;
+
+    }
+    else {
+        uint8_t result = *significant_to;
+
+        asm (   "mov %0, %1"
+                : "=&r" (result)
+                : "r" (*significant_from)
+                );
+
+        *significant_to = result;
+
+        uint16_t flags_to_update = flags_8_bit_add(*significant_to, *significant_from);
+        update_specific_flags(survivor, sregs.Flags, flags_to_update, 0x08D5);
+
+
+        *significant_to = result;
+    }
+}
+
+void general_test(Survivor survivor[static 1], bool is_16_bit, uint8_t significant_from[static 1], uint8_t* insignificant_from,
+                  uint8_t significant_to[static 1], uint8_t* insignificant_to)
+{
+    if (is_16_bit) {
+        uint16_t num_a = (*significant_from<<8) + *insignificant_from;
+        uint16_t num_b = (*significant_to<<8) + *insignificant_to;
+
+        uint16_t result = num_b;
+
+        asm (
+                "test %1, %0\n\t"
+
+                : "=&r" (result)
+                : "r" (num_a)
+                );
+
+        uint16_t flags_to_update = flags_16_bit_add(num_a, num_b);
+        update_specific_flags(survivor, sregs.Flags, flags_to_update, 0x08D5);
+
+        *significant_to = (result&0xFF00)>>8;
+        *insignificant_to = result&0x00FF;
+
+    }
+    else {
+        uint8_t result = *significant_to;
+
+        asm (   "test %0, %1"
+                : "=&r" (result)
+                : "r" (*significant_from)
+                );
+
+        *significant_to = result;
+
+        uint16_t flags_to_update = flags_8_bit_add(*significant_to, *significant_from);
+        update_specific_flags(survivor, sregs.Flags, flags_to_update, 0x08D5);
+
+
+        *significant_to = result;
+    }
+}
+
 
 void update_specific_flags(Survivor survivor[static 1], uint16_t og_flags, uint16_t flags_after_change, uint16_t mask) {
     uint16_t difference = og_flags ^ flags_after_change;
@@ -343,33 +726,6 @@ bool general_pop(Survivor survivor[static 1], uint16_t shared_memory, uint16_t r
     sregs.IP += 1;
 
     return true;
-}
-
-void general_or(Survivor survivor[static 1], bool is_16_bit, uint8_t significant_from[static 1], uint8_t* insignificant_from,
-                 uint8_t significant_to[static 1], uint8_t* insignificant_to)
-{
-    if (is_16_bit) {
-        uint16_t num_a = (*significant_from<<8) + *insignificant_from;
-        uint16_t num_b = (*significant_to<<8) + *insignificant_to;
-
-        uint16_t result = num_a | num_b;
-
-        uint16_t flags_to_update = flags_16_bit_or(num_a, num_b);
-        update_specific_flags(survivor, sregs.Flags, flags_to_update, 0x08C4);
-
-        *significant_to = (result&0xFF00)>>8;
-        *insignificant_to = result&0x00FF;
-
-    }
-    else {
-        uint8_t result = *significant_to | *significant_from;
-
-        uint16_t flags_to_update = flags_8_bit_or(*significant_to, *significant_from);
-        update_specific_flags(survivor, sregs.Flags, flags_to_update, 0x08C4);
-
-
-        *significant_to = result;
-    }
 }
 
 bool general_op_0(Survivor survivor[static 1], uint16_t shared_memory, operation_ptr general_op) // OP [X], reg8

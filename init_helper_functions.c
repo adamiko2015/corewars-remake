@@ -86,8 +86,8 @@ void init_opcode_table(void) {
             [0x02] = general_binary_operation,
             [0x03] = general_binary_operation,
 
-            [0x06] = general_binary_operation,
-            [0x07] = general_binary_operation,
+            [0x06] = op_06,
+            [0x07] = op_07,
 
             [0xff] = 0
             };
@@ -96,12 +96,18 @@ void init_opcode_table(void) {
     memcpy(opcode_lookup_table, tmp_opcode_lookup_table, sizeof(tmp_opcode_lookup_table));
 
     operation_ptr tmp_operators[0b11111] = {
-        [0x00] = general_add,
-        [0x01] = general_or
+        general_add,
+        general_or,
+        general_adc,
+        general_sbb,
+        general_and,
+        general_sub,
+        general_xor,
+        general_cmp
         };
 
     if ((operators = malloc(sizeof(tmp_operators))) == 0) exit_angrily
-    memcpy(operators, tmp_opcode_lookup_table, sizeof(tmp_operators));
+    memcpy(operators, tmp_operators, sizeof(tmp_operators));
 
     op_generalizer tmp_general_ops[6] = {
         [0] = general_op_0,

@@ -1,9 +1,9 @@
-# This program is for Windows!, you need to account for the linux calling convntion in asm files to change program to linux!
+# This program is for Windows! You need to account for the linux calling convention in asm files to use program in linux!
 
 CC = gcc
 LNK = gcc
 NASM = nasm
-CFLAGS = -ggdb -Wall -Wextra -O0 -c -std=c2x
+CFLAGS = -ggdb -Wall -Wextra -O0 -c -std=gnu2x -masm=intel
 LNKFLAGS = $(CLFAGS)
 ASMFLAGS = -f elf64 -g -Wall
 

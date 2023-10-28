@@ -32,4 +32,7 @@ uint16_t flags_16_bit_cmp(uint16_t num_a, uint16_t num_b);
 uint16_t flags_8_bit_mov(uint8_t num_a, uint8_t num_b);
 uint16_t flags_16_bit_mov(uint16_t num_a, uint16_t num_b);
 
+uint16_t flags_8_bit_test(uint8_t num_a, uint8_t num_b);
+uint16_t flags_16_bit_test(uint16_t num_a, uint16_t num_b);
+
 #endif //COREWARSINTERPRETER_OPCODE_FLAG_HELPER_FUNCTIONS_H
