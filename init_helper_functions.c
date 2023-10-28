@@ -42,13 +42,13 @@ void get_code(Survivor survivor[static 1], char* filename, char* dirname) { // T
     char* path = strcat(strcat(strcat(tpath, dirname), "/"), filename);
     FILE* fptr = fopen(path, "rb");
 
-    char tcode[0x1000];
+    char tcode[MAX_CODE_SIZE];
 
     fseek(fptr, 0, SEEK_END); // voodoo magic to get code size
     uint16_t bin_size = ftell(fptr);
     fseek(fptr, 0, SEEK_SET);
 
-    if (bin_size == 0x100) exit_angrily
+    if (bin_size > MAX_CODE_SIZE) {fprintf(stderr, "Code of survivor %s is too large! Max code size is %d Bytes!", tpath, MAX_CODE_SIZE); exit(1);}
 
     fread(tcode, bin_size, 1, fptr);
     fclose(fptr);

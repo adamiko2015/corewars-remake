@@ -18,6 +18,8 @@
 
 #define sregs survivor->registers
 
+#define MAX_CODE_SIZE 0x200
+
 // might be a difference between our implementation and official implementation here.
 // in the official implementation stack size and shared memory size may differ.
 typedef struct {
