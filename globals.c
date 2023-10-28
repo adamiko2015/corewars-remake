@@ -15,7 +15,7 @@ Segment* memory;
 Team* teams;
 Team* zombies;
 
-Team* teams_in_play; // Includes zombies.
+Team** teams_in_play; // Includes zombies.
 
 uint32_t teams_alive; // Doesn't include zombies.
 uint32_t* team_permutation;

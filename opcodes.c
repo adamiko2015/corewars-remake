@@ -2,7 +2,6 @@
 #include "globals.h"
 #include "opcode_helper_functions.h"
 
-// TODO: check boundary condition checks
 bool op_00(Survivor survivor[static 1], uint16_t shared_memory) // ADD [X], reg8
 {
     uint8_t address_byte = memory[0].values[sregs.IP+1];
@@ -17,7 +16,6 @@ bool op_00(Survivor survivor[static 1], uint16_t shared_memory) // ADD [X], reg8
 
     if (!get_virtual_address(&ip_progress, &destination, &destination_virtual_addr, survivor, &address_byte, pos, &segment_register_virtual_addr)) {return false;}
 
-    debug_print_statement // Test this code!
     if (destination == 0) {
         uint16_t segment = ((destination_virtual_addr + 0x10 * segment_register_virtual_addr) & 0xF0000) >> 16;
         if (segment != 0 && segment != survivor->stack_id && segment != shared_memory) {return false;}

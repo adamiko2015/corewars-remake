@@ -72,7 +72,7 @@ void add_survivor_to_team(Team team[static 1], Survivor survivor) {
 // Might be a difference between official and our implementation, here memory starts at 0, and Adam Grose proclaims
 // it  should start at 0x7c00
 void allocate_memory(void) {
-    int segment_cnt = 1 + team_count + survivor_count;
+    int segment_cnt = 1 + team_count + survivor_count + zombie_count;
 
     memory = malloc(sizeof(Segment)*segment_cnt);
     if (memory == 0) exit_angrily

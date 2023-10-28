@@ -2,7 +2,7 @@
 #include "structs_libraries_and_macros.h"
 
 bool choose_teams(void) {
-    if (rounds_repeated > num_of_rounds) return false;
+    if (rounds_repeated >= num_of_rounds) return false;
 
     int carry = 1;
     for (int i=teams_per_round-1; i>=0 && carry; i--) {
@@ -20,11 +20,11 @@ bool choose_teams(void) {
     }
 
     for (uint32_t i=0; i<teams_per_round; i++) {
-        teams_in_play[i] = teams[team_permutation[i]];
+        teams_in_play[i] = &teams[team_permutation[i]];
     }
 
     for (uint32_t i=0; i<zombie_count; i++) {
-        teams_in_play[i+teams_per_round] = zombies[i];
+        teams_in_play[i+teams_per_round] = &zombies[i];
     }
 
     teams_alive = teams_per_round;
@@ -34,26 +34,26 @@ bool choose_teams(void) {
 }
 
 void resurrect_players(void) {
-    for(Team* team = teams_in_play; team < teams_in_play + total_team_count; team++) {
-        team->living_survivors[0] = 1;
-        team->survivors[0].initialized = true;
-        team->survivors[0].registers = (Registers) {
+    for(Team** team = teams_in_play; team < teams_in_play + total_team_count; team++) {
+        (*team)->living_survivors[0] = 1;
+        (*team)->survivors[0].initialized = true;
+        (*team)->survivors[0].registers = (Registers) {
             .SP = sizeof(Segment)-1,
-            .SS = team->survivors[0].stack_id*0x1000,
-            .ES = team->shared_memory_id*0x1000,
+            .SS = (*team)->survivors[0].stack_id*0x1000,
+            .ES = (*team)->shared_memory_id*0x1000,
         };
 
-        if (team->survivors[1].initialized) {
-            team->living_survivors[1] = 1;
-            team->survivors[1].initialized = true;
-            team->survivors[1].registers = (Registers) {
+        if ((*team)->survivors[1].initialized) {
+            (*team)->living_survivors[1] = 1;
+            (*team)->survivors[1].initialized = true;
+            (*team)->survivors[1].registers = (Registers) {
                     .SP = sizeof(Segment)-1,
-                    .SS = team->survivors[1].stack_id*0x1000,
-                    .ES = team->shared_memory_id*0x1000,
+                    .SS = (*team)->survivors[1].stack_id*0x1000,
+                    .ES = (*team)->shared_memory_id*0x1000,
             };
         }
         else {
-            team->living_survivors[1] = 0;
+            (*team)->living_survivors[1] = 0;
         }
     }
 }
@@ -69,29 +69,29 @@ void insert_players(void) {
     bool occupied[0x10000];
     if ((memset(occupied, false, sizeof(bool)*0x10000)) == 0) exit_angrily
 
-    for(Team* team = teams_in_play; team < teams_in_play + total_team_count; team++) {
+    for(Team** team = teams_in_play; team < teams_in_play + total_team_count; team++) {
         for(uint16_t i = 0; i < 2; i++) {
-            if(!(team->living_survivors[i])) continue;
+            if(!((*team)->living_survivors[i])) continue;
 
             bool found = false;
 
             while(!found) {
-                uint32_t location = rand() % (0x10000 - team->survivors[i].code_size);
+                uint32_t location = rand() % (0x10000 - (*team)->survivors[i].code_size);
 
-                for(uint16_t j = location; j < location + team->survivors[i].code_size; j++) {
+                for(uint16_t j = location; j < location + (*team)->survivors[i].code_size; j++) {
                     if(occupied[j]) goto skip;
                 }
 
                 found = true;
                 
                 // copy code to memory
-                for(uint16_t k = 0; k < team->survivors[i].code_size; k++) {
-                    memory[0].values[location + k] = team->survivors[i].code[k];
+                for(uint16_t k = 0; k < (*team)->survivors[i].code_size; k++) {
+                    memory[0].values[location + k] = (*team)->survivors[i].code[k];
                     occupied[location + k] = true;
                 }
 
-                team->survivors[i].registers.AX = location;
-                team->survivors[i].registers.IP = location;
+                (*team)->survivors[i].registers.AX = location;
+                (*team)->survivors[i].registers.IP = location;
 
                 skip:
                     continue;

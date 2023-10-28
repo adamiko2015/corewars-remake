@@ -11,7 +11,6 @@ extern uint32_t survivor_count;
 
 extern uint32_t commands_ran;
 
-//User input. TODO: change method of input when implementing GUI.
 extern uint32_t num_of_rounds;
 extern uint32_t teams_per_round;
 
@@ -20,7 +19,7 @@ extern Segment* memory;
 extern Team* teams;
 extern Team* zombies;
 
-extern Team* teams_in_play;
+extern Team** teams_in_play;
 
 extern uint32_t teams_alive;
 extern uint32_t* team_permutation;
