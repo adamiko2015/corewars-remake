@@ -85,9 +85,108 @@ void init_opcode_table(void) {
             [0x01] = general_binary_operation,
             [0x02] = general_binary_operation,
             [0x03] = general_binary_operation,
+            [0x04] = general_binary_operation,
+            [0x05] = general_binary_operation,
 
             [0x06] = op_06,
             [0x07] = op_07,
+
+            [0x08] = general_binary_operation,
+            [0x09] = general_binary_operation,
+            [0x0a] = general_binary_operation,
+            [0x0b] = general_binary_operation,
+            [0x0c] = general_binary_operation,
+            [0x0d] = general_binary_operation,
+
+            [0x0e] = op_0E,
+
+            [0x10] = general_binary_operation,
+            [0x11] = general_binary_operation,
+            [0x12] = general_binary_operation,
+            [0x13] = general_binary_operation,
+            [0x14] = general_binary_operation,
+            [0x15] = general_binary_operation,
+
+            [0x16] = op_16,
+            [0x17] = op_17,
+
+            [0x18] = general_binary_operation,
+            [0x19] = general_binary_operation,
+            [0x1a] = general_binary_operation,
+            [0x1b] = general_binary_operation,
+            [0x1c] = general_binary_operation,
+            [0x1d] = general_binary_operation,
+
+            [0x1e] = op_1E,
+            [0x1f] = op_1F,
+
+            [0x20] = general_binary_operation,
+            [0x21] = general_binary_operation,
+            [0x22] = general_binary_operation,
+            [0x23] = general_binary_operation,
+            [0x24] = general_binary_operation,
+            [0x25] = general_binary_operation,
+
+
+            [0x28] = general_binary_operation,
+            [0x29] = general_binary_operation,
+            [0x2a] = general_binary_operation,
+            [0x2b] = general_binary_operation,
+            [0x2c] = general_binary_operation,
+            [0x2d] = general_binary_operation,
+
+
+            [0x30] = general_binary_operation,
+            [0x31] = general_binary_operation,
+            [0x32] = general_binary_operation,
+            [0x33] = general_binary_operation,
+            [0x34] = general_binary_operation,
+            [0x35] = general_binary_operation,
+
+
+            [0x38] = general_binary_operation,
+            [0x39] = general_binary_operation,
+            [0x3a] = general_binary_operation,
+            [0x3b] = general_binary_operation,
+            [0x3c] = general_binary_operation,
+            [0x3d] = general_binary_operation,
+
+
+            [0x40] = general_inc,
+            [0x41] = general_inc,
+            [0x42] = general_inc,
+            [0x43] = general_inc,
+            [0x44] = general_inc,
+            [0x45] = general_inc,
+            [0x46] = general_inc,
+            [0x47] = general_inc,
+
+            [0x48] = general_dec,
+            [0x49] = general_dec,
+            [0x4a] = general_dec,
+            [0x4b] = general_dec,
+            [0x4c] = general_dec,
+            [0x4d] = general_dec,
+            [0x4e] = general_dec,
+            [0x4f] = general_dec,
+
+            [0x50] = general_push_opcode,
+            [0x51] = general_push_opcode,
+            [0x52] = general_push_opcode,
+            [0x53] = general_push_opcode,
+            [0x54] = general_push_opcode,
+            [0x55] = general_push_opcode,
+            [0x56] = general_push_opcode,
+            [0x57] = general_push_opcode,
+
+            [0x58] = general_pop_opcode,
+            [0x59] = general_pop_opcode,
+            [0x5a] = general_pop_opcode,
+            [0x5b] = general_pop_opcode,
+            [0x5c] = general_pop_opcode,
+            [0x5d] = general_pop_opcode,
+            [0x5e] = general_pop_opcode,
+            [0x5f] = general_pop_opcode,
 
             [0xff] = 0
             };

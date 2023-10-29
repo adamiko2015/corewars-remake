@@ -279,9 +279,10 @@ void general_add(Survivor survivor[static 1], bool is_16_bit, uint8_t significan
 
         uint16_t result = num_b;
 
-        asm (   "add %0, %1"
-                : "=&r" (result)
-                : "r" (num_a)
+        asm (   "add %2, %1\r\n\t"
+                "mov %0, %2"
+                : "=r" (result)
+                : "r" (num_a), "r" (num_b)
                 );
 
         uint16_t flags_to_update = flags_16_bit_add(num_a, num_b);
@@ -295,18 +296,16 @@ void general_add(Survivor survivor[static 1], bool is_16_bit, uint8_t significan
 
         uint8_t result = *significant_to;
 
-        asm (   "add %0, %1"
-                : "=&r" (result)
-                : "r" (*significant_from)
+        asm (   "add %2, %1\r\n\t"
+                "mov %0, %2"
+                : "=r" (result)
+                : "r" (*significant_from), "r" (*significant_to)
                 );
 
         *significant_to = result;
 
         uint16_t flags_to_update = flags_8_bit_add(*significant_to, *significant_from);
         update_specific_flags(survivor, sregs.Flags, flags_to_update, 0x08D5);
-
-
-        *significant_to = result;
     }
 }
 
@@ -319,11 +318,10 @@ void general_or(Survivor survivor[static 1], bool is_16_bit, uint8_t significant
 
         uint16_t result = num_b;
 
-        asm (
-                "or %1, %0\n\t"
-
-                : "=&r" (result)
-                : "r" (num_a)
+        asm (   "or %2, %1\r\n\t"
+                "mov %0, %2"
+                : "=r" (result)
+                : "r" (num_a), "r" (num_b)
                 );
 
         uint16_t flags_to_update = flags_16_bit_add(num_a, num_b);
@@ -336,18 +334,16 @@ void general_or(Survivor survivor[static 1], bool is_16_bit, uint8_t significant
     else {
         uint8_t result = *significant_to;
 
-        asm (   "or %0, %1"
-                : "=&r" (result)
-                : "r" (*significant_from)
+        asm (   "or %2, %1\r\n\t"
+                "mov %0, %2"
+                : "=r" (result)
+                : "r" (*significant_from), "r" (*significant_to)
                 );
 
         *significant_to = result;
 
         uint16_t flags_to_update = flags_8_bit_add(*significant_to, *significant_from);
         update_specific_flags(survivor, sregs.Flags, flags_to_update, 0x08D5);
-
-
-        *significant_to = result;
     }
 }
 
@@ -360,11 +356,10 @@ void general_adc(Survivor survivor[static 1], bool is_16_bit, uint8_t significan
 
         uint16_t result = num_b;
 
-        asm (
-                "adc %1, %0\n\t"
-
-                : "=&r" (result)
-                : "r" (num_a)
+        asm (   "adc %2, %1\r\n\t"
+                "mov %0, %2"
+                : "=r" (result)
+                : "r" (num_a), "r" (num_b)
                 );
 
         uint16_t flags_to_update = flags_16_bit_add(num_a, num_b);
@@ -377,18 +372,16 @@ void general_adc(Survivor survivor[static 1], bool is_16_bit, uint8_t significan
     else {
         uint8_t result = *significant_to;
 
-        asm (   "adc %0, %1"
-                : "=&r" (result)
-                : "r" (*significant_from)
+        asm (   "adc %2, %1\r\n\t"
+                "mov %0, %2"
+                : "=r" (result)
+                : "r" (*significant_from), "r" (*significant_to)
                 );
 
         *significant_to = result;
 
         uint16_t flags_to_update = flags_8_bit_add(*significant_to, *significant_from);
         update_specific_flags(survivor, sregs.Flags, flags_to_update, 0x08D5);
-
-
-        *significant_to = result;
     }
 }
 
@@ -401,11 +394,10 @@ void general_sbb(Survivor survivor[static 1], bool is_16_bit, uint8_t significan
 
         uint16_t result = num_b;
 
-        asm (
-                "sbb %1, %0\n\t"
-
-                : "=&r" (result)
-                : "r" (num_a)
+        asm (   "sbb %2, %1\r\n\t"
+                "mov %0, %2"
+                : "=r" (result)
+                : "r" (num_a), "r" (num_b)
                 );
 
         uint16_t flags_to_update = flags_16_bit_add(num_a, num_b);
@@ -418,9 +410,10 @@ void general_sbb(Survivor survivor[static 1], bool is_16_bit, uint8_t significan
     else {
         uint8_t result = *significant_to;
 
-        asm (   "sbb %0, %1"
-                : "=&r" (result)
-                : "r" (*significant_from)
+        asm (   "sbb %2, %1\r\n\t"
+                "mov %0, %2"
+                : "=r" (result)
+                : "r" (*significant_from), "r" (*significant_to)
                 );
 
         *significant_to = result;
@@ -442,11 +435,10 @@ void general_and(Survivor survivor[static 1], bool is_16_bit, uint8_t significan
 
         uint16_t result = num_b;
 
-        asm (
-                "and %1, %0\n\t"
-
-                : "=&r" (result)
-                : "r" (num_a)
+        asm (   "and %2, %1\r\n\t"
+                "mov %0, %2"
+                : "=r" (result)
+                : "r" (num_a), "r" (num_b)
                 );
 
         uint16_t flags_to_update = flags_16_bit_add(num_a, num_b);
@@ -459,18 +451,16 @@ void general_and(Survivor survivor[static 1], bool is_16_bit, uint8_t significan
     else {
         uint8_t result = *significant_to;
 
-        asm (   "and %0, %1"
-                : "=&r" (result)
-                : "r" (*significant_from)
+        asm (   "and %2, %1\r\n\t"
+                "mov %0, %2"
+                : "=r" (result)
+                : "r" (*significant_from), "r" (*significant_to)
                 );
 
         *significant_to = result;
 
         uint16_t flags_to_update = flags_8_bit_add(*significant_to, *significant_from);
         update_specific_flags(survivor, sregs.Flags, flags_to_update, 0x08D5);
-
-
-        *significant_to = result;
     }
 }
 
@@ -483,11 +473,10 @@ void general_sub(Survivor survivor[static 1], bool is_16_bit, uint8_t significan
 
         uint16_t result = num_b;
 
-        asm (
-                "sub %1, %0\n\t"
-
-                : "=&r" (result)
-                : "r" (num_a)
+        asm (   "sub %2, %1\r\n\t"
+                "mov %0, %2"
+                : "=r" (result)
+                : "r" (num_a), "r" (num_b)
                 );
 
         uint16_t flags_to_update = flags_16_bit_add(num_a, num_b);
@@ -500,18 +489,16 @@ void general_sub(Survivor survivor[static 1], bool is_16_bit, uint8_t significan
     else {
         uint8_t result = *significant_to;
 
-        asm (   "sub %0, %1"
-                : "=&r" (result)
-                : "r" (*significant_from)
+        asm (   "sub %2, %1\r\n\t"
+                "mov %0, %2"
+                : "=r" (result)
+                : "r" (*significant_from), "r" (*significant_to)
                 );
 
         *significant_to = result;
 
         uint16_t flags_to_update = flags_8_bit_add(*significant_to, *significant_from);
         update_specific_flags(survivor, sregs.Flags, flags_to_update, 0x08D5);
-
-
-        *significant_to = result;
     }
 }
 
@@ -524,11 +511,10 @@ void general_xor(Survivor survivor[static 1], bool is_16_bit, uint8_t significan
 
         uint16_t result = num_b;
 
-        asm (
-                "xor %1, %0\n\t"
-
-                : "=&r" (result)
-                : "r" (num_a)
+        asm (   "xor %2, %1\r\n\t"
+                "mov %0, %2"
+                : "=r" (result)
+                : "r" (num_a), "r" (num_b)
                 );
 
         uint16_t flags_to_update = flags_16_bit_add(num_a, num_b);
@@ -541,18 +527,16 @@ void general_xor(Survivor survivor[static 1], bool is_16_bit, uint8_t significan
     else {
         uint8_t result = *significant_to;
 
-        asm (   "xor %0, %1"
-                : "=&r" (result)
-                : "r" (*significant_from)
+        asm (   "xor %2, %1\r\n\t"
+                "mov %0, %2"
+                : "=r" (result)
+                : "r" (*significant_from), "r" (*significant_to)
                 );
 
         *significant_to = result;
 
         uint16_t flags_to_update = flags_8_bit_add(*significant_to, *significant_from);
         update_specific_flags(survivor, sregs.Flags, flags_to_update, 0x08D5);
-
-
-        *significant_to = result;
     }
 }
 
@@ -565,11 +549,10 @@ void general_cmp(Survivor survivor[static 1], bool is_16_bit, uint8_t significan
 
         uint16_t result = num_b;
 
-        asm (
-                "cmp %1, %0\n\t"
-
-                : "=&r" (result)
-                : "r" (num_a)
+        asm (   "cmp %2, %1\r\n\t"
+                "mov %0, %2"
+                : "=r" (result)
+                : "r" (num_a), "r" (num_b)
                 );
 
         uint16_t flags_to_update = flags_16_bit_add(num_a, num_b);
@@ -582,18 +565,16 @@ void general_cmp(Survivor survivor[static 1], bool is_16_bit, uint8_t significan
     else {
         uint8_t result = *significant_to;
 
-        asm (   "cmp %0, %1"
-                : "=&r" (result)
-                : "r" (*significant_from)
+        asm (   "cmp %2, %1\r\n\t"
+                "mov %0, %2"
+                : "=r" (result)
+                : "r" (*significant_from), "r" (*significant_to)
                 );
 
         *significant_to = result;
 
         uint16_t flags_to_update = flags_8_bit_add(*significant_to, *significant_from);
         update_specific_flags(survivor, sregs.Flags, flags_to_update, 0x08D5);
-
-
-        *significant_to = result;
     }
 }
 
@@ -606,15 +587,11 @@ void general_mov(Survivor survivor[static 1], bool is_16_bit, uint8_t significan
 
         uint16_t result = num_b;
 
-        asm (
-                "mov %1, %0\n\t"
-
-                : "=&r" (result)
-                : "r" (num_a)
+        asm (   "mov %2, %1\r\n\t"
+                "mov %0, %2"
+                : "=r" (result)
+                : "r" (num_a), "r" (num_b)
                 );
-
-        uint16_t flags_to_update = flags_16_bit_add(num_a, num_b);
-        update_specific_flags(survivor, sregs.Flags, flags_to_update, 0x08D5);
 
         *significant_to = (result&0xFF00)>>8;
         *insignificant_to = result&0x00FF;
@@ -623,16 +600,11 @@ void general_mov(Survivor survivor[static 1], bool is_16_bit, uint8_t significan
     else {
         uint8_t result = *significant_to;
 
-        asm (   "mov %0, %1"
-                : "=&r" (result)
-                : "r" (*significant_from)
+        asm (   "mov %2, %1\r\n\t"
+                "mov %0, %2"
+                : "=r" (result)
+                : "r" (*significant_from), "r" (*significant_to)
                 );
-
-        *significant_to = result;
-
-        uint16_t flags_to_update = flags_8_bit_add(*significant_to, *significant_from);
-        update_specific_flags(survivor, sregs.Flags, flags_to_update, 0x08D5);
-
 
         *significant_to = result;
     }
@@ -647,11 +619,10 @@ void general_test(Survivor survivor[static 1], bool is_16_bit, uint8_t significa
 
         uint16_t result = num_b;
 
-        asm (
-                "test %1, %0\n\t"
-
-                : "=&r" (result)
-                : "r" (num_a)
+        asm (   "test %2, %1\r\n\t"
+                "mov %0, %2"
+                : "=r" (result)
+                : "r" (num_a), "r" (num_b)
                 );
 
         uint16_t flags_to_update = flags_16_bit_add(num_a, num_b);
@@ -664,18 +635,16 @@ void general_test(Survivor survivor[static 1], bool is_16_bit, uint8_t significa
     else {
         uint8_t result = *significant_to;
 
-        asm (   "test %0, %1"
-                : "=&r" (result)
-                : "r" (*significant_from)
+        asm (   "test %2, %1\r\n\t"
+                "mov %0, %2"
+                : "=r" (result)
+                : "r" (*significant_from), "r" (*significant_to)
                 );
 
         *significant_to = result;
 
         uint16_t flags_to_update = flags_8_bit_add(*significant_to, *significant_from);
         update_specific_flags(survivor, sregs.Flags, flags_to_update, 0x08D5);
-
-
-        *significant_to = result;
     }
 }
 
@@ -689,7 +658,7 @@ void update_specific_flags(Survivor survivor[static 1], uint16_t og_flags, uint1
 // might be a difference between our implementation and official implementation here.
 // in the official implementation there is an exception when we push or pop from the end of the stack,
 // here we just loop to the beginning of the segment.
-bool general_push(Survivor survivor[static 1], uint16_t shared_memory, uint16_t reg[static 1])
+bool general_push(Survivor survivor[static 1], uint16_t shared_memory, uint16_t reg[static 1]) // Push *
 {
     sregs.SP -= 2;
     uint16_t destination = sregs.SP;
@@ -708,7 +677,7 @@ bool general_push(Survivor survivor[static 1], uint16_t shared_memory, uint16_t 
 
 }
 
-bool general_pop(Survivor survivor[static 1], uint16_t shared_memory, uint16_t reg[static 1])
+bool general_pop(Survivor survivor[static 1], uint16_t shared_memory, uint16_t reg[static 1]) // Pop *
 {
     uint16_t address = sregs.SP;
 
