@@ -12,7 +12,9 @@ void kill_current_player()
 void run_current_opcode() {
     Survivor* survivor = &(teams_in_play[current_player.team_id]->survivors[current_player.survivor_position]);
 
-    uint8_t opcode_lookup_value = memory[0].values[survivor->registers.IP];
+    uint32_t segment;
+    if ((segment = ((((uint32_t) sregs.IP + 10*sregs.CS) & 0xF000) >> 16)) != 0) { kill_current_player(); return; } // TODO: test this code
+    uint8_t opcode_lookup_value = memory[0].values[sregs.IP+10*sregs.CS];
 
     opcode_ptr opcode = opcode_lookup_table[opcode_lookup_value];
     if (opcode == 0) { kill_current_player(); return; }

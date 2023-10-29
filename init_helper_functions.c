@@ -188,6 +188,23 @@ void init_opcode_table(void) {
             [0x5e] = general_pop_opcode,
             [0x5f] = general_pop_opcode,
 
+            [0x70] = op_70,
+            [0x71] = op_71,
+            [0x72] = op_72,
+            [0x73] = op_73,
+            [0x74] = op_74,
+            [0x75] = op_75,
+            [0x76] = op_76,
+            [0x77] = op_77,
+            [0x78] = op_78,
+            [0x79] = op_79,
+            [0x7a] = op_7A,
+            [0x7b] = op_7B,
+            [0x7c] = op_7C,
+            [0x7d] = op_7D,
+            [0x7e] = op_7E,
+            [0x7f] = op_7F,
+
             [0xff] = 0
             };
 

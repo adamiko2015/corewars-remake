@@ -58,4 +58,6 @@ bool general_op_3(Survivor survivor[static 1], uint16_t shared_memory, operation
 bool general_op_4(Survivor survivor[static 1], uint16_t shared_memory, operation_ptr general_op);
 bool general_op_5(Survivor survivor[static 1], uint16_t shared_memory, operation_ptr general_op);
 
+void general_jmp_near(Survivor survivor[static 1]);
+
 #endif //COREWARSINTERPRETER_OPCODE_MACROS_H

@@ -699,7 +699,7 @@ bool general_pop(Survivor survivor[static 1], uint16_t shared_memory, uint16_t r
 
 bool general_op_0(Survivor survivor[static 1], uint16_t shared_memory, operation_ptr general_op) // OP [X], reg8
 {
-    uint8_t address_byte = memory[0].values[sregs.IP+1];
+    uint8_t address_byte = memory[0].values[(sregs.IP + 10*sregs.CS + 1) & 0xFFFF];
     uint16_t pos = sregs.IP+2;
     uint8_t* address;
     address = reg8_decoder(survivor, (address_byte & 0b00111000) >> 3);
@@ -732,8 +732,8 @@ bool general_op_0(Survivor survivor[static 1], uint16_t shared_memory, operation
 bool general_op_1(Survivor survivor[static 1], uint16_t shared_memory, operation_ptr general_op) // OP [X], reg16
 {
 
-    uint8_t address_byte = memory[0].values[sregs.IP+1];
-    uint16_t pos = sregs.IP+2;
+    uint8_t address_byte = memory[0].values[(sregs.IP + 10*sregs.CS + 1) & 0xFFFF];
+    uint16_t pos = sregs.IP + 10*sregs.CS + 2;
 
     uint8_t* significant_address,* insignificant_address;
 
@@ -769,7 +769,7 @@ bool general_op_1(Survivor survivor[static 1], uint16_t shared_memory, operation
 
 bool general_op_2(Survivor survivor[static 1], uint16_t shared_memory, operation_ptr general_op) // OP reg8, [X]
 {
-    uint8_t address_byte = memory[0].values[sregs.IP+1];
+    uint8_t address_byte = memory[0].values[(sregs.IP + 10*sregs.CS + 1) & 0xFFFF];
     uint16_t pos = sregs.IP+2;
     uint8_t* destination;
     destination = reg8_decoder(survivor, (address_byte & 0b00111000) >> 3);
@@ -802,7 +802,7 @@ bool general_op_2(Survivor survivor[static 1], uint16_t shared_memory, operation
 bool general_op_3(Survivor survivor[static 1], uint16_t shared_memory, operation_ptr general_op) // OP reg16, [X]
 {
 
-    uint8_t address_byte = memory[0].values[sregs.IP+1];
+    uint8_t address_byte = memory[0].values[(sregs.IP + 10*sregs.CS + 1) & 0xFFFF];
     uint16_t pos = sregs.IP+2;
 
     uint8_t* significant_destination,* insignificant_destination;
@@ -843,7 +843,7 @@ bool general_op_4(Survivor survivor[static 1], uint16_t shared_memory, operation
 
     shared_memory++;
     
-    uint8_t address_byte = memory[0].values[sregs.IP+1];
+    uint8_t address_byte = memory[0].values[(sregs.IP + 10*sregs.CS + 1) & 0xFFFF];
     uint8_t* destination;
     destination = (uint8_t*)&sregs.AX;
     uint8_t ip_progress = 2;
@@ -860,8 +860,8 @@ bool general_op_5(Survivor survivor[static 1], uint16_t shared_memory, operation
 
     shared_memory++;
 
-    uint8_t insignificant_address_byte = memory[0].values[sregs.IP+1];
-    uint8_t significant_address_byte = memory[0].values[sregs.IP+1];
+    uint8_t insignificant_address_byte = memory[0].values[(sregs.IP + 10*sregs.CS + 1) & 0xFFFF];
+    uint8_t significant_address_byte = memory[0].values[(sregs.IP + 10*sregs.CS + 1) & 0xFFFF];
 
     uint8_t* significant_destination,* insignificant_destination;
 
@@ -874,4 +874,11 @@ bool general_op_5(Survivor survivor[static 1], uint16_t shared_memory, operation
 
     sregs.IP += ip_progress;
     return true;
+}
+
+void general_jmp_near(Survivor survivor[static 1])
+{
+    debug_print_statement
+
+    sregs.IP += memory[0].values[sregs.IP + 10*sregs.CS + 1];
 }

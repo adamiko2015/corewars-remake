@@ -3,7 +3,7 @@
 CC = gcc
 LNK = gcc
 NASM = nasm
-CFLAGS = -ggdb -Wall -Wextra -O0 -c -std=gnu2x -masm=intel
+CFLAGS = -ggdb -Wall -Wextra -O0 -c -std=gnu2x -masm=intel -Wno-unused-parameter
 LNKFLAGS = $(CLFAGS)
 ASMFLAGS = -f elf64 -g -Wall
 
