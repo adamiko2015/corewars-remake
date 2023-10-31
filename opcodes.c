@@ -1,7 +1,6 @@
 #include "structs_libraries_and_macros.h"
 #include "globals.h"
 #include "opcode_helper_functions.h"
-#include "opcode_flag_helper_functions.h"
 
 
 bool general_binary_operation(Survivor survivor[static 1], uint16_t shared_memory) // OP *, *
@@ -53,15 +52,20 @@ bool op_1F(Survivor survivor[static 1], uint16_t shared_memory) // Pop DS
 
 bool general_inc(Survivor survivor[static 1], uint16_t shared_memory) // INC reg16
 {
-    debug_print_statement
-
     uint8_t reg_byte = memory[0].values[(sregs.IP + 10*sregs.CS) & 0xFFFF];
     uint16_t* reg = reg16_decoder(survivor, reg_byte & 0b00000111);
 
-    uint16_t flags_to_update = flags_16_bit_add(*reg, 1);
-    update_specific_flags(survivor, sregs.Flags, flags_to_update, 0x08d5);
+    uint_fast16_t flags_to_update;
 
-    (*reg)++;
+    asm (   "inc %2\r\n\t"
+            "mov %0, %2\r\n\t"
+            "pushf\r\n\t"
+            "pop %1"
+            : "=r" (*reg), "=r" (flags_to_update)
+            : "r" (*reg)
+            );
+
+    update_specific_flags(survivor, sregs.Flags, flags_to_update, 0x08d5);
 
     sregs.IP++;
 
@@ -70,15 +74,20 @@ bool general_inc(Survivor survivor[static 1], uint16_t shared_memory) // INC reg
 
 bool general_dec(Survivor survivor[static 1], uint16_t shared_memory) // DEC reg16
 {
-    debug_print_statement
-
     uint8_t reg_byte = memory[0].values[(sregs.IP + 10*sregs.CS) & 0xFFFF];
     uint16_t* reg = reg16_decoder(survivor, reg_byte & 0b00000111);
 
-    uint16_t flags_to_update = flags_16_bit_sub(*reg, 1);
-    update_specific_flags(survivor, sregs.Flags, flags_to_update, 0x08d5);
+    uint_fast16_t flags_to_update;
 
-    (*reg)--;
+    asm (   "dec %2\r\n\t"
+            "mov %0, %2\r\n\t"
+            "pushf\r\n\t"
+            "pop %1"
+            : "=r" (*reg), "=r" (flags_to_update)
+            : "r" (*reg)
+            );
+
+    update_specific_flags(survivor, sregs.Flags, flags_to_update, 0x08d5);
 
     sregs.IP++;
 

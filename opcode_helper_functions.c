@@ -1,6 +1,5 @@
 #include "globals.h"
 #include "structs_libraries_and_macros.h"
-#include "opcode_flag_helper_functions.h"
 #include "opcode_helper_functions.h"
 
 bool get_virtual_address(uint8_t ip_progress[static 1], uint8_t* destination[static 1],
@@ -277,15 +276,17 @@ void general_add(Survivor survivor[static 1], bool is_16_bit, uint8_t significan
         uint16_t num_a = (*significant_from<<8) + *insignificant_from;
         uint16_t num_b = (*significant_to<<8) + *insignificant_to;
 
-        uint16_t result = num_b;
+        uint16_t result;
+        uint_fast16_t flags_to_update;
 
-        asm (   "add %2, %1\r\n\t"
-                "mov %0, %2"
-                : "=r" (result)
+        asm (   "add %3, %2\r\n\t"
+                "mov %0, %3\r\n\t"
+                "pushf\r\n\t"
+                "pop %1"
+                : "=r" (result), "=r" (flags_to_update)
                 : "r" (num_a), "r" (num_b)
                 );
 
-        uint16_t flags_to_update = flags_16_bit_add(num_a, num_b);
         update_specific_flags(survivor, sregs.Flags, flags_to_update, 0x08D5);
 
         *significant_to = (result&0xFF00)>>8;
@@ -293,18 +294,20 @@ void general_add(Survivor survivor[static 1], bool is_16_bit, uint8_t significan
 
     }
     else {
+        uint8_t result;
+        uint_fast16_t flags_to_update;
 
-        uint8_t result = *significant_to;
+        asm (   "add %3, %2\r\n\t"
+                "mov %0, %3\r\n\t"
+                "pushf\r\n\t"
+                "pop %1"
 
-        asm (   "add %2, %1\r\n\t"
-                "mov %0, %2"
-                : "=r" (result)
+                : "=r" (result), "=r" (flags_to_update)
                 : "r" (*significant_from), "r" (*significant_to)
                 );
 
         *significant_to = result;
 
-        uint16_t flags_to_update = flags_8_bit_add(*significant_to, *significant_from);
         update_specific_flags(survivor, sregs.Flags, flags_to_update, 0x08D5);
     }
 }
@@ -316,15 +319,17 @@ void general_or(Survivor survivor[static 1], bool is_16_bit, uint8_t significant
         uint16_t num_a = (*significant_from<<8) + *insignificant_from;
         uint16_t num_b = (*significant_to<<8) + *insignificant_to;
 
-        uint16_t result = num_b;
+        uint16_t result;
+        uint_fast16_t flags_to_update;
 
-        asm (   "or %2, %1\r\n\t"
-                "mov %0, %2"
-                : "=r" (result)
+        asm (   "or %3, %2\r\n\t"
+                "mov %0, %3\r\n\t"
+                "pushf\r\n\t"
+                "pop %1"
+                : "=r" (result), "=r" (flags_to_update)
                 : "r" (num_a), "r" (num_b)
                 );
 
-        uint16_t flags_to_update = flags_16_bit_add(num_a, num_b);
         update_specific_flags(survivor, sregs.Flags, flags_to_update, 0x08D5);
 
         *significant_to = (result&0xFF00)>>8;
@@ -332,17 +337,20 @@ void general_or(Survivor survivor[static 1], bool is_16_bit, uint8_t significant
 
     }
     else {
-        uint8_t result = *significant_to;
+        uint8_t result;
+        uint_fast16_t flags_to_update;
 
-        asm (   "or %2, %1\r\n\t"
-                "mov %0, %2"
-                : "=r" (result)
+        asm (   "or %3, %2\r\n\t"
+                "mov %0, %3\r\n\t"
+                "pushf\r\n\t"
+                "pop %1"
+
+                : "=r" (result), "=r" (flags_to_update)
                 : "r" (*significant_from), "r" (*significant_to)
                 );
 
         *significant_to = result;
 
-        uint16_t flags_to_update = flags_8_bit_add(*significant_to, *significant_from);
         update_specific_flags(survivor, sregs.Flags, flags_to_update, 0x08D5);
     }
 }
@@ -354,15 +362,17 @@ void general_adc(Survivor survivor[static 1], bool is_16_bit, uint8_t significan
         uint16_t num_a = (*significant_from<<8) + *insignificant_from;
         uint16_t num_b = (*significant_to<<8) + *insignificant_to;
 
-        uint16_t result = num_b;
+        uint16_t result;
+        uint_fast16_t flags_to_update;
 
-        asm (   "adc %2, %1\r\n\t"
-                "mov %0, %2"
-                : "=r" (result)
+        asm (   "adc %3, %2\r\n\t"
+                "mov %0, %3\r\n\t"
+                "pushf\r\n\t"
+                "pop %1"
+                : "=r" (result), "=r" (flags_to_update)
                 : "r" (num_a), "r" (num_b)
                 );
 
-        uint16_t flags_to_update = flags_16_bit_add(num_a, num_b);
         update_specific_flags(survivor, sregs.Flags, flags_to_update, 0x08D5);
 
         *significant_to = (result&0xFF00)>>8;
@@ -370,17 +380,20 @@ void general_adc(Survivor survivor[static 1], bool is_16_bit, uint8_t significan
 
     }
     else {
-        uint8_t result = *significant_to;
+        uint8_t result;
+        uint_fast16_t flags_to_update;
 
-        asm (   "adc %2, %1\r\n\t"
-                "mov %0, %2"
-                : "=r" (result)
+        asm (   "adc %3, %2\r\n\t"
+                "mov %0, %3\r\n\t"
+                "pushf\r\n\t"
+                "pop %1"
+
+                : "=r" (result), "=r" (flags_to_update)
                 : "r" (*significant_from), "r" (*significant_to)
                 );
 
         *significant_to = result;
 
-        uint16_t flags_to_update = flags_8_bit_add(*significant_to, *significant_from);
         update_specific_flags(survivor, sregs.Flags, flags_to_update, 0x08D5);
     }
 }
@@ -392,15 +405,17 @@ void general_sbb(Survivor survivor[static 1], bool is_16_bit, uint8_t significan
         uint16_t num_a = (*significant_from<<8) + *insignificant_from;
         uint16_t num_b = (*significant_to<<8) + *insignificant_to;
 
-        uint16_t result = num_b;
+        uint16_t result;
+        uint_fast16_t flags_to_update;
 
-        asm (   "sbb %2, %1\r\n\t"
-                "mov %0, %2"
-                : "=r" (result)
+        asm (   "sbb %3, %2\r\n\t"
+                "mov %0, %3\r\n\t"
+                "pushf\r\n\t"
+                "pop %1"
+                : "=r" (result), "=r" (flags_to_update)
                 : "r" (num_a), "r" (num_b)
                 );
 
-        uint16_t flags_to_update = flags_16_bit_add(num_a, num_b);
         update_specific_flags(survivor, sregs.Flags, flags_to_update, 0x08D5);
 
         *significant_to = (result&0xFF00)>>8;
@@ -408,21 +423,21 @@ void general_sbb(Survivor survivor[static 1], bool is_16_bit, uint8_t significan
 
     }
     else {
-        uint8_t result = *significant_to;
+        uint8_t result;
+        uint_fast16_t flags_to_update;
 
-        asm (   "sbb %2, %1\r\n\t"
-                "mov %0, %2"
-                : "=r" (result)
+        asm (   "sbb %3, %2\r\n\t"
+                "mov %0, %3\r\n\t"
+                "pushf\r\n\t"
+                "pop %1"
+
+                : "=r" (result), "=r" (flags_to_update)
                 : "r" (*significant_from), "r" (*significant_to)
                 );
 
         *significant_to = result;
 
-        uint16_t flags_to_update = flags_8_bit_add(*significant_to, *significant_from);
         update_specific_flags(survivor, sregs.Flags, flags_to_update, 0x08D5);
-
-
-        *significant_to = result;
     }
 }
 
@@ -433,15 +448,17 @@ void general_and(Survivor survivor[static 1], bool is_16_bit, uint8_t significan
         uint16_t num_a = (*significant_from<<8) + *insignificant_from;
         uint16_t num_b = (*significant_to<<8) + *insignificant_to;
 
-        uint16_t result = num_b;
+        uint16_t result;
+        uint_fast16_t flags_to_update;
 
-        asm (   "and %2, %1\r\n\t"
-                "mov %0, %2"
-                : "=r" (result)
+        asm (   "and %3, %2\r\n\t"
+                "mov %0, %3\r\n\t"
+                "pushf\r\n\t"
+                "pop %1"
+                : "=r" (result), "=r" (flags_to_update)
                 : "r" (num_a), "r" (num_b)
                 );
 
-        uint16_t flags_to_update = flags_16_bit_add(num_a, num_b);
         update_specific_flags(survivor, sregs.Flags, flags_to_update, 0x08D5);
 
         *significant_to = (result&0xFF00)>>8;
@@ -449,17 +466,20 @@ void general_and(Survivor survivor[static 1], bool is_16_bit, uint8_t significan
 
     }
     else {
-        uint8_t result = *significant_to;
+        uint8_t result;
+        uint_fast16_t flags_to_update;
 
-        asm (   "and %2, %1\r\n\t"
-                "mov %0, %2"
-                : "=r" (result)
+        asm (   "and %3, %2\r\n\t"
+                "mov %0, %3\r\n\t"
+                "pushf\r\n\t"
+                "pop %1"
+
+                : "=r" (result), "=r" (flags_to_update)
                 : "r" (*significant_from), "r" (*significant_to)
                 );
 
         *significant_to = result;
 
-        uint16_t flags_to_update = flags_8_bit_add(*significant_to, *significant_from);
         update_specific_flags(survivor, sregs.Flags, flags_to_update, 0x08D5);
     }
 }
@@ -471,15 +491,17 @@ void general_sub(Survivor survivor[static 1], bool is_16_bit, uint8_t significan
         uint16_t num_a = (*significant_from<<8) + *insignificant_from;
         uint16_t num_b = (*significant_to<<8) + *insignificant_to;
 
-        uint16_t result = num_b;
+        uint16_t result;
+        uint_fast16_t flags_to_update;
 
-        asm (   "sub %2, %1\r\n\t"
-                "mov %0, %2"
-                : "=r" (result)
+        asm (   "sub %3, %2\r\n\t"
+                "mov %0, %3\r\n\t"
+                "pushf\r\n\t"
+                "pop %1"
+                : "=r" (result), "=r" (flags_to_update)
                 : "r" (num_a), "r" (num_b)
                 );
 
-        uint16_t flags_to_update = flags_16_bit_add(num_a, num_b);
         update_specific_flags(survivor, sregs.Flags, flags_to_update, 0x08D5);
 
         *significant_to = (result&0xFF00)>>8;
@@ -487,17 +509,20 @@ void general_sub(Survivor survivor[static 1], bool is_16_bit, uint8_t significan
 
     }
     else {
-        uint8_t result = *significant_to;
+        uint8_t result;
+        uint_fast16_t flags_to_update;
 
-        asm (   "sub %2, %1\r\n\t"
-                "mov %0, %2"
-                : "=r" (result)
+        asm (   "sub %3, %2\r\n\t"
+                "mov %0, %3\r\n\t"
+                "pushf\r\n\t"
+                "pop %1"
+
+                : "=r" (result), "=r" (flags_to_update)
                 : "r" (*significant_from), "r" (*significant_to)
                 );
 
         *significant_to = result;
 
-        uint16_t flags_to_update = flags_8_bit_add(*significant_to, *significant_from);
         update_specific_flags(survivor, sregs.Flags, flags_to_update, 0x08D5);
     }
 }
@@ -509,15 +534,17 @@ void general_xor(Survivor survivor[static 1], bool is_16_bit, uint8_t significan
         uint16_t num_a = (*significant_from<<8) + *insignificant_from;
         uint16_t num_b = (*significant_to<<8) + *insignificant_to;
 
-        uint16_t result = num_b;
+        uint16_t result;
+        uint_fast16_t flags_to_update;
 
-        asm (   "xor %2, %1\r\n\t"
-                "mov %0, %2"
-                : "=r" (result)
+        asm (   "xor %3, %2\r\n\t"
+                "mov %0, %3\r\n\t"
+                "pushf\r\n\t"
+                "pop %1"
+                : "=r" (result), "=r" (flags_to_update)
                 : "r" (num_a), "r" (num_b)
                 );
 
-        uint16_t flags_to_update = flags_16_bit_add(num_a, num_b);
         update_specific_flags(survivor, sregs.Flags, flags_to_update, 0x08D5);
 
         *significant_to = (result&0xFF00)>>8;
@@ -525,17 +552,20 @@ void general_xor(Survivor survivor[static 1], bool is_16_bit, uint8_t significan
 
     }
     else {
-        uint8_t result = *significant_to;
+        uint8_t result;
+        uint_fast16_t flags_to_update;
 
-        asm (   "xor %2, %1\r\n\t"
-                "mov %0, %2"
-                : "=r" (result)
+        asm (   "xor %3, %2\r\n\t"
+                "mov %0, %3\r\n\t"
+                "pushf\r\n\t"
+                "pop %1"
+
+                : "=r" (result), "=r" (flags_to_update)
                 : "r" (*significant_from), "r" (*significant_to)
                 );
 
         *significant_to = result;
 
-        uint16_t flags_to_update = flags_8_bit_add(*significant_to, *significant_from);
         update_specific_flags(survivor, sregs.Flags, flags_to_update, 0x08D5);
     }
 }
@@ -547,15 +577,17 @@ void general_cmp(Survivor survivor[static 1], bool is_16_bit, uint8_t significan
         uint16_t num_a = (*significant_from<<8) + *insignificant_from;
         uint16_t num_b = (*significant_to<<8) + *insignificant_to;
 
-        uint16_t result = num_b;
+        uint16_t result;
+        uint_fast16_t flags_to_update;
 
-        asm (   "cmp %2, %1\r\n\t"
-                "mov %0, %2"
-                : "=r" (result)
+        asm (   "cmp %3, %2\r\n\t"
+                "mov %0, %3\r\n\t"
+                "pushf\r\n\t"
+                "pop %1"
+                : "=r" (result), "=r" (flags_to_update)
                 : "r" (num_a), "r" (num_b)
                 );
 
-        uint16_t flags_to_update = flags_16_bit_add(num_a, num_b);
         update_specific_flags(survivor, sregs.Flags, flags_to_update, 0x08D5);
 
         *significant_to = (result&0xFF00)>>8;
@@ -563,17 +595,20 @@ void general_cmp(Survivor survivor[static 1], bool is_16_bit, uint8_t significan
 
     }
     else {
-        uint8_t result = *significant_to;
+        uint8_t result;
+        uint_fast16_t flags_to_update;
 
-        asm (   "cmp %2, %1\r\n\t"
-                "mov %0, %2"
-                : "=r" (result)
+        asm (   "cmp %3, %2\r\n\t"
+                "mov %0, %3\r\n\t"
+                "pushf\r\n\t"
+                "pop %1"
+
+                : "=r" (result), "=r" (flags_to_update)
                 : "r" (*significant_from), "r" (*significant_to)
                 );
 
         *significant_to = result;
 
-        uint16_t flags_to_update = flags_8_bit_add(*significant_to, *significant_from);
         update_specific_flags(survivor, sregs.Flags, flags_to_update, 0x08D5);
     }
 }
@@ -617,15 +652,17 @@ void general_test(Survivor survivor[static 1], bool is_16_bit, uint8_t significa
         uint16_t num_a = (*significant_from<<8) + *insignificant_from;
         uint16_t num_b = (*significant_to<<8) + *insignificant_to;
 
-        uint16_t result = num_b;
+        uint16_t result;
+        uint_fast16_t flags_to_update;
 
-        asm (   "test %2, %1\r\n\t"
-                "mov %0, %2"
-                : "=r" (result)
+        asm (   "test %3, %2\r\n\t"
+                "mov %0, %3\r\n\t"
+                "pushf\r\n\t"
+                "pop %1"
+                : "=r" (result), "=r" (flags_to_update)
                 : "r" (num_a), "r" (num_b)
                 );
 
-        uint16_t flags_to_update = flags_16_bit_add(num_a, num_b);
         update_specific_flags(survivor, sregs.Flags, flags_to_update, 0x08D5);
 
         *significant_to = (result&0xFF00)>>8;
@@ -633,17 +670,20 @@ void general_test(Survivor survivor[static 1], bool is_16_bit, uint8_t significa
 
     }
     else {
-        uint8_t result = *significant_to;
+        uint8_t result;
+        uint_fast16_t flags_to_update;
 
-        asm (   "test %2, %1\r\n\t"
-                "mov %0, %2"
-                : "=r" (result)
+        asm (   "test %3, %2\r\n\t"
+                "mov %0, %3\r\n\t"
+                "pushf\r\n\t"
+                "pop %1"
+
+                : "=r" (result), "=r" (flags_to_update)
                 : "r" (*significant_from), "r" (*significant_to)
                 );
 
         *significant_to = result;
 
-        uint16_t flags_to_update = flags_8_bit_add(*significant_to, *significant_from);
         update_specific_flags(survivor, sregs.Flags, flags_to_update, 0x08D5);
     }
 }
@@ -839,10 +879,6 @@ bool general_op_3(Survivor survivor[static 1], uint16_t shared_memory, operation
 
 bool general_op_4(Survivor survivor[static 1], uint16_t shared_memory, operation_ptr general_op) // OP AL, imm8
 {
-    debug_print_statement
-
-    shared_memory++;
-    
     uint8_t address_byte = memory[0].values[(sregs.IP + 10*sregs.CS + 1) & 0xFFFF];
     uint8_t* destination;
     destination = (uint8_t*)&sregs.AX;
@@ -856,12 +892,8 @@ bool general_op_4(Survivor survivor[static 1], uint16_t shared_memory, operation
 
 bool general_op_5(Survivor survivor[static 1], uint16_t shared_memory, operation_ptr general_op) // OP AX, imm16
 {
-    debug_print_statement
-
-    shared_memory++;
-
     uint8_t insignificant_address_byte = memory[0].values[(sregs.IP + 10*sregs.CS + 1) & 0xFFFF];
-    uint8_t significant_address_byte = memory[0].values[(sregs.IP + 10*sregs.CS + 1) & 0xFFFF];
+    uint8_t significant_address_byte = memory[0].values[(sregs.IP + 10*sregs.CS + 2) & 0xFFFF];
 
     uint8_t* significant_destination,* insignificant_destination;
 
