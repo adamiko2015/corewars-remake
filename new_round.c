@@ -103,8 +103,6 @@ void insert_players(void) {
 bool init_round(void) {
     if (!choose_teams()) {return false;}
 
-    debug_print_statement
-
     resurrect_players();
     reset_segments();
 

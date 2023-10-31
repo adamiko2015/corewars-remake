@@ -908,9 +908,7 @@ bool general_op_5(Survivor survivor[static 1], uint16_t shared_memory, operation
     return true;
 }
 
-void general_jmp_near(Survivor survivor[static 1])
+void general_jmp_near_2B_opcode(Survivor survivor[static 1])
 {
-    debug_print_statement
-
-    sregs.IP += memory[0].values[sregs.IP + 10*sregs.CS + 1];
+    sregs.IP += (int8_t) memory[0].values[sregs.IP + 10*sregs.CS + 1] + 2;
 }

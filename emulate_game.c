@@ -13,7 +13,7 @@ void run_current_opcode() {
     Survivor* survivor = &(teams_in_play[current_player.team_id]->survivors[current_player.survivor_position]);
 
     uint32_t segment;
-    if ((segment = ((((uint32_t) sregs.IP + 10*sregs.CS) & 0xF000) >> 16)) != 0) { kill_current_player(); return; } // TODO: test this code
+    if ((segment = ((((uint32_t) sregs.IP + 10*sregs.CS) & 0xF0000) >> 16)) != 0) { kill_current_player(); return; } // TODO: test this code
     uint8_t opcode_lookup_value = memory[0].values[sregs.IP+10*sregs.CS];
 
     opcode_ptr opcode = opcode_lookup_table[opcode_lookup_value];
@@ -29,23 +29,15 @@ bool round_end_check() {
     if(commands_ran > commands_per_round) {
         int32_t alive_survivor_count = 0;
 
-        debug_print_statement
-
         for(Team** team = teams_in_play; team < teams_in_play + team_count; team++) {
             alive_survivor_count += (*team)->living_survivors[0] + (*team)->living_survivors[1];
         }
 
-        debug_print_statement
-
         double points_to_add = (double) 1 / alive_survivor_count;
-
-        debug_print_statement
 
         for(Team** team = teams_in_play; team < teams_in_play + team_count; team++) {
             teams[(*team)->team_id].points += points_to_add * ((*team)->living_survivors[0] + (*team)->living_survivors[1]);
         }
-
-        debug_print_statement
         
         return true;
     }

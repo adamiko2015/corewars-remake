@@ -1,5 +1,3 @@
-# This program is for Windows! You need to account for the linux calling convention in asm files to use program in linux!
-
 CC = gcc
 LNK = gcc
 NASM = nasm

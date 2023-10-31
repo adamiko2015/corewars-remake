@@ -24,7 +24,7 @@ extern Team** teams_in_play;
 extern uint32_t teams_alive;
 extern uint32_t* team_permutation;
 
-#define commands_per_round 0x10000
+#define commands_per_round (int)200000
 
 extern opcode_ptr* opcode_lookup_table;
 

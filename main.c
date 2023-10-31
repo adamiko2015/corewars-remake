@@ -4,6 +4,8 @@
 #include "new_round.h"
 #include "emulate_game.h"
 
+#include <time.h>
+
 int main(void) {
     setbuf(stdout, 0); // For debug purposes
     setbuf(stderr, 0);
@@ -11,10 +13,11 @@ int main(void) {
     init_usr_input();
     load_players();
 
-
     while (init_round()) {
         emulation_loop();
     }
+
+    printf("%lf\n", teams[0].points);
 
 
     // TODO: display score

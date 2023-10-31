@@ -119,7 +119,8 @@ bool op_70(Survivor survivor[static 1], uint16_t shared_memory) // JO
     debug_print_statement
 
     bool condition = (sregs.Flags & 0x0800);
-    if (condition) general_jmp_near(survivor);
+    if (condition) general_jmp_near_2B_opcode(survivor);
+    else sregs.IP += 2;
     return true;
 }
 
@@ -128,7 +129,8 @@ bool op_71(Survivor survivor[static 1], uint16_t shared_memory) // JNO
     debug_print_statement
 
     bool condition = !(sregs.Flags & 0x0800);
-    if (condition) general_jmp_near(survivor);
+    if (condition) general_jmp_near_2B_opcode(survivor);
+    else sregs.IP += 2;
     return true;
 }
 
@@ -137,7 +139,8 @@ bool op_72(Survivor survivor[static 1], uint16_t shared_memory) // JC,JB,JNAE
     debug_print_statement
 
     bool condition = (sregs.Flags & 0x0001);
-    if (condition) general_jmp_near(survivor);
+    if (condition) general_jmp_near_2B_opcode(survivor);
+    else sregs.IP += 2;
     return true;
 }
 
@@ -146,16 +149,16 @@ bool op_73(Survivor survivor[static 1], uint16_t shared_memory) // JNC,JNC,JAE
     debug_print_statement
 
     bool condition = !(sregs.Flags & 0x0001);
-    if (condition) general_jmp_near(survivor);
+    if (condition) general_jmp_near_2B_opcode(survivor);
+    else sregs.IP += 2;
     return true;
 }
 
 bool op_74(Survivor survivor[static 1], uint16_t shared_memory) // JE,JZ
 {
-    debug_print_statement
-
     bool condition = (sregs.Flags & 0x0040);
-    if (condition) general_jmp_near(survivor);
+    if (condition) general_jmp_near_2B_opcode(survivor);
+    else sregs.IP += 2;
     return true;
 }
 
@@ -164,7 +167,8 @@ bool op_75(Survivor survivor[static 1], uint16_t shared_memory) // JNE,JNZ
     debug_print_statement
 
     bool condition = !(sregs.Flags & 0x0040);
-    if (condition) general_jmp_near(survivor);
+    if (condition) general_jmp_near_2B_opcode(survivor);
+    else sregs.IP += 2;
     return true;
 }
 
@@ -173,7 +177,8 @@ bool op_76(Survivor survivor[static 1], uint16_t shared_memory) // JBE,JNA
     debug_print_statement
 
     bool condition = (sregs.Flags & 0x0001) || (sregs.Flags & 0x0040);
-    if (condition) general_jmp_near(survivor);
+    if (condition) general_jmp_near_2B_opcode(survivor);
+    else sregs.IP += 2;
     return true;
 }
 
@@ -182,7 +187,8 @@ bool op_77(Survivor survivor[static 1], uint16_t shared_memory) // JNBE,JA
     debug_print_statement
 
     bool condition = !((sregs.Flags & 0x0001) || (sregs.Flags & 0x0040));
-    if (condition) general_jmp_near(survivor);
+    if (condition) general_jmp_near_2B_opcode(survivor);
+    else sregs.IP += 2;
     return true;
 }
 
@@ -191,7 +197,8 @@ bool op_78(Survivor survivor[static 1], uint16_t shared_memory) // JS
     debug_print_statement
 
     bool condition = (sregs.Flags & 0x0080);
-    if (condition) general_jmp_near(survivor);
+    if (condition) general_jmp_near_2B_opcode(survivor);
+    else sregs.IP += 2;
     return true;
 }
 
@@ -200,7 +207,8 @@ bool op_79(Survivor survivor[static 1], uint16_t shared_memory) // JNS
     debug_print_statement
 
     bool condition = !(sregs.Flags & 0x0080);
-    if (condition) general_jmp_near(survivor);
+    if (condition) general_jmp_near_2B_opcode(survivor);
+    else sregs.IP += 2;
     return true;
 }
 
@@ -209,7 +217,8 @@ bool op_7A(Survivor survivor[static 1], uint16_t shared_memory) // JP,JPE
     debug_print_statement
 
     bool condition = (sregs.Flags & 0x0004);
-    if (condition) general_jmp_near(survivor);
+    if (condition) general_jmp_near_2B_opcode(survivor);
+    else sregs.IP += 2;
     return true;
 }
 
@@ -218,7 +227,8 @@ bool op_7B(Survivor survivor[static 1], uint16_t shared_memory) // JNP,JPO
     debug_print_statement
 
     bool condition = !(sregs.Flags & 0x0004);
-    if (condition) general_jmp_near(survivor);
+    if (condition) general_jmp_near_2B_opcode(survivor);
+    else sregs.IP += 2;
     return true;
 }
 
@@ -227,7 +237,8 @@ bool op_7C(Survivor survivor[static 1], uint16_t shared_memory) // JL,JNGE
     debug_print_statement
 
     bool condition = ((sregs.Flags & 0x0080) && 1) != ((sregs.Flags & 0x0800) && 1);
-    if (condition) general_jmp_near(survivor);
+    if (condition) general_jmp_near_2B_opcode(survivor);
+    else sregs.IP += 2;
     return true;
 }
 
@@ -236,7 +247,8 @@ bool op_7D(Survivor survivor[static 1], uint16_t shared_memory) // JNL,JGE
     debug_print_statement
 
     bool condition = ((sregs.Flags & 0x0080) && 1) == ((sregs.Flags & 0x0800) && 1);
-    if (condition) general_jmp_near(survivor);
+    if (condition) general_jmp_near_2B_opcode(survivor);
+    else sregs.IP += 2;
     return true;
 }
 
@@ -245,7 +257,8 @@ bool op_7E(Survivor survivor[static 1], uint16_t shared_memory) // JLE,JNG
     debug_print_statement
 
     bool condition = (sregs.Flags & 0x0040) || (((sregs.Flags & 0x0080) && 1) != ((sregs.Flags & 0x0800) && 1));
-    if (condition) general_jmp_near(survivor);
+    if (condition) general_jmp_near_2B_opcode(survivor);
+    else sregs.IP += 2;
     return true;
 }
 
@@ -254,6 +267,7 @@ bool op_7F(Survivor survivor[static 1], uint16_t shared_memory) // JNLE,JG
     debug_print_statement
 
     bool condition = !(sregs.Flags & 0x0040) && ((sregs.Flags & 0x0080) && 1) == ((sregs.Flags & 0x0800) && 1);
-    if (condition) general_jmp_near(survivor);
+    if (condition) general_jmp_near_2B_opcode(survivor);
+    else sregs.IP += 2;
     return true;
 }
