@@ -3,7 +3,7 @@
 #include "opcode_helper_functions.h"
 
 
-bool general_binary_operation(Survivor survivor[static 1], uint16_t shared_memory) // OP *, *
+bool general_binary_operation(Survivor survivor[static 1], uint16_t shared_memory) // OP *, * (general_op0/1/2/3/4/5)
 {
     uint8_t opcode = memory[0].values[(sregs.IP + 10*sregs.CS) & 0xFFFF];
     operation_ptr operation = operators[(opcode & 0b11111000) >> 3];
@@ -270,4 +270,179 @@ bool op_7F(Survivor survivor[static 1], uint16_t shared_memory) // JNLE,JG
     if (condition) general_jmp_near_2B_opcode(survivor);
     else sregs.IP += 2;
     return true;
+}
+
+bool op_80(Survivor survivor[static 1], uint16_t shared_memory) // OP byte ptr [X], imm8
+{
+    uint8_t op_byte = memory[0].values[sregs.IP + 1];
+    operation_ptr op;
+
+    switch ((op_byte >> 3) & 0b111) {
+        case 0:
+        {
+            op = general_add;
+            break;
+        }
+        case 1:
+        {
+            op = general_or;
+            break;
+        }
+        case 2:
+        {
+            op = general_adc;
+            break;
+        }
+        case 3:
+        {
+            op = general_sbb;
+            break;
+        }
+        case 4:
+        {
+            op = general_and;
+            break;
+        }
+        case 5:
+        {
+            op = general_sub;
+            break;
+        }
+        case 6:
+        {
+            op = general_xor;
+            break;
+        }
+        case 7:
+        {
+            op = general_cmp;
+            break;
+        }
+    }
+
+    return general_op_6(survivor, shared_memory, op);
+}
+
+bool op_81(Survivor survivor[static 1], uint16_t shared_memory) // OP byte ptr [X], imm16
+{
+    uint8_t op_byte = memory[0].values[sregs.IP + 1];
+    operation_ptr op;
+
+    switch ((op_byte >> 3) & 0b111) {
+        case 0:
+        {
+            op = general_add;
+            break;
+        }
+        case 1:
+        {
+            op = general_or;
+            break;
+        }
+        case 2:
+        {
+            op = general_adc;
+            break;
+        }
+        case 3:
+        {
+            op = general_sbb;
+            break;
+        }
+        case 4:
+        {
+            op = general_and;
+            break;
+        }
+        case 5:
+        {
+            op = general_sub;
+            break;
+        }
+        case 6:
+        {
+            op = general_xor;
+            break;
+        }
+        case 7:
+        {
+            op = general_cmp;
+            break;
+        }
+    }
+
+    return general_op_7(survivor, shared_memory, op);
+}
+
+opcode_ptr op_82 = op_80;
+
+bool op_83(Survivor survivor[static 1], uint16_t shared_memory) // OP byte ptr [X], imm16
+{
+    uint8_t op_byte = memory[0].values[sregs.IP + 1];
+    operation_ptr op;
+
+    switch ((op_byte >> 3) & 0b111) {
+        case 0:
+        {
+            op = general_add;
+            break;
+        }
+        case 1:
+        {
+            op = general_or;
+            break;
+        }
+        case 2:
+        {
+            op = general_adc;
+            break;
+        }
+        case 3:
+        {
+            op = general_sbb;
+            break;
+        }
+        case 4:
+        {
+            op = general_and;
+            break;
+        }
+        case 5:
+        {
+            op = general_sub;
+            break;
+        }
+        case 6:
+        {
+            op = general_xor;
+            break;
+        }
+        case 7:
+        {
+            op = general_cmp;
+            break;
+        }
+    }
+
+    return general_op_8(survivor, shared_memory, op);
+}
+
+bool op_84(Survivor survivor[static 1], uint16_t shared_memory) // TEST reg8, [X]
+{
+    debug_print_statement
+
+    operation_ptr operation = general_test;
+    op_generalizer generalizer = general_op_2;
+
+    return generalizer(survivor, shared_memory, operation);
+}
+
+bool op_85(Survivor survivor[static 1], uint16_t shared_memory) // TEST reg16, [X]
+{
+    debug_print_statement
+
+    operation_ptr operation = general_test;
+    op_generalizer generalizer = general_op_3;
+
+    return generalizer(survivor, shared_memory, operation);
 }

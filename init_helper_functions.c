@@ -205,6 +205,14 @@ void init_opcode_table(void) {
             [0x7e] = op_7E,
             [0x7f] = op_7F,
 
+            [0x80] = op_80,
+            [0x81] = op_81,
+            [0x82] = op_82,
+            [0x83] = op_83,
+
+            [0x84] = op_84,
+            [0x85] = op_85,
+
             [0xff] = 0
             };
 
