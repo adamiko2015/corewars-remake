@@ -670,3 +670,177 @@ bool op_9F(Survivor survivor[static 1], uint16_t shared_memory) // LAHF
 
     return true;
 }
+
+bool op_A0(Survivor survivor[static 1], uint16_t shared_memory) // MOV AL, [imm16]
+{
+    debug_print_statement
+
+    uint32_t address = 10*sregs.DS + memory[0].values[(sregs.IP + 10*sregs.CS + 1) & 0xFFFF] + 0x10*memory[0].values[(sregs.IP + 10*sregs.CS + 2) & 0xFFFF];
+
+    uint16_t segment = (address & 0xFF0000) >> 16;
+    if (segment != 0 && segment != survivor->stack_id && segment != shared_memory) {return false;}
+
+    *(uint8_t*) &sregs.AX = memory[0].values[address];
+
+    sregs.IP += 3;
+
+    return true;
+}
+
+bool op_A1(Survivor survivor[static 1], uint16_t shared_memory) // MOV AX, [imm16]
+{
+    debug_print_statement
+
+    uint32_t address = 10*sregs.DS + memory[0].values[(sregs.IP + 10*sregs.CS + 1) & 0xFFFF] + 0x10*memory[0].values[(sregs.IP + 10*sregs.CS + 2) & 0xFFFF];
+
+    uint16_t segment = (address & 0xFF0000) >> 16;
+    if (segment != 0 && segment != survivor->stack_id && segment != shared_memory) {return false;}
+
+    sregs.AX = memory[0].values[address];
+
+    sregs.IP += 3;
+
+    return true;
+}
+
+bool op_A2(Survivor survivor[static 1], uint16_t shared_memory) // MOV [imm16], AL
+{
+    debug_print_statement
+
+    uint32_t destination = 10*sregs.DS + memory[0].values[(sregs.IP + 10*sregs.CS + 1) & 0xFFFF] + 0x10*memory[0].values[(sregs.IP + 10*sregs.CS + 2) & 0xFFFF];
+
+    uint16_t segment = (destination & 0xFF0000) >> 16;
+    if (segment != 0 && segment != survivor->stack_id && segment != shared_memory) {return false;}
+
+     memory[0].values[destination] = *(uint8_t*) &sregs.AX;
+
+    sregs.IP += 3;
+
+    return true;
+}
+
+bool op_A3(Survivor survivor[static 1], uint16_t shared_memory) // MOV [imm16], AX
+{
+    debug_print_statement
+
+    uint32_t destination = 10*sregs.DS + memory[0].values[(sregs.IP + 10*sregs.CS + 1) & 0xFFFF] + 0x10*memory[0].values[(sregs.IP + 10*sregs.CS + 2) & 0xFFFF];
+
+    uint16_t segment = (destination & 0xFF0000) >> 16;
+    if (segment != 0 && segment != survivor->stack_id && segment != shared_memory) {return false;}
+
+    *(uint16_t*) &memory[0].values[destination] = sregs.AX;
+
+    sregs.IP += 3;
+
+    return true;
+}
+
+bool op_A4(Survivor survivor[static 1], uint16_t shared_memory) // MOVSB
+{
+    debug_print_statement
+
+    uint32_t address = sregs.SI + 0x10*sregs.DS;
+
+    uint16_t addr_segment = (address & 0xFF0000) >> 16;
+    if (addr_segment != 0 && addr_segment != survivor->stack_id && addr_segment != shared_memory) {return false;}
+
+
+    uint32_t destination = sregs.DI + 0x10*sregs.ES;
+
+    uint16_t dest_segment = (destination & 0xFF0000) >> 16;
+    if (dest_segment != 0 && dest_segment != survivor->stack_id && dest_segment != shared_memory) {return false;}
+
+    memory[0].values[destination] = memory[0].values[address];
+
+    int8_t diff = (sregs.Flags & 0x0400) ? -1 : 1;
+
+    sregs.DI += diff;
+    sregs.SI += diff;
+
+    sregs.IP += 1;
+
+    return true;
+}
+
+bool op_A5(Survivor survivor[static 1], uint16_t shared_memory) // MOVSW
+{
+    debug_print_statement
+
+    uint32_t address = sregs.SI + 0x10*sregs.DS;
+
+    uint16_t addr_segment = (address & 0xFF0000) >> 16;
+    if (addr_segment != 0 && addr_segment != survivor->stack_id && addr_segment != shared_memory) {return false;}
+
+
+    uint32_t destination = sregs.DI + 0x10*sregs.ES;
+
+    uint16_t dest_segment = (destination & 0xFF0000) >> 16;
+    if (dest_segment != 0 && dest_segment != survivor->stack_id && dest_segment != shared_memory) {return false;}
+
+    memory[0].values[destination] = memory[0].values[address];
+    memory[0].values[((destination + 1)&0xFFFF) + 0x10000*dest_segment] = memory[0].values[((address + 1)&0xFFFF) + 0x10000*addr_segment];
+
+    int8_t diff = (sregs.Flags & 0x0400) ? -2 : 2;
+
+    sregs.DI += diff;
+    sregs.SI += diff;
+
+    sregs.IP += 1;
+
+    return true;
+}
+
+bool op_A6(Survivor survivor[static 1], uint16_t shared_memory) // CMPSB
+{
+    debug_print_statement
+
+    uint32_t address = sregs.SI + 0x10*sregs.DS;
+
+    uint16_t addr_segment = (address & 0xFF0000) >> 16;
+    if (addr_segment != 0 && addr_segment != survivor->stack_id && addr_segment != shared_memory) {return false;}
+
+
+    uint32_t destination = sregs.DI + 0x10*sregs.ES;
+
+    uint16_t dest_segment = (destination & 0xFF0000) >> 16;
+    if (dest_segment != 0 && dest_segment != survivor->stack_id && dest_segment != shared_memory) {return false;}
+
+    general_cmp(survivor, 0, &memory[0].values[destination], 0, &memory[0].values[address], 0);
+
+    int8_t diff = (sregs.Flags & 0x0400) ? -1 : 1;
+
+    sregs.DI += diff;
+    sregs.SI += diff;
+
+    sregs.IP += 1;
+
+    return true;
+}
+
+bool op_A7(Survivor survivor[static 1], uint16_t shared_memory) // CMPSW
+{
+    debug_print_statement
+
+    uint32_t address = sregs.SI + 0x10*sregs.DS;
+
+    uint16_t addr_segment = (address & 0xFF0000) >> 16;
+    if (addr_segment != 0 && addr_segment != survivor->stack_id && addr_segment != shared_memory) {return false;}
+
+
+    uint32_t destination = sregs.DI + 0x10*sregs.ES;
+
+    uint16_t dest_segment = (destination & 0xFF0000) >> 16;
+    if (dest_segment != 0 && dest_segment != survivor->stack_id && dest_segment != shared_memory) {return false;}
+
+    general_cmp(survivor, 1, &memory[0].values[((destination + 1)&0xFFFF) + 0x10000*dest_segment],
+                &memory[0].values[destination], &memory[0].values[((address + 1)&0xFFFF) + 0x10000*addr_segment], &memory[0].values[address]);
+
+    int8_t diff = (sregs.Flags & 0x0400) ? -2 : 2;
+
+    sregs.DI += diff;
+    sregs.SI += diff;
+
+    sregs.IP += 1;
+
+    return true;
+}
