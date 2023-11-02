@@ -1108,6 +1108,41 @@ bool general_op_10(Survivor survivor[static 1], uint16_t shared_memory, operatio
     return true;
 }
 
+bool general_op_11(Survivor survivor[static 1], uint16_t shared_memory, operation_ptr general_op) // OP reg8, imm8
+{
+    uint8_t address_byte = memory[0].values[(sregs.IP + 10*sregs.CS) & 0xFFFF];
+    uint16_t pos = sregs.IP + 10*sregs.CS + 1;
+    uint8_t* destination;
+    destination = reg8_decoder(survivor, (address_byte & 0b00111000) >> 3);
+
+    uint8_t address_value = memory[0].values[pos];
+
+    general_op(survivor, 0, &address_value, 0, destination, 0);
+
+    sregs.IP += 2;
+    return true;
+}
+
+bool general_op_12(Survivor survivor[static 1], uint16_t shared_memory, operation_ptr general_op) // OP reg16, imm16
+{
+
+    uint8_t address_byte = memory[0].values[(sregs.IP + 10*sregs.CS) & 0xFFFF];
+    uint16_t pos = sregs.IP + 10*sregs.CS + 1;
+
+    uint8_t* significant_destination,* insignificant_destination;
+
+    insignificant_destination = (uint8_t*)reg16_decoder(survivor, (address_byte & 0b00111000) >> 3);
+    significant_destination = insignificant_destination + 1;
+
+    uint8_t insignificant_address_value = memory[0].values[pos];
+    uint8_t significant_address_value = memory[0].values[(pos + 1) & 0xFFFF];
+
+    general_op(survivor, 1, &significant_address_value, &insignificant_address_value, significant_destination, insignificant_destination);
+
+    sregs.IP += 3;
+    return true;
+}
+
 
 void general_jmp_near_2B_opcode(Survivor survivor[static 1])
 {

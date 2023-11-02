@@ -49,6 +49,35 @@ bool op_8D(Survivor survivor[static 1], uint16_t shared_memory);
 bool op_8E(Survivor survivor[static 1], uint16_t shared_memory);
 bool op_8F(Survivor survivor[static 1], uint16_t shared_memory);
 
+bool general_xchg_op(Survivor survivor[static 1], uint16_t shared_memory);
+
+bool op_98(Survivor survivor[static 1], uint16_t shared_memory);
+bool op_99(Survivor survivor[static 1], uint16_t shared_memory);
+bool op_9A(Survivor survivor[static 1], uint16_t shared_memory);
+bool op_9B(Survivor survivor[static 1], uint16_t shared_memory);
+bool op_9C(Survivor survivor[static 1], uint16_t shared_memory);
+bool op_9D(Survivor survivor[static 1], uint16_t shared_memory);
+bool op_9E(Survivor survivor[static 1], uint16_t shared_memory);
+bool op_9F(Survivor survivor[static 1], uint16_t shared_memory);
+bool op_A0(Survivor survivor[static 1], uint16_t shared_memory);
+bool op_A1(Survivor survivor[static 1], uint16_t shared_memory);
+bool op_A2(Survivor survivor[static 1], uint16_t shared_memory);
+bool op_A3(Survivor survivor[static 1], uint16_t shared_memory);
+bool op_A4(Survivor survivor[static 1], uint16_t shared_memory);
+bool op_A5(Survivor survivor[static 1], uint16_t shared_memory);
+bool op_A6(Survivor survivor[static 1], uint16_t shared_memory);
+bool op_A7(Survivor survivor[static 1], uint16_t shared_memory);
+bool op_A8(Survivor survivor[static 1], uint16_t shared_memory);
+bool op_A9(Survivor survivor[static 1], uint16_t shared_memory);
+bool op_AA(Survivor survivor[static 1], uint16_t shared_memory);
+bool op_AB(Survivor survivor[static 1], uint16_t shared_memory);
+bool op_AC(Survivor survivor[static 1], uint16_t shared_memory);
+bool op_AD(Survivor survivor[static 1], uint16_t shared_memory);
+bool op_AE(Survivor survivor[static 1], uint16_t shared_memory);
+bool op_AF(Survivor survivor[static 1], uint16_t shared_memory);
+
+bool op_B0to7(Survivor survivor[static 1], uint16_t shared_memory);
+bool op_B8toF(Survivor survivor[static 1], uint16_t shared_memory);
 
 bool general_inc(Survivor survivor[static 1], uint16_t shared_memory);
 bool general_dec(Survivor survivor[static 1], uint16_t shared_memory);
