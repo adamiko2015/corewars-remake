@@ -1070,7 +1070,7 @@ bool general_op_9(Survivor survivor[static 1], uint16_t shared_memory, operation
     return true;
 }
 
-bool general_op_9(Survivor survivor[static 1], uint16_t shared_memory, operation_ptr general_op) // OP segment reg16, [X]
+bool general_op_10(Survivor survivor[static 1], uint16_t shared_memory, operation_ptr general_op) // OP segment reg16, [X]
 {
 
     uint8_t address_byte = memory[0].values[(sregs.IP + 10*sregs.CS + 1) & 0xFFFF];
@@ -1079,7 +1079,7 @@ bool general_op_9(Survivor survivor[static 1], uint16_t shared_memory, operation
     uint8_t* significant_destination,* insignificant_destination;
 
     insignificant_destination = (uint8_t*)seg_decoder(survivor, (address_byte & 0b00111000) >> 3);
-    significant_destination = insignificant_address + 1;
+    significant_destination = insignificant_destination + 1;
 
     uint8_t ip_progress = 0;
 
@@ -1088,14 +1088,14 @@ bool general_op_9(Survivor survivor[static 1], uint16_t shared_memory, operation
     uint8_t* insignificant_address = 0;
     uint8_t* significant_address;
 
-    if (!get_virtual_address(&ip_progress, &insignificant_addressn, &address_virtual_addr, survivor, &address_byte, pos, &segment_register_virtual_addr)) {return false;}
+    if (!get_virtual_address(&ip_progress, &insignificant_address, &address_virtual_addr, survivor, &address_byte, pos, &segment_register_virtual_addr)) {return false;}
 
     if (insignificant_address == 0) {
         uint16_t segment = ((uint32_t) (address_virtual_addr + 0x10 * segment_register_virtual_addr) & 0xF0000) >> 16;
         if (segment != 0 && segment != survivor->stack_id && segment != shared_memory) {return false;}
 
-        insignificant_address = &((uint8_t*) memory)[(uint32_t) destination_virtual_addr + segment_register_virtual_addr * 0x10];
-        significant_address = &((uint8_t*) memory)[(uint32_t) ((destination_virtual_addr+1)&0xFFFF) + segment_register_virtual_addr * 0x10];
+        insignificant_address = &((uint8_t*) memory)[(uint32_t) address_virtual_addr + segment_register_virtual_addr * 0x10];
+        significant_address = &((uint8_t*) memory)[(uint32_t) ((address_virtual_addr+1)&0xFFFF) + segment_register_virtual_addr * 0x10];
     }
     else {
         significant_address = insignificant_address + 1;

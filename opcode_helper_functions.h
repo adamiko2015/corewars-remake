@@ -65,6 +65,7 @@ bool general_op_6(Survivor survivor[static 1], uint16_t shared_memory, operation
 bool general_op_7(Survivor survivor[static 1], uint16_t shared_memory, operation_ptr general_op);
 bool general_op_8(Survivor survivor[static 1], uint16_t shared_memory, operation_ptr general_op);
 bool general_op_9(Survivor survivor[static 1], uint16_t shared_memory, operation_ptr general_op);
+bool general_op_10(Survivor survivor[static 1], uint16_t shared_memory, operation_ptr general_op);
 
 void general_jmp_near_2B_opcode(Survivor survivor[static 1]);
 

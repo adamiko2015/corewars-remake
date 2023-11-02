@@ -17,8 +17,6 @@ int main(void) {
         emulation_loop();
     }
 
-    printf("%lf\n", teams[0].points);
-
 
     // TODO: display score
 

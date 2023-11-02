@@ -222,6 +222,9 @@ void init_opcode_table(void) {
             [0x8b] = general_mov_op,
 
             [0x8c] = op_8C,
+            [0x8d] = op_8D,
+            [0x8e] = op_8E,
+            [0x8f] = op_8F,
 
             [0xff] = 0
             };

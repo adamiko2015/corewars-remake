@@ -502,16 +502,17 @@ bool op_8D(Survivor survivor[static 1], uint16_t shared_memory) // LEA reg16, [X
 
     uint8_t ip_progress = 0;
 
+    uint16_t segment_register_virtual_addr;
     uint16_t destination_virtual_addr = 0;
     uint8_t* destination = 0;
 
-    if (!get_virtual_address(&ip_progress, &insignificant_destination, &destination_virtual_addr, survivor, &address_byte, pos, &segment_register_virtual_addr)) {return false;}
+    if (!get_virtual_address(&ip_progress, &destination, &destination_virtual_addr, survivor, &address_byte, pos, &segment_register_virtual_addr)) {return false;}
 
     if (destination != 0) {
         return false;
     }
 
-    uint8_t* insignificant_destination = &destination_virtual_addr;
+    uint8_t* insignificant_destination = (uint8_t*) &destination_virtual_addr;
     uint8_t* significant_destination = insignificant_destination + 1;
 
     general_mov(survivor, 1, significant_address, insignificant_address, significant_destination, insignificant_destination);
@@ -537,17 +538,13 @@ bool op_8F(Survivor survivor[static 1], uint16_t shared_memory) // POP [X]
     uint8_t address_byte = memory[0].values[(sregs.IP + 10*sregs.CS + 1) & 0xFFFF];
     uint16_t pos = sregs.IP + 10*sregs.CS + 2;
 
-    uint8_t* significant_address,* insignificant_address;
-
-    insignificant_address = (uint8_t*)reg16_decoder(survivor, (address_byte & 0b00111000) >> 3);
-    significant_address = insignificant_address + 1;
-
     uint8_t ip_progress = 0;
 
+    uint16_t segment_register_virtual_addr;
     uint16_t destination_virtual_addr = 0;
     uint8_t* destination = 0;
 
-    if (!get_virtual_address(&ip_progress, &insignificant_destination, &destination_virtual_addr, survivor, &address_byte, pos, &segment_register_virtual_addr)) {return false;}
+    if (!get_virtual_address(&ip_progress, &destination, &destination_virtual_addr, survivor, &address_byte, pos, &segment_register_virtual_addr)) {return false;}
 
     if (destination != 0) {
         return false;
@@ -557,9 +554,9 @@ bool op_8F(Survivor survivor[static 1], uint16_t shared_memory) // POP [X]
     if (segment != 0 && segment != survivor->stack_id && segment != shared_memory) {return false;}
 
     uint32_t segmented_destination_virtual_addr = destination_virtual_addr + 0x10*segment_register_virtual_addr;
-    uint16_t destination = &memory[0].values[segmented_destination_virtual_addr];
+    uint16_t destination_in_memory = memory[0].values[segmented_destination_virtual_addr];
 
-    return general_pop(survivor, shared_memory, &destination);
+    return general_pop(survivor, shared_memory, &destination_in_memory);
 }
 
 
