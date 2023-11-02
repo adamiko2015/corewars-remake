@@ -53,6 +53,7 @@ bool round_end_check() {
 }
 
 void advance_player_tracker() {
+    // TODO: account for energy
     do {
         current_player.team_id = (current_player.survivor_position + current_player.team_id) % (teams_per_round+zombie_count);
         current_player.survivor_position = (current_player.survivor_position + 1) & 1;}
