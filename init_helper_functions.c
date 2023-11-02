@@ -213,6 +213,16 @@ void init_opcode_table(void) {
             [0x84] = op_84,
             [0x85] = op_85,
 
+            [0x86] = op_86,
+            [0x87] = op_87,
+
+            [0x88] = general_mov_op,
+            [0x89] = general_mov_op,
+            [0x8a] = general_mov_op,
+            [0x8b] = general_mov_op,
+
+            [0x8c] = op_8C,
+
             [0xff] = 0
             };
 

@@ -5,7 +5,7 @@
 
 bool general_binary_operation(Survivor survivor[static 1], uint16_t shared_memory) // OP *, * (general_op0/1/2/3/4/5)
 {
-    uint8_t opcode = memory[0].values[(sregs.IP + 10*sregs.CS) & 0xFFFF];
+    uint8_t opcode = memory[0].values[sregs.IP + 10*sregs.CS];
     operation_ptr operation = operators[(opcode & 0b11111000) >> 3];
     op_generalizer generalizer = general_ops[opcode & 0b111];
 
@@ -52,7 +52,7 @@ bool op_1F(Survivor survivor[static 1], uint16_t shared_memory) // Pop DS
 
 bool general_inc(Survivor survivor[static 1], uint16_t shared_memory) // INC reg16
 {
-    uint8_t reg_byte = memory[0].values[(sregs.IP + 10*sregs.CS) & 0xFFFF];
+    uint8_t reg_byte = memory[0].values[sregs.IP + 10*sregs.CS];
     uint16_t* reg = reg16_decoder(survivor, reg_byte & 0b00000111);
 
     uint_fast16_t flags_to_update;
@@ -74,7 +74,7 @@ bool general_inc(Survivor survivor[static 1], uint16_t shared_memory) // INC reg
 
 bool general_dec(Survivor survivor[static 1], uint16_t shared_memory) // DEC reg16
 {
-    uint8_t reg_byte = memory[0].values[(sregs.IP + 10*sregs.CS) & 0xFFFF];
+    uint8_t reg_byte = memory[0].values[sregs.IP + 10*sregs.CS];
     uint16_t* reg = reg16_decoder(survivor, reg_byte & 0b00000111);
 
     uint_fast16_t flags_to_update;
@@ -98,7 +98,7 @@ bool general_push_opcode(Survivor survivor[static 1], uint16_t shared_memory) //
 {
     debug_print_statement
 
-    uint8_t reg_byte = memory[0].values[(sregs.IP + 10*sregs.CS) & 0xFFFF];
+    uint8_t reg_byte = memory[0].values[sregs.IP + 10*sregs.CS];
     uint16_t* reg = reg16_decoder(survivor, reg_byte & 0b00000111);
 
     return general_push(survivor, shared_memory, reg);
@@ -108,7 +108,7 @@ bool general_pop_opcode(Survivor survivor[static 1], uint16_t shared_memory) // 
 {
     debug_print_statement
 
-    uint8_t reg_byte = memory[0].values[(sregs.IP + 10*sregs.CS) & 0xFFFF];
+    uint8_t reg_byte = memory[0].values[sregs.IP + 10*sregs.CS];
     uint16_t* reg = reg16_decoder(survivor, reg_byte & 0b00000111);
 
     return general_pop(survivor, shared_memory, reg);
@@ -274,7 +274,7 @@ bool op_7F(Survivor survivor[static 1], uint16_t shared_memory) // JNLE,JG
 
 bool op_80(Survivor survivor[static 1], uint16_t shared_memory) // OP byte ptr [X], imm8
 {
-    uint8_t op_byte = memory[0].values[sregs.IP + 1];
+    uint8_t op_byte = memory[0].values[(sregs.IP + 10*sregs.CS + 1) & 0xFFFF];
     operation_ptr op;
 
     switch ((op_byte >> 3) & 0b111) {
@@ -325,7 +325,7 @@ bool op_80(Survivor survivor[static 1], uint16_t shared_memory) // OP byte ptr [
 
 bool op_81(Survivor survivor[static 1], uint16_t shared_memory) // OP byte ptr [X], imm16
 {
-    uint8_t op_byte = memory[0].values[sregs.IP + 1];
+    uint8_t op_byte = memory[0].values[(sregs.IP + 10*sregs.CS + 1) & 0xFFFF];
     operation_ptr op;
 
     switch ((op_byte >> 3) & 0b111) {
@@ -378,7 +378,7 @@ opcode_ptr op_82 = op_80;
 
 bool op_83(Survivor survivor[static 1], uint16_t shared_memory) // OP byte ptr [X], imm16
 {
-    uint8_t op_byte = memory[0].values[sregs.IP + 1];
+    uint8_t op_byte = memory[0].values[(sregs.IP + 10*sregs.CS + 1) & 0xFFFF];
     operation_ptr op;
 
     switch ((op_byte >> 3) & 0b111) {
@@ -443,6 +443,47 @@ bool op_85(Survivor survivor[static 1], uint16_t shared_memory) // TEST reg16, [
 
     operation_ptr operation = general_test;
     op_generalizer generalizer = general_op_3;
+
+    return generalizer(survivor, shared_memory, operation);
+}
+
+bool op_86(Survivor survivor[static 1], uint16_t shared_memory) // XCHG reg8, [X]
+{
+    debug_print_statement
+
+    operation_ptr operation = general_xchg;
+    op_generalizer generalizer = general_op_2;
+
+    return generalizer(survivor, shared_memory, operation);
+}
+
+bool op_87(Survivor survivor[static 1], uint16_t shared_memory) // XCHG reg16, [X]
+{
+    debug_print_statement
+
+    operation_ptr operation = general_xchg;
+    op_generalizer generalizer = general_op_3;
+
+    return generalizer(survivor, shared_memory, operation);
+}
+
+bool general_mov_op(Survivor survivor[static 1], uint16_t shared_memory) // MOV *, * (general_op0/1/2/3)
+{
+    debug_print_statement
+
+    uint8_t opcode = memory[0].values[sregs.IP + 10*sregs.CS];
+    operation_ptr operation = general_mov;
+    op_generalizer generalizer = general_ops[opcode & 0b111];
+
+    return generalizer(survivor, shared_memory, operation);
+}
+
+bool op_8C(Survivor survivor[static 1], uint16_t shared_memory) // MOV [X], seg
+{
+    debug_print_statement
+
+    operation_ptr operation = general_mov;
+    op_generalizer generalizer = general_op_9;
 
     return generalizer(survivor, shared_memory, operation);
 }

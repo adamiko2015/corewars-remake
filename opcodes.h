@@ -39,6 +39,14 @@ bool op_83(Survivor survivor[static 1], uint16_t shared_memory);
 bool op_84(Survivor survivor[static 1], uint16_t shared_memory);
 bool op_85(Survivor survivor[static 1], uint16_t shared_memory);
 
+bool op_86(Survivor survivor[static 1], uint16_t shared_memory);
+bool op_87(Survivor survivor[static 1], uint16_t shared_memory);
+
+bool general_mov_op(Survivor survivor[static 1], uint16_t shared_memory);
+
+bool op_8C(Survivor survivor[static 1], uint16_t shared_memory);
+
+
 bool general_inc(Survivor survivor[static 1], uint16_t shared_memory);
 bool general_dec(Survivor survivor[static 1], uint16_t shared_memory);
 

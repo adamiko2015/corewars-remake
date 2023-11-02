@@ -267,6 +267,29 @@ uint16_t* reg16_decoder(Survivor survivor[static 1], uint8_t byte) {
     exit_angrily
 }
 
+uint16_t* seg_decoder(Survivor survivor[static 1], uint8_t byte) {
+    uint16_t* reg;
+    switch (byte & 0b11) {
+        case 0b00: {
+            reg = &(sregs.ES);
+            return reg;
+        }
+        case 0b01: {
+            reg = &(sregs.CS);
+            return reg;
+        }
+        case 0b10: {
+            reg = &(sregs.SS);
+            return reg;
+        }
+        case 0b11: {
+            reg = &(sregs.DS);
+            return reg;
+        }
+    }
+    exit_angrily
+}
+
 // General function to add two addresses while taking care of Flags
 // might be different from og implementation, because we implemented AF.
 void general_add(Survivor survivor[static 1], bool is_16_bit, uint8_t significant_from[static 1], uint8_t* insignificant_from,
@@ -688,6 +711,20 @@ void general_test(Survivor survivor[static 1], bool is_16_bit, uint8_t significa
     }
 }
 
+void general_xchg(Survivor survivor[static 1], bool is_16_bit, uint8_t significant_from[static 1], uint8_t* insignificant_from,
+                  uint8_t significant_to[static 1], uint8_t* insignificant_to)
+{
+    uint8_t tmp = *significant_to;
+    *significant_to = *significant_from;
+    *significant_from = tmp;
+
+    if (is_16_bit) {
+        tmp = *insignificant_to;
+        *insignificant_to = *insignificant_from;
+        *insignificant_from = tmp;
+    }
+}
+
 
 void update_specific_flags(Survivor survivor[static 1], uint16_t og_flags, uint16_t flags_after_change, uint16_t mask) {
     uint16_t difference = og_flags ^ flags_after_change;
@@ -961,7 +998,7 @@ bool general_op_7(Survivor survivor[static 1], uint16_t shared_memory, operation
     return true;
 }
 
-bool general_op_8(Survivor survivor[static 1], uint16_t shared_memory, operation_ptr general_op) // OP [X], imm16
+bool general_op_8(Survivor survivor[static 1], uint16_t shared_memory, operation_ptr general_op) // OP [X], sign-extended imm8
 {
     uint16_t pos = sregs.IP + 10*sregs.CS + 2;
 
@@ -987,6 +1024,44 @@ bool general_op_8(Survivor survivor[static 1], uint16_t shared_memory, operation
 
     insignificant_destination = &((uint8_t*) memory)[(uint32_t) destination_virtual_addr + segment_register_virtual_addr * 0x10];
     significant_destination = &((uint8_t*) memory)[(uint32_t) ((destination_virtual_addr+1)&0xFFFF) + segment_register_virtual_addr * 0x10];
+
+
+    general_op(survivor, 1, significant_address, insignificant_address, significant_destination, insignificant_destination);
+
+    sregs.IP += ip_progress;
+    return true;
+}
+
+bool general_op_9(Survivor survivor[static 1], uint16_t shared_memory, operation_ptr general_op) // OP [X], segment reg16
+{
+
+    uint8_t address_byte = memory[0].values[(sregs.IP + 10*sregs.CS + 1) & 0xFFFF];
+    uint16_t pos = sregs.IP + 10*sregs.CS + 2;
+
+    uint8_t* significant_address,* insignificant_address;
+
+    insignificant_address = (uint8_t*)seg_decoder(survivor, (address_byte & 0b00111000) >> 3);
+    significant_address = insignificant_address + 1;
+
+    uint8_t ip_progress = 0;
+
+    uint16_t destination_virtual_addr = 0;
+    uint16_t segment_register_virtual_addr = 0;
+    uint8_t* insignificant_destination = 0;
+    uint8_t* significant_destination;
+
+    if (!get_virtual_address(&ip_progress, &insignificant_destination, &destination_virtual_addr, survivor, &address_byte, pos, &segment_register_virtual_addr)) {return false;}
+
+    if (insignificant_destination == 0) {
+        uint16_t segment = ((destination_virtual_addr + 0x10 * segment_register_virtual_addr) & 0xF0000) >> 16;
+        if (segment != 0 && segment != survivor->stack_id && segment != shared_memory) {return false;}
+
+        insignificant_destination = &((uint8_t*) memory)[(uint32_t) destination_virtual_addr + segment_register_virtual_addr * 0x10];
+        significant_destination = &((uint8_t*) memory)[(uint32_t) ((destination_virtual_addr+1)&0xFFFF) + segment_register_virtual_addr * 0x10];
+    }
+    else {
+        significant_destination = insignificant_destination + 1;
+    }
 
 
     general_op(survivor, 1, significant_address, insignificant_address, significant_destination, insignificant_destination);
