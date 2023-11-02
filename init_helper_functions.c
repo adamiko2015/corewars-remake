@@ -277,6 +277,17 @@ void init_opcode_table(void) {
             [0xbe] = op_B8toF,
             [0xbf] = op_B8toF,
 
+            [0xc2] = op_C2,
+            [0xc3] = op_C3,
+            [0xc4] = op_C4,
+            [0xc5] = op_C5,
+            [0xc6] = op_C6,
+            [0xc7] = op_C7,
+            [0xca] = op_CA,
+            [0xcb] = op_CB,
+            [0xcd] = op_CD,
+            [0xcf] = op_CF,
+
 
 
             [0xff] = 0

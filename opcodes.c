@@ -1017,3 +1017,202 @@ bool op_B8toF(Survivor survivor[static 1], uint16_t shared_memory) // MOV reg16,
 
     return generalizer(survivor, shared_memory, operation);
 }
+
+bool op_C2(Survivor survivor[static 1], uint16_t shared_memory) // RETN [imm16]
+{
+    debug_print_statement
+
+    uint16_t size_to_pop = memory[0].values[sregs.IP + 0x10*sregs.CS] + 0x10*memory[0].values[(sregs.IP + 0x10*sregs.CS + 1) & 0xFFFF];
+
+    if (!general_pop(survivor, shared_memory, &sregs.IP)) {return false;}
+
+    sregs.SP = sregs.SP + size_to_pop;
+
+    return true;
+
+    // TODO: no incrementing IP?
+}
+
+bool op_C3(Survivor survivor[static 1], uint16_t shared_memory) // RETN
+{
+    debug_print_statement
+
+    return general_pop(survivor, shared_memory, &sregs.IP);
+
+    // TODO: no incrementing IP?
+}
+
+bool op_C4(Survivor survivor[static 1], uint16_t shared_memory) // LES reg16, [X]
+{
+    debug_print_statement
+
+    uint8_t address_byte = memory[0].values[(sregs.IP + 10*sregs.CS + 1) & 0xFFFF];
+    uint16_t pos = sregs.IP + 10*sregs.CS + 2;
+
+    uint8_t ip_progress = 0;
+
+    uint16_t segment_register_virtual_addr;
+    uint16_t address_virtual_addr = 0;
+    uint8_t* address = 0;
+
+    if (!get_virtual_address(&ip_progress, &address, &address_virtual_addr, survivor, &address_byte, pos, &segment_register_virtual_addr)) {return false;}
+
+    if (address != 0) {
+        return false;
+    }
+
+    uint32_t real_virtual_addr = (uint32_t) address_virtual_addr + 0x10*segment_register_virtual_addr;
+    uint16_t addr_segment = (real_virtual_addr  & 0xFF0000) >> 16;
+    if (addr_segment != 0 && addr_segment != survivor->stack_id && addr_segment != shared_memory) {return false;}
+
+    uint8_t* reg = (uint8_t*) reg16_decoder(survivor, (address_byte & 0b111000) >> 3);
+    uint8_t* seg_reg = (uint8_t*) &sregs.ES;
+
+    *reg = memory[0].values[(address_virtual_addr + 0x10*segment_register_virtual_addr) & 0xFFFF];
+    *(reg + 1) = memory[0].values[(address_virtual_addr + 0x10*segment_register_virtual_addr + 1) & 0xFFFF];
+    *(seg_reg) = memory[0].values[(address_virtual_addr + 0x10*segment_register_virtual_addr + 2) & 0xFFFF];
+    *(seg_reg + 1) = memory[0].values[(address_virtual_addr + 0x10*segment_register_virtual_addr + 3) & 0xFFFF];
+
+    sregs.IP += ip_progress;
+
+    return true;
+}
+
+bool op_C5(Survivor survivor[static 1], uint16_t shared_memory) // LDS reg16, [X]
+{
+    debug_print_statement
+
+    uint8_t address_byte = memory[0].values[(sregs.IP + 10*sregs.CS + 1) & 0xFFFF];
+    uint16_t pos = sregs.IP + 10*sregs.CS + 2;
+
+    uint8_t ip_progress = 0;
+
+    uint16_t segment_register_virtual_addr;
+    uint16_t address_virtual_addr = 0;
+    uint8_t* address = 0;
+
+    if (!get_virtual_address(&ip_progress, &address, &address_virtual_addr, survivor, &address_byte, pos, &segment_register_virtual_addr)) {return false;}
+
+    if (address != 0) {
+        return false;
+    }
+
+    uint32_t real_virtual_addr = (uint32_t) address_virtual_addr + 0x10*segment_register_virtual_addr;
+    uint16_t addr_segment = (real_virtual_addr  & 0xFF0000) >> 16;
+    if (addr_segment != 0 && addr_segment != survivor->stack_id && addr_segment != shared_memory) {return false;}
+
+    uint8_t* reg = (uint8_t*) reg16_decoder(survivor, (address_byte & 0b111000) >> 3);
+    uint8_t* seg_reg = (uint8_t*) &sregs.DS;
+
+    *reg = memory[0].values[(address_virtual_addr + 0x10*segment_register_virtual_addr) & 0xFFFF];
+    *(reg + 1) = memory[0].values[(address_virtual_addr + 0x10*segment_register_virtual_addr + 1) & 0xFFFF];
+    *(seg_reg) = memory[0].values[(address_virtual_addr + 0x10*segment_register_virtual_addr + 2) & 0xFFFF];
+    *(seg_reg + 1) = memory[0].values[(address_virtual_addr + 0x10*segment_register_virtual_addr + 3) & 0xFFFF];
+
+    sregs.IP += ip_progress;
+
+    return true;
+}
+
+bool op_C6(Survivor survivor[static 1], uint16_t shared_memory) // MOV [X], imm8
+{
+    debug_print_statement
+
+    operation_ptr operation = general_mov;
+    op_generalizer generalizer = general_op_6;
+
+    return generalizer(survivor, shared_memory, operation);
+}
+
+bool op_C7(Survivor survivor[static 1], uint16_t shared_memory) // MOV [X], imm16
+{
+    debug_print_statement
+
+    operation_ptr operation = general_mov;
+    op_generalizer generalizer = general_op_7;
+
+    return generalizer(survivor, shared_memory, operation);
+}
+
+bool op_CA(Survivor survivor[static 1], uint16_t shared_memory) //RETF [imm16]
+{
+    debug_print_statement
+
+    uint16_t size_to_pop = memory[0].values[sregs.IP + 0x10*sregs.CS] + 0x10*memory[0].values[(sregs.IP + 0x10*sregs.CS + 1) & 0xFFFF];
+
+    if (!general_pop(survivor, shared_memory, &sregs.IP)) {return false;}
+    if (!general_pop(survivor, shared_memory, &sregs.CS)) {return false;}
+
+    sregs.SP = sregs.SP + size_to_pop;
+
+    return true;
+
+    // TODO: no incrementing IP?
+}
+
+bool op_CB(Survivor survivor[static 1], uint16_t shared_memory) // RETN
+{
+    debug_print_statement
+
+    if (!general_pop(survivor, shared_memory, &sregs.IP)) {return false;}
+    return general_pop(survivor, shared_memory, &sregs.CS);
+
+    // TODO: no incrementing IP?
+}
+
+
+bool op_CD(Survivor survivor[static 1], uint16_t shared_memory) // INT [imm8]
+{
+    debug_print_statement
+
+    uint8_t interrupt_number = memory[0].values[sregs.IP + 0x10*sregs.CS];
+    if (interrupt_number == 0x86) {
+        if (sregs.INT86h_used >= 2) {return false;}
+        for (int i=0; i<=127; i++) {op_AB(survivor, shared_memory);}
+        sregs.INT86h_used++;
+        return true;
+
+    }
+    else if (interrupt_number == 0x87) {
+        if (sregs.INT86h_used >= 1) {return false;}
+        for (int i=0; i<=0xFFFF; i++)
+        {
+            // might be a difference, here we are "nicer" with checking forbidden memory.
+            int diff = (sregs.Flags & 0x0400) ? -i : i;
+            int16_t address = 0x10*sregs.ES + ((sregs.DS + diff) & 0xFFFF);
+            int16_t segment = ((0x10*sregs.ES + ((sregs.DS + diff) & 0xFFFF)) >> 16);
+            if ((memory[0].values[(uint32_t) (segment<<16) + address] == (uint8_t) sregs.AX)
+                &&
+                (memory[0].values[(uint32_t) (segment<<16) + ((address + 1) & 0xFFFF)] == *(((uint8_t*) &sregs.AX) + 1)))
+            {
+                if ((memory[0].values[(uint32_t) (segment<<16) + ((address + 2) & 0xFFFF)] == (uint8_t) sregs.DX)
+                    &&
+                    (memory[0].values[(uint32_t) (segment<<16) + ((address + 3) & 0xFFFF)] == *(((uint8_t*) &sregs.DX) + 1)))
+                {
+                    if (segment != 0 && segment != survivor->stack_id && segment != shared_memory) {return false;}
+
+                    memory[0].values[(uint32_t) (segment<<16) + ((address + 0) & 0xFFFF)] = (uint8_t) sregs.BX;
+                    memory[0].values[(uint32_t) (segment<<16) + ((address + 1) & 0xFFFF)] = *(((uint8_t*) &sregs.BX) + 1);
+                    memory[0].values[(uint32_t) (segment<<16) + ((address + 2) & 0xFFFF)] = (uint8_t) sregs.CX;
+                    memory[0].values[(uint32_t) (segment<<16) + ((address + 3) & 0xFFFF)] = *(((uint8_t*) &sregs.CX) + 1);
+                }
+            }
+        }
+
+        sregs.INT87h_used++;
+        return true;
+
+    } else {return false;}
+}
+
+bool op_CF(Survivor survivor[static 1], uint16_t shared_memory) // IRET
+{
+    debug_print_statement
+
+    if (!general_pop(survivor, shared_memory, &sregs.IP)) {return false;}
+    if (!general_pop(survivor, shared_memory, &sregs.CS)) {return false;}
+    return general_pop(survivor, shared_memory, &sregs.Flags);
+
+    // TODO: no incrementing IP?
+}
+
