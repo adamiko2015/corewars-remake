@@ -556,7 +556,117 @@ bool op_8F(Survivor survivor[static 1], uint16_t shared_memory) // POP [X]
     uint32_t segmented_destination_virtual_addr = destination_virtual_addr + 0x10*segment_register_virtual_addr;
     uint16_t destination_in_memory = memory[0].values[segmented_destination_virtual_addr];
 
+    sregs.IP += ip_progress - 1;
+
     return general_pop(survivor, shared_memory, &destination_in_memory);
 }
 
+bool general_xchg_op(Survivor survivor[static 1], uint16_t shared_memory) // XCHG reg16, AX
+{
+    debug_print_statement
 
+    uint8_t* insignificant_address = (uint8_t*) &sregs.AX;
+    uint8_t* significant_address = insignificant_address + 1;
+
+    uint8_t* insignificant_destination = (uint8_t*) reg16_decoder(survivor, memory[0].values[sregs.IP + 0x10*sregs.CS] & 0b111);
+    uint8_t* significant_destination = insignificant_destination + 1;
+
+    general_xchg(survivor, 1, significant_address, insignificant_address,significant_destination, insignificant_destination);
+
+    sregs.IP += 1;
+
+    return true;
+}
+
+bool op_98(Survivor survivor[static 1], uint16_t shared_memory) // CBW
+{
+    debug_print_statement
+
+    if ((int8_t)sregs.AX < 0) {
+        sregs.AX |= 0xFF00;
+    }
+    else {
+        sregs.AX &= 0x00FF;
+    }
+
+    sregs.IP += 1;
+
+    return true;
+}
+
+bool op_99(Survivor survivor[static 1], uint16_t shared_memory) // CBW
+{
+    debug_print_statement
+
+    if ((int16_t)sregs.AX < 0) {
+        sregs.DS = 0xFFFF;
+    }
+    else {
+        sregs.DS &= 0;
+    }
+
+    sregs.IP += 1;
+
+    return true;
+}
+
+bool op_9A(Survivor survivor[static 1], uint16_t shared_memory) // CALL FAR imm16:imm16
+{
+    debug_print_statement
+
+    uint16_t new_CS = memory[0].values[(sregs.IP + 10*sregs.CS + 1) & 0xFFFF]  + 10*memory[0].values[(sregs.IP + 10*sregs.CS + 2) & 0xFFFF];
+    uint16_t new_IP = memory[0].values[(sregs.IP + 10*sregs.CS + 3) & 0xFFFF]  + 10*memory[0].values[(sregs.IP + 10*sregs.CS + 4) & 0xFFFF];
+
+    sregs.IP += 5;
+
+    general_push(survivor, shared_memory, &sregs.CS);
+    general_push(survivor, shared_memory, &sregs.CS);
+
+    sregs.CS = new_CS;
+    sregs.IP = new_IP;
+
+    return true;
+}
+
+bool op_9B(Survivor survivor[static 1], uint16_t shared_memory) // original: WAIT, modified: virtual opcode NRG
+{
+    debug_print_statement
+
+    if ((memory[0].values[(sregs.IP + 10*sregs.CS + 1) & 0xFFFF]) != 0x9b) {return false;}
+    if ((sregs.Energy != 0xFFFF) sregs.Energy++);
+    sregs.IP += 2;
+
+    return true;
+}
+
+bool op_9C(Survivor survivor[static 1], uint16_t shared_memory) // Push CS
+{
+    debug_print_statement
+
+    return general_push(survivor, shared_memory, &sregs.Flags);
+}
+
+bool op_9D(Survivor survivor[static 1], uint16_t shared_memory) // Push SS
+{
+    debug_print_statement
+
+    return general_push(survivor, shared_memory, &sregs.Flags);
+}
+
+bool op_9E(Survivor survivor[static 1], uint16_t shared_memory) // SAHF
+{
+    debug_print_statement
+
+    *(uint8_t*)&sregs.Flags = *((uint8_t*)&sregs.AX + 1);
+
+    return true;
+}
+
+bool op_9F(Survivor survivor[static 1], uint16_t shared_memory) // LAHF
+{
+    debug_print_statement
+
+     *((uint8_t*)&sregs.AX + 1) = *(uint8_t*)&sregs.Flags;
+
+    return true;
+}

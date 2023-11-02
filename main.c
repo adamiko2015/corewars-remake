@@ -17,7 +17,6 @@ int main(void) {
         emulation_loop();
     }
 
-
     // TODO: display score
 
     return 0;
