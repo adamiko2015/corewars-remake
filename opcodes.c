@@ -633,7 +633,7 @@ bool op_9B(Survivor survivor[static 1], uint16_t shared_memory) // original: WAI
     debug_print_statement
 
     if ((memory[0].values[(sregs.IP + 10*sregs.CS + 1) & 0xFFFF]) != 0x9b) {return false;}
-    if ((sregs.Energy != 0xFFFF) sregs.Energy++);
+    if (sregs.Energy != 0xFFFF) sregs.Energy++;
     sregs.IP += 2;
 
     return true;
