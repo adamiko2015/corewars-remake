@@ -1461,3 +1461,278 @@ bool op_F6(Survivor survivor[static 1], uint16_t shared_memory) // OP byte ptr [
 
     return false;
 }
+
+bool op_F7(Survivor survivor[static 1], uint16_t shared_memory) // OP word ptr [X]
+{
+    uint8_t address_byte = memory[0].values[(sregs.IP + 10*sregs.CS + 1) & 0xFFFF];
+    uint16_t pos = sregs.IP + 10*sregs.CS + 2;
+    uint8_t ip_progress = 0;
+
+    uint16_t destination_virtual_addr = 0;
+    uint16_t segment_register_virtual_addr = 0;
+    uint8_t* insignificant_destination = 0;
+    uint8_t* significant_destination;
+
+    if (!get_virtual_address(&ip_progress, &insignificant_destination, &destination_virtual_addr, survivor, &address_byte, pos, &segment_register_virtual_addr)) {return false;}
+
+    if (insignificant_destination == 0) {
+        uint16_t segment = ((uint32_t) (destination_virtual_addr + 0x10 * segment_register_virtual_addr) >> 16);
+        if (segment != 0 && segment != survivor->stack_id && segment != shared_memory) {return false;}
+
+        insignificant_destination = &((uint8_t*) memory)[(uint32_t) destination_virtual_addr + segment_register_virtual_addr * 0x10];
+        significant_destination = &((uint8_t*) memory)[(uint32_t) ((destination_virtual_addr+1)&0xFFFF) + segment_register_virtual_addr * 0x10];
+    }
+    else {
+        significant_destination = insignificant_destination + 1;
+    }
+
+    sregs.IP += ip_progress;
+
+    switch ((address_byte & 0b111000) >> 3) {
+        case 0b001: // TEST imm8
+        {
+            uint8_t insignificant_address_value = memory[0].values[(sregs.IP + 10*sregs.CS) & 0xFFFF];
+            uint8_t significant_address_value = memory[0].values[(sregs.IP + 10*sregs.CS + 1) & 0xFFFF];
+            general_test(survivor, 1, &significant_address_value,&insignificant_address_value,
+                         significant_destination, insignificant_destination);
+
+            sregs.IP += 2;
+            return true;
+        }
+
+        case 0b010: // NOT
+        {
+            *insignificant_destination ^= 0xff;
+            *significant_destination ^= 0xff;
+
+            return true;
+        }
+
+        case 0b011: // NEG
+        {
+            uint8_t insignificant_pseudo_destination = 0;
+            uint8_t significant_pseudo_destination = 0;
+            general_sub(survivor, 1, significant_destination, insignificant_destination,
+                        &significant_pseudo_destination, &insignificant_pseudo_destination);
+
+            *insignificant_destination = insignificant_pseudo_destination;
+            *significant_destination = significant_pseudo_destination;
+            return true;
+        }
+
+        case 0b100: // MUL
+        {
+            general_mul(survivor, 1, significant_destination, insignificant_destination);
+
+            return true;
+        }
+
+        case 0b101: // (unimplemented) IMUL
+        {
+            return false;
+        }
+
+        case 0b110: // DIV
+        {
+            if ((*insignificant_destination == 0) && (*significant_destination == 0)) {return false;}
+
+            general_div(survivor, 1, significant_destination, insignificant_destination);
+
+            return true;
+        }
+
+        case 0b111: // (unimplemented) IDIV
+        {
+            return false;
+        }
+    }
+
+    return false;
+}
+
+bool op_F8(Survivor survivor[static 1], uint16_t shared_memory) // CLC
+{
+    sregs.Flags &= (0xFFFF - 0x1);
+    sregs.IP++;
+    return true;
+}
+
+bool op_F9(Survivor survivor[static 1], uint16_t shared_memory) // STC
+{
+    sregs.Flags |= 0x1;
+    sregs.IP++;
+    return true;
+}
+
+bool op_FA(Survivor survivor[static 1], uint16_t shared_memory) // CLI
+{
+    sregs.Flags &= (0xFFFF - 0x200);
+    sregs.IP++;
+    return true;
+}
+
+bool op_FB(Survivor survivor[static 1], uint16_t shared_memory) // STI
+{
+    sregs.Flags |= 0x200;
+    sregs.IP++;
+    return true;
+}
+
+bool op_FC(Survivor survivor[static 1], uint16_t shared_memory) // CLD
+{
+    sregs.Flags &= (0xFFFF - 0x400);
+    sregs.IP++;
+    return true;
+}
+
+bool op_FD(Survivor survivor[static 1], uint16_t shared_memory) // STD
+{
+    sregs.Flags |= 0x400;
+    sregs.IP++;
+    return true;
+}
+
+bool op_FE(Survivor survivor[static 1], uint16_t shared_memory) // OP byte ptr [X]
+{
+    uint8_t address_byte = memory[0].values[(sregs.IP + 10*sregs.CS + 1) & 0xFFFF];
+    uint16_t pos = sregs.IP + 10*sregs.CS + 2;
+    uint8_t ip_progress = 0;
+
+    uint16_t destination_virtual_addr = 0;
+    uint16_t segment_register_virtual_addr = 0;
+    uint8_t* destination = 0;
+
+    if (!get_virtual_address(&ip_progress, &destination, &destination_virtual_addr, survivor, &address_byte, pos, &segment_register_virtual_addr)) {return false;}
+
+    if (destination == 0) {
+        uint16_t segment = ((uint32_t) (destination_virtual_addr + 0x10 * segment_register_virtual_addr) >> 16);
+        if (segment != 0 && segment != survivor->stack_id && segment != shared_memory) {return false;}
+
+        destination = (uint8_t*)&((uint8_t*) memory)[(uint32_t) destination_virtual_addr + segment_register_virtual_addr * 0x10];
+    }
+
+    sregs.IP += ip_progress;
+
+    if ((address_byte >> 3) == 0) {
+        uint8_t one = 1;
+        general_add(survivor, 0, &one, 0,
+                    &memory[0].values[(uint32_t) (destination_virtual_addr + 0x10 * segment_register_virtual_addr)], 0);
+        return true;
+    }
+    else if ((address_byte >> 3) == 1) {
+        uint8_t one = 1;
+        general_sub(survivor, 0, &one, 0,
+                    &memory[0].values[(uint32_t) (destination_virtual_addr + 0x10 * segment_register_virtual_addr)], 0);
+        return true;
+    }
+    else {
+        return false;
+    }
+}
+
+bool op_FF(Survivor survivor[static 1], uint16_t shared_memory) // OP word ptr [X]
+{
+    uint8_t address_byte = memory[0].values[(sregs.IP + 10*sregs.CS + 1) & 0xFFFF];
+    uint16_t pos = sregs.IP + 10*sregs.CS + 2;
+
+    uint8_t ip_progress = 0;
+
+    uint16_t destination_virtual_addr = 0;
+    uint16_t segment_register_virtual_addr = 0;
+    uint8_t* insignificant_destination = 0;
+    uint8_t* significant_destination;
+
+    if (!get_virtual_address(&ip_progress, &insignificant_destination, &destination_virtual_addr, survivor, &address_byte, pos, &segment_register_virtual_addr)) {return false;}
+
+    uint16_t real_virtual_addr = (destination_virtual_addr + 0x10 * segment_register_virtual_addr);
+    uint16_t segment = ((uint32_t) (destination_virtual_addr + 0x10 * segment_register_virtual_addr) >> 16);
+    if (insignificant_destination == 0) {
+        if (segment != 0 && segment != survivor->stack_id && segment != shared_memory) {return false;}
+
+        insignificant_destination = &((uint8_t*) memory)[(uint32_t) destination_virtual_addr + segment_register_virtual_addr * 0x10];
+        significant_destination = &((uint8_t*) memory)[(uint32_t) ((destination_virtual_addr+1)&0xFFFF) + segment_register_virtual_addr * 0x10];
+    }
+    else {
+        significant_destination = insignificant_destination + 1;
+    }
+
+    uint8_t one = 1;
+    uint8_t zero = 0;
+    switch ((address_byte&0b111000) >> 3) {
+        case 0b000: // INC
+        {
+            general_add(survivor, 1, &zero, &one, significant_destination, insignificant_destination);
+
+            sregs.IP += ip_progress;
+            return true;
+        }
+
+        case 0b001: // DEC
+        {
+            general_sub(survivor, 1, &zero, &one, significant_destination, insignificant_destination);
+
+            sregs.IP += ip_progress;
+            return true;
+        }
+
+        case 0b010: // CALL near
+        {
+            uint16_t new_IP = *insignificant_destination  + 0x100*(*significant_destination);
+
+            sregs.IP += ip_progress;
+
+            general_push(survivor, shared_memory, &sregs.IP);
+
+            sregs.IP = new_IP;
+
+            return true;
+        }
+
+        case 0b011: // CALL far
+        {
+            // Here we assume of course that destination_virtual_addr is initialized, that is because you can't CALL far a register
+
+            uint16_t new_IP = memory[0].values[real_virtual_addr + 0x10000*segment]  + 0x100*memory[0].values[real_virtual_addr + 0x10000*segment + 1];
+            uint16_t new_CS = memory[0].values[real_virtual_addr + 0x10000*segment + 2]  + 0x100*memory[0].values[real_virtual_addr + 0x10000*segment + 3];
+
+            sregs.IP += ip_progress;
+
+            general_push(survivor, shared_memory, &sregs.CS);
+            general_push(survivor, shared_memory, &sregs.IP);
+
+            sregs.CS = new_CS;
+            sregs.IP = new_IP;
+
+            return true;
+        }
+
+        case 0b100: // JMP near
+        {
+            sregs.IP = *insignificant_destination  + 0x100*(*significant_destination);
+
+            return true;
+        }
+
+        case 0b101: // JMP far
+        {
+            // Here we assume of course that destination_virtual_addr is initialized, that is because you can't CALL far a register
+
+            sregs.IP = memory[0].values[real_virtual_addr + 0x10000*segment] + 0x100*memory[0].values[real_virtual_addr + 0x10000*segment + 1];
+            sregs.CS = memory[0].values[real_virtual_addr + 0x10000*segment + 2] + 0x100*memory[0].values[real_virtual_addr + 0x10000*segment + 3];
+
+            return true;
+        }
+
+        case 0b110: // PUSH
+        {
+            uint16_t full_value = *insignificant_destination + 0x100*(*significant_destination);
+            general_push(survivor, shared_memory, &full_value);
+
+            sregs.IP += ip_progress;
+
+            return true;
+        }
+    }
+
+    return false;
+}

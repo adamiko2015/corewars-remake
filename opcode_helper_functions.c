@@ -1216,7 +1216,6 @@ bool general_op_0(Survivor survivor[static 1], uint16_t shared_memory, operation
 // another survivor's private section.
 bool general_op_1(Survivor survivor[static 1], uint16_t shared_memory, operation_ptr general_op) // OP [X], reg16
 {
-
     uint8_t address_byte = memory[0].values[(sregs.IP + 10*sregs.CS + 1) & 0xFFFF];
     uint16_t pos = sregs.IP + 10*sregs.CS + 2;
 
