@@ -310,15 +310,15 @@ void init_opcode_table(void) {
 
             [0xf5] = op_F5,
             [0xf6] = op_F6,
-            [0xf7] = 0,
-            [0xf8] = 0,
-            [0xf9] = 0,
-            [0xfa] = 0,
-            [0xfb] = 0,
-            [0xfc] = 0,
-            [0xfd] = 0,
-            [0xfe] = 0,
-            [0xff] = 0
+            [0xf7] = op_F7,
+            [0xf8] = op_F8,
+            [0xf9] = op_F9,
+            [0xfa] = op_FA,
+            [0xfb] = op_FB,
+            [0xfc] = op_FC,
+            [0xfd] = op_FD,
+            [0xfe] = op_FE,
+            [0xff] = op_FF
             };
 
     if ((opcode_lookup_table = malloc(sizeof(tmp_opcode_lookup_table))) == 0) exit_angrily
