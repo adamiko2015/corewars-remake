@@ -1453,7 +1453,7 @@ bool op_F6(Survivor survivor[static 1], uint16_t shared_memory) // OP byte ptr [
             return true;
         }
 
-        case 0b101: // (unimplemented) IDIV
+        case 0b111: // (unimplemented) IDIV
         {
             return false;
         }

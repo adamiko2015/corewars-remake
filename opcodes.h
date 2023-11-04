@@ -115,6 +115,7 @@ bool op_F2(Survivor survivor[static 1], uint16_t shared_memory);
 bool op_F3(Survivor survivor[static 1], uint16_t shared_memory);
 
 bool op_F5(Survivor survivor[static 1], uint16_t shared_memory);
+bool op_F6(Survivor survivor[static 1], uint16_t shared_memory);
 
 bool general_inc(Survivor survivor[static 1], uint16_t shared_memory);
 bool general_dec(Survivor survivor[static 1], uint16_t shared_memory);

@@ -1085,7 +1085,7 @@ void general_mul(Survivor survivor[static 1], bool is_16_bit, uint8_t significan
                 "pushf\r\n\t"
                 "pop %1"
                 : "=r" (sregs.AX), "=r" (flags_to_update)
-                : "r" (*(uint8_t)&sregs.AX), "r" (num_a)
+                : "r" (*(uint8_t*)&sregs.AX), "r" (num_a)
                 : "al", "ax"
                 );
 

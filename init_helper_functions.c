@@ -309,7 +309,7 @@ void init_opcode_table(void) {
             [0xf3] = op_F3,
 
             [0xf5] = op_F5,
-            [0xf6] = 0,
+            [0xf6] = op_F6,
             [0xf7] = 0,
             [0xf8] = 0,
             [0xf9] = 0,
