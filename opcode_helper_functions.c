@@ -1054,6 +1054,85 @@ void general_xchg(Survivor survivor[static 1], bool is_16_bit, uint8_t significa
     }
 }
 
+void general_mul(Survivor survivor[static 1], bool is_16_bit, uint8_t significant_from[static 1], uint8_t* insignificant_from)
+{
+    if (is_16_bit) {
+        uint16_t num_a = (*significant_from<<8) + *insignificant_from;
+
+        uint_fast16_t flags_to_update;
+
+        asm (   "mov ax, %3\r\n\t"
+                "mul %4\r\n\t"
+                "mov %0, ax\r\n\t"
+                "mov %1, dx\r\n\t"
+                "pushf\r\n\t"
+                "pop %2"
+                : "=r" (sregs.AX), "=r" (sregs.DX), "=r" (flags_to_update)
+                : "r" (sregs.AX), "r" (num_a)
+                : "ax", "dx"
+                );
+
+        update_specific_flags(survivor, sregs.Flags, flags_to_update, 0x08D5);
+    }
+    else {
+        uint8_t num_a = *significant_from;
+
+        uint_fast16_t flags_to_update;
+
+        asm (   "mov al, %2\r\n\t"
+                "mul %3\r\n\t"
+                "mov %0, ax\r\n\t"
+                "pushf\r\n\t"
+                "pop %1"
+                : "=r" (sregs.AX), "=r" (flags_to_update)
+                : "r" (*(uint8_t)&sregs.AX), "r" (num_a)
+                : "al", "ax"
+                );
+
+        update_specific_flags(survivor, sregs.Flags, flags_to_update, 0x08D5);
+    }
+}
+
+void general_div(Survivor survivor[static 1], bool is_16_bit, uint8_t significant_from[static 1], uint8_t* insignificant_from)
+// This function assumes divisor is not zero!
+{
+    if (is_16_bit) {
+        uint16_t num_a = (*significant_from<<8) + *insignificant_from;
+
+        uint_fast16_t flags_to_update;
+
+        asm (   "mov ax, %3\r\n\t"
+                "mov dx, %5\r\n\t"
+                "div %4\r\n\t"
+                "mov %0, ax\r\n\t"
+                "mov %1, dx\r\n\t"
+                "pushf\r\n\t"
+                "pop %2"
+                : "=r" (sregs.AX), "=r" (sregs.DX), "=r" (flags_to_update)
+                : "r" (sregs.AX), "r" (num_a), "r" (sregs.DX)
+                : "ax", "dx"
+                );
+
+        update_specific_flags(survivor, sregs.Flags, flags_to_update, 0x08D5);
+    }
+    else {
+        uint8_t num_a = *significant_from;
+
+        uint_fast16_t flags_to_update;
+
+        asm (   "mov ax, %2\r\n\t"
+                "div %3\r\n\t"
+                "mov %0, ax\r\n\t"
+                "pushf\r\n\t"
+                "pop %1"
+                : "=r" (sregs.AX), "=r" (flags_to_update)
+                : "r" (sregs.AX), "r" (num_a)
+                : "al", "ax"
+                );
+
+        update_specific_flags(survivor, sregs.Flags, flags_to_update, 0x08D5);
+    }
+}
 
 void update_specific_flags(Survivor survivor[static 1], uint16_t og_flags, uint16_t flags_after_change, uint16_t mask) {
     uint16_t difference = og_flags ^ flags_after_change;

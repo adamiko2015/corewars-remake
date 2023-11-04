@@ -64,6 +64,10 @@ void general_sar(Survivor survivor[static 1], bool is_16_bit, uint8_t significan
 void general_xchg(Survivor survivor[static 1], bool is_16_bit, uint8_t significant_from[static 1], uint8_t* insignificant_from,
                   uint8_t significant_to[static 1], uint8_t* insignificant_to);
 
+void general_mul(Survivor survivor[static 1], bool is_16_bit, uint8_t significant_from[static 1], uint8_t* insignificant_from);
+
+void general_div(Survivor survivor[static 1], bool is_16_bit, uint8_t significant_from[static 1], uint8_t* insignificant_from);
+
 
 void update_specific_flags(Survivor survivor[static 1], uint16_t og_flags, uint16_t flags_after_change, uint16_t mask);
 

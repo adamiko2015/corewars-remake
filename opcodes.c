@@ -1383,3 +1383,81 @@ bool op_F5(Survivor survivor[static 1], uint16_t shared_memory) // CMC
     sregs.IP += 1;
     return true;
 }
+
+bool op_F6(Survivor survivor[static 1], uint16_t shared_memory) // OP byte ptr [X]
+{
+    uint8_t address_byte = memory[0].values[(sregs.IP + 10*sregs.CS + 1) & 0xFFFF];
+    uint16_t pos = sregs.IP + 10*sregs.CS + 2;
+
+    uint8_t ip_progress = 0;
+
+    uint16_t destination_virtual_addr = 0;
+    uint16_t segment_register_virtual_addr = 0;
+    uint8_t* destination = 0;
+
+    if (!get_virtual_address(&ip_progress, &destination, &destination_virtual_addr, survivor, &address_byte, pos, &segment_register_virtual_addr)) {return false;}
+
+    if (destination == 0) {
+        uint16_t segment = ((uint32_t) (destination_virtual_addr + 0x10 * segment_register_virtual_addr) >> 16);
+        if (segment != 0 && segment != survivor->stack_id && segment != shared_memory) {return false;}
+
+        destination = (uint8_t*)&((uint8_t*) memory)[(uint32_t) destination_virtual_addr + segment_register_virtual_addr * 0x10];
+    }
+
+    sregs.IP += ip_progress;
+
+    switch ((address_byte & 0b111000) >> 3) {
+        case 0b001: // TEST imm8
+        {
+            uint8_t address_value = memory[0].values[(sregs.IP + 10*sregs.CS) & 0xFFFF];
+            general_test(survivor, 0, &address_value, 0, destination, 0);
+
+            sregs.IP++;
+            return true;
+        }
+
+        case 0b010: // NOT
+        {
+            *destination ^= 0xff;
+
+            return true;
+        }
+
+        case 0b011: // NEG
+        {
+            uint8_t pseudo_destination = 0;
+            general_sub(survivor, 0, destination, 0, &pseudo_destination, 0);
+
+            *destination = pseudo_destination;
+            return true;
+        }
+
+        case 0b100: // MUL
+        {
+            general_mul(survivor, 0, destination, 0);
+
+            return true;
+        }
+
+        case 0b101: // (unimplemented) IMUL
+        {
+            return false;
+        }
+
+        case 0b110: // DIV
+        {
+            if (*destination == 0) {return false;}
+
+            general_div(survivor, 0, destination, 0);
+
+            return true;
+        }
+
+        case 0b101: // (unimplemented) IDIV
+        {
+            return false;
+        }
+    }
+
+    return false;
+}
