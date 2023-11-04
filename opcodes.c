@@ -5,7 +5,7 @@
 
 bool general_binary_operation(Survivor survivor[static 1], uint16_t shared_memory) // OP *, * (general_op0/1/2/3/4/5)
 {
-    uint8_t opcode = memory[0].values[sregs.IP + 10*sregs.CS];
+    uint8_t opcode = memory[0].values[sregs.IP + 0x10*sregs.CS];
     operation_ptr operation = operators[(opcode & 0b11111000) >> 3];
     op_generalizer generalizer = general_ops[opcode & 0b111];
 
@@ -52,7 +52,7 @@ bool op_1F(Survivor survivor[static 1], uint16_t shared_memory) // Pop DS
 
 bool general_inc(Survivor survivor[static 1], uint16_t shared_memory) // INC reg16
 {
-    uint8_t reg_byte = memory[0].values[sregs.IP + 10*sregs.CS];
+    uint8_t reg_byte = memory[0].values[sregs.IP + 0x10*sregs.CS];
     uint16_t* reg = reg16_decoder(survivor, reg_byte & 0b00000111);
 
     uint_fast16_t flags_to_update;
@@ -74,7 +74,7 @@ bool general_inc(Survivor survivor[static 1], uint16_t shared_memory) // INC reg
 
 bool general_dec(Survivor survivor[static 1], uint16_t shared_memory) // DEC reg16
 {
-    uint8_t reg_byte = memory[0].values[sregs.IP + 10*sregs.CS];
+    uint8_t reg_byte = memory[0].values[sregs.IP + 0x10*sregs.CS];
     uint16_t* reg = reg16_decoder(survivor, reg_byte & 0b00000111);
 
     uint_fast16_t flags_to_update;
@@ -96,9 +96,8 @@ bool general_dec(Survivor survivor[static 1], uint16_t shared_memory) // DEC reg
 
 bool general_push_opcode(Survivor survivor[static 1], uint16_t shared_memory) // PUSH reg16
 {
-    debug_print_statement
 
-    uint8_t reg_byte = memory[0].values[sregs.IP + 10*sregs.CS];
+    uint8_t reg_byte = memory[0].values[sregs.IP + 0x10*sregs.CS];
     uint16_t* reg = reg16_decoder(survivor, reg_byte & 0b00000111);
 
     return general_push(survivor, shared_memory, reg);
@@ -106,9 +105,8 @@ bool general_push_opcode(Survivor survivor[static 1], uint16_t shared_memory) //
 
 bool general_pop_opcode(Survivor survivor[static 1], uint16_t shared_memory) // POP reg16
 {
-    debug_print_statement
 
-    uint8_t reg_byte = memory[0].values[sregs.IP + 10*sregs.CS];
+    uint8_t reg_byte = memory[0].values[sregs.IP + 0x10*sregs.CS];
     uint16_t* reg = reg16_decoder(survivor, reg_byte & 0b00000111);
 
     return general_pop(survivor, shared_memory, reg);
@@ -116,7 +114,6 @@ bool general_pop_opcode(Survivor survivor[static 1], uint16_t shared_memory) // 
 
 bool op_70(Survivor survivor[static 1], uint16_t shared_memory) // JO
 {
-    debug_print_statement
 
     bool condition = (sregs.Flags & 0x0800);
     if (condition) general_jmp_near_2B_opcode(survivor);
@@ -126,7 +123,6 @@ bool op_70(Survivor survivor[static 1], uint16_t shared_memory) // JO
 
 bool op_71(Survivor survivor[static 1], uint16_t shared_memory) // JNO
 {
-    debug_print_statement
 
     bool condition = !(sregs.Flags & 0x0800);
     if (condition) general_jmp_near_2B_opcode(survivor);
@@ -136,7 +132,6 @@ bool op_71(Survivor survivor[static 1], uint16_t shared_memory) // JNO
 
 bool op_72(Survivor survivor[static 1], uint16_t shared_memory) // JC,JB,JNAE
 {
-    debug_print_statement
 
     bool condition = (sregs.Flags & 0x0001);
     if (condition) general_jmp_near_2B_opcode(survivor);
@@ -146,7 +141,6 @@ bool op_72(Survivor survivor[static 1], uint16_t shared_memory) // JC,JB,JNAE
 
 bool op_73(Survivor survivor[static 1], uint16_t shared_memory) // JNC,JNC,JAE
 {
-    debug_print_statement
 
     bool condition = !(sregs.Flags & 0x0001);
     if (condition) general_jmp_near_2B_opcode(survivor);
@@ -164,7 +158,6 @@ bool op_74(Survivor survivor[static 1], uint16_t shared_memory) // JE,JZ
 
 bool op_75(Survivor survivor[static 1], uint16_t shared_memory) // JNE,JNZ
 {
-    debug_print_statement
 
     bool condition = !(sregs.Flags & 0x0040);
     if (condition) general_jmp_near_2B_opcode(survivor);
@@ -174,7 +167,6 @@ bool op_75(Survivor survivor[static 1], uint16_t shared_memory) // JNE,JNZ
 
 bool op_76(Survivor survivor[static 1], uint16_t shared_memory) // JBE,JNA
 {
-    debug_print_statement
 
     bool condition = (sregs.Flags & 0x0001) || (sregs.Flags & 0x0040);
     if (condition) general_jmp_near_2B_opcode(survivor);
@@ -184,7 +176,6 @@ bool op_76(Survivor survivor[static 1], uint16_t shared_memory) // JBE,JNA
 
 bool op_77(Survivor survivor[static 1], uint16_t shared_memory) // JNBE,JA
 {
-    debug_print_statement
 
     bool condition = !((sregs.Flags & 0x0001) || (sregs.Flags & 0x0040));
     if (condition) general_jmp_near_2B_opcode(survivor);
@@ -194,7 +185,6 @@ bool op_77(Survivor survivor[static 1], uint16_t shared_memory) // JNBE,JA
 
 bool op_78(Survivor survivor[static 1], uint16_t shared_memory) // JS
 {
-    debug_print_statement
 
     bool condition = (sregs.Flags & 0x0080);
     if (condition) general_jmp_near_2B_opcode(survivor);
@@ -204,7 +194,6 @@ bool op_78(Survivor survivor[static 1], uint16_t shared_memory) // JS
 
 bool op_79(Survivor survivor[static 1], uint16_t shared_memory) // JNS
 {
-    debug_print_statement
 
     bool condition = !(sregs.Flags & 0x0080);
     if (condition) general_jmp_near_2B_opcode(survivor);
@@ -214,7 +203,6 @@ bool op_79(Survivor survivor[static 1], uint16_t shared_memory) // JNS
 
 bool op_7A(Survivor survivor[static 1], uint16_t shared_memory) // JP,JPE
 {
-    debug_print_statement
 
     bool condition = (sregs.Flags & 0x0004);
     if (condition) general_jmp_near_2B_opcode(survivor);
@@ -224,7 +212,6 @@ bool op_7A(Survivor survivor[static 1], uint16_t shared_memory) // JP,JPE
 
 bool op_7B(Survivor survivor[static 1], uint16_t shared_memory) // JNP,JPO
 {
-    debug_print_statement
 
     bool condition = !(sregs.Flags & 0x0004);
     if (condition) general_jmp_near_2B_opcode(survivor);
@@ -234,7 +221,6 @@ bool op_7B(Survivor survivor[static 1], uint16_t shared_memory) // JNP,JPO
 
 bool op_7C(Survivor survivor[static 1], uint16_t shared_memory) // JL,JNGE
 {
-    debug_print_statement
 
     bool condition = ((sregs.Flags & 0x0080) && 1) != ((sregs.Flags & 0x0800) && 1);
     if (condition) general_jmp_near_2B_opcode(survivor);
@@ -244,7 +230,6 @@ bool op_7C(Survivor survivor[static 1], uint16_t shared_memory) // JL,JNGE
 
 bool op_7D(Survivor survivor[static 1], uint16_t shared_memory) // JNL,JGE
 {
-    debug_print_statement
 
     bool condition = ((sregs.Flags & 0x0080) && 1) == ((sregs.Flags & 0x0800) && 1);
     if (condition) general_jmp_near_2B_opcode(survivor);
@@ -254,7 +239,6 @@ bool op_7D(Survivor survivor[static 1], uint16_t shared_memory) // JNL,JGE
 
 bool op_7E(Survivor survivor[static 1], uint16_t shared_memory) // JLE,JNG
 {
-    debug_print_statement
 
     bool condition = (sregs.Flags & 0x0040) || (((sregs.Flags & 0x0080) && 1) != ((sregs.Flags & 0x0800) && 1));
     if (condition) general_jmp_near_2B_opcode(survivor);
@@ -264,7 +248,6 @@ bool op_7E(Survivor survivor[static 1], uint16_t shared_memory) // JLE,JNG
 
 bool op_7F(Survivor survivor[static 1], uint16_t shared_memory) // JNLE,JG
 {
-    debug_print_statement
 
     bool condition = !(sregs.Flags & 0x0040) && ((sregs.Flags & 0x0080) && 1) == ((sregs.Flags & 0x0800) && 1);
     if (condition) general_jmp_near_2B_opcode(survivor);
@@ -274,7 +257,7 @@ bool op_7F(Survivor survivor[static 1], uint16_t shared_memory) // JNLE,JG
 
 bool op_80(Survivor survivor[static 1], uint16_t shared_memory) // OP byte ptr [X], imm8
 {
-    uint8_t op_byte = memory[0].values[(sregs.IP + 10*sregs.CS + 1) & 0xFFFF];
+    uint8_t op_byte = memory[0].values[(sregs.IP + 0x10*sregs.CS + 1) & 0xFFFF];
     operation_ptr op;
 
     switch ((op_byte >> 3) & 0b111) {
@@ -325,7 +308,7 @@ bool op_80(Survivor survivor[static 1], uint16_t shared_memory) // OP byte ptr [
 
 bool op_81(Survivor survivor[static 1], uint16_t shared_memory) // OP byte ptr [X], imm16
 {
-    uint8_t op_byte = memory[0].values[(sregs.IP + 10*sregs.CS + 1) & 0xFFFF];
+    uint8_t op_byte = memory[0].values[(sregs.IP + 0x10*sregs.CS + 1) & 0xFFFF];
     operation_ptr op;
 
     switch ((op_byte >> 3) & 0b111) {
@@ -378,7 +361,7 @@ opcode_ptr op_82 = op_80;
 
 bool op_83(Survivor survivor[static 1], uint16_t shared_memory) // OP byte ptr [X], imm16
 {
-    uint8_t op_byte = memory[0].values[(sregs.IP + 10*sregs.CS + 1) & 0xFFFF];
+    uint8_t op_byte = memory[0].values[(sregs.IP + 0x10*sregs.CS + 1) & 0xFFFF];
     operation_ptr op;
 
     switch ((op_byte >> 3) & 0b111) {
@@ -429,7 +412,6 @@ bool op_83(Survivor survivor[static 1], uint16_t shared_memory) // OP byte ptr [
 
 bool op_84(Survivor survivor[static 1], uint16_t shared_memory) // TEST reg8, [X]
 {
-    debug_print_statement
 
     operation_ptr operation = general_test;
     op_generalizer generalizer = general_op_2;
@@ -439,7 +421,6 @@ bool op_84(Survivor survivor[static 1], uint16_t shared_memory) // TEST reg8, [X
 
 bool op_85(Survivor survivor[static 1], uint16_t shared_memory) // TEST reg16, [X]
 {
-    debug_print_statement
 
     operation_ptr operation = general_test;
     op_generalizer generalizer = general_op_3;
@@ -449,7 +430,6 @@ bool op_85(Survivor survivor[static 1], uint16_t shared_memory) // TEST reg16, [
 
 bool op_86(Survivor survivor[static 1], uint16_t shared_memory) // XCHG reg8, [X]
 {
-    debug_print_statement
 
     operation_ptr operation = general_xchg;
     op_generalizer generalizer = general_op_2;
@@ -459,7 +439,6 @@ bool op_86(Survivor survivor[static 1], uint16_t shared_memory) // XCHG reg8, [X
 
 bool op_87(Survivor survivor[static 1], uint16_t shared_memory) // XCHG reg16, [X]
 {
-    debug_print_statement
 
     operation_ptr operation = general_xchg;
     op_generalizer generalizer = general_op_3;
@@ -469,9 +448,8 @@ bool op_87(Survivor survivor[static 1], uint16_t shared_memory) // XCHG reg16, [
 
 bool general_mov_op(Survivor survivor[static 1], uint16_t shared_memory) // MOV *, * (general_op0/1/2/3)
 {
-    debug_print_statement
 
-    uint8_t opcode = memory[0].values[sregs.IP + 10*sregs.CS];
+    uint8_t opcode = memory[0].values[sregs.IP + 0x10*sregs.CS];
     operation_ptr operation = general_mov;
     op_generalizer generalizer = general_ops[opcode & 0b111];
 
@@ -480,7 +458,6 @@ bool general_mov_op(Survivor survivor[static 1], uint16_t shared_memory) // MOV 
 
 bool op_8C(Survivor survivor[static 1], uint16_t shared_memory) // MOV [X], seg
 {
-    debug_print_statement
 
     operation_ptr operation = general_mov;
     op_generalizer generalizer = general_op_9;
@@ -490,10 +467,9 @@ bool op_8C(Survivor survivor[static 1], uint16_t shared_memory) // MOV [X], seg
 
 bool op_8D(Survivor survivor[static 1], uint16_t shared_memory) // LEA reg16, [X]
 {
-    debug_print_statement
 
-    uint8_t address_byte = memory[0].values[(sregs.IP + 10*sregs.CS + 1) & 0xFFFF];
-    uint16_t pos = sregs.IP + 10*sregs.CS + 2;
+    uint8_t address_byte = memory[0].values[(sregs.IP + 0x10*sregs.CS + 1) & 0xFFFF];
+    uint16_t pos = sregs.IP + 0x10*sregs.CS + 2;
 
     uint8_t* significant_address,* insignificant_address;
 
@@ -523,7 +499,6 @@ bool op_8D(Survivor survivor[static 1], uint16_t shared_memory) // LEA reg16, [X
 
 bool op_8E(Survivor survivor[static 1], uint16_t shared_memory) // MOV [X], seg
 {
-    debug_print_statement
 
     operation_ptr operation = general_mov;
     op_generalizer generalizer = general_op_10;
@@ -533,10 +508,9 @@ bool op_8E(Survivor survivor[static 1], uint16_t shared_memory) // MOV [X], seg
 
 bool op_8F(Survivor survivor[static 1], uint16_t shared_memory) // POP [X]
 {
-    debug_print_statement
 
-    uint8_t address_byte = memory[0].values[(sregs.IP + 10*sregs.CS + 1) & 0xFFFF];
-    uint16_t pos = sregs.IP + 10*sregs.CS + 2;
+    uint8_t address_byte = memory[0].values[(sregs.IP + 0x10*sregs.CS + 1) & 0xFFFF];
+    uint16_t pos = sregs.IP + 0x10*sregs.CS + 2;
 
     uint8_t ip_progress = 0;
 
@@ -563,7 +537,6 @@ bool op_8F(Survivor survivor[static 1], uint16_t shared_memory) // POP [X]
 
 bool general_xchg_op(Survivor survivor[static 1], uint16_t shared_memory) // XCHG reg16, AX
 {
-    debug_print_statement
 
     uint8_t* insignificant_address = (uint8_t*) &sregs.AX;
     uint8_t* significant_address = insignificant_address + 1;
@@ -580,7 +553,6 @@ bool general_xchg_op(Survivor survivor[static 1], uint16_t shared_memory) // XCH
 
 bool op_98(Survivor survivor[static 1], uint16_t shared_memory) // CBW
 {
-    debug_print_statement
 
     if ((int8_t)sregs.AX < 0) {
         sregs.AX |= 0xFF00;
@@ -596,7 +568,6 @@ bool op_98(Survivor survivor[static 1], uint16_t shared_memory) // CBW
 
 bool op_99(Survivor survivor[static 1], uint16_t shared_memory) // CBW
 {
-    debug_print_statement
 
     if ((int16_t)sregs.AX < 0) {
         sregs.DS = 0xFFFF;
@@ -612,15 +583,14 @@ bool op_99(Survivor survivor[static 1], uint16_t shared_memory) // CBW
 
 bool op_9A(Survivor survivor[static 1], uint16_t shared_memory) // CALL FAR imm16:imm16
 {
-    debug_print_statement
 
-    uint16_t new_CS = memory[0].values[(sregs.IP + 10*sregs.CS + 1) & 0xFFFF]  + 10*memory[0].values[(sregs.IP + 10*sregs.CS + 2) & 0xFFFF];
-    uint16_t new_IP = memory[0].values[(sregs.IP + 10*sregs.CS + 3) & 0xFFFF]  + 10*memory[0].values[(sregs.IP + 10*sregs.CS + 4) & 0xFFFF];
+    uint16_t new_CS = memory[0].values[(sregs.IP + 0x10*sregs.CS + 1) & 0xFFFF]  + 0x100*memory[0].values[(sregs.IP + 0x10*sregs.CS + 2) & 0xFFFF];
+    uint16_t new_IP = memory[0].values[(sregs.IP + 0x10*sregs.CS + 3) & 0xFFFF]  + 0x100*memory[0].values[(sregs.IP + 0x10*sregs.CS + 4) & 0xFFFF];
 
     sregs.IP += 5;
 
     general_push(survivor, shared_memory, &sregs.CS);
-    general_push(survivor, shared_memory, &sregs.CS);
+    general_push(survivor, shared_memory, &sregs.IP);
 
     sregs.CS = new_CS;
     sregs.IP = new_IP;
@@ -630,9 +600,8 @@ bool op_9A(Survivor survivor[static 1], uint16_t shared_memory) // CALL FAR imm1
 
 bool op_9B(Survivor survivor[static 1], uint16_t shared_memory) // original: WAIT, modified: virtual opcode NRG
 {
-    debug_print_statement
 
-    if ((memory[0].values[(sregs.IP + 10*sregs.CS + 1) & 0xFFFF]) != 0x9b) {return false;}
+    if ((memory[0].values[(sregs.IP + 0x10*sregs.CS + 1) & 0xFFFF]) != 0x9b) {return false;}
     if (sregs.Energy != 0xFFFF) sregs.Energy++;
     sregs.IP += 2;
 
@@ -641,21 +610,18 @@ bool op_9B(Survivor survivor[static 1], uint16_t shared_memory) // original: WAI
 
 bool op_9C(Survivor survivor[static 1], uint16_t shared_memory) // Push CS
 {
-    debug_print_statement
 
     return general_push(survivor, shared_memory, &sregs.Flags);
 }
 
 bool op_9D(Survivor survivor[static 1], uint16_t shared_memory) // Push SS
 {
-    debug_print_statement
 
     return general_push(survivor, shared_memory, &sregs.Flags);
 }
 
 bool op_9E(Survivor survivor[static 1], uint16_t shared_memory) // SAHF
 {
-    debug_print_statement
 
     *(uint8_t*)&sregs.Flags = *((uint8_t*)&sregs.AX + 1);
 
@@ -664,7 +630,6 @@ bool op_9E(Survivor survivor[static 1], uint16_t shared_memory) // SAHF
 
 bool op_9F(Survivor survivor[static 1], uint16_t shared_memory) // LAHF
 {
-    debug_print_statement
 
      *((uint8_t*)&sregs.AX + 1) = *(uint8_t*)&sregs.Flags;
 
@@ -673,9 +638,8 @@ bool op_9F(Survivor survivor[static 1], uint16_t shared_memory) // LAHF
 
 bool op_A0(Survivor survivor[static 1], uint16_t shared_memory) // MOV AL, [imm16]
 {
-    debug_print_statement
 
-    uint32_t address = 10*sregs.DS + memory[0].values[(sregs.IP + 10*sregs.CS + 1) & 0xFFFF] + 0x10*memory[0].values[(sregs.IP + 10*sregs.CS + 2) & 0xFFFF];
+    uint32_t address = 0x10*sregs.DS + memory[0].values[(sregs.IP + 0x10*sregs.CS + 1) & 0xFFFF] + 0x10*memory[0].values[(sregs.IP + 0x10*sregs.CS + 2) & 0xFFFF];
 
     uint16_t segment = (address & 0xFF0000) >> 16;
     if (segment != 0 && segment != survivor->stack_id && segment != shared_memory) {return false;}
@@ -689,9 +653,8 @@ bool op_A0(Survivor survivor[static 1], uint16_t shared_memory) // MOV AL, [imm1
 
 bool op_A1(Survivor survivor[static 1], uint16_t shared_memory) // MOV AX, [imm16]
 {
-    debug_print_statement
 
-    uint32_t address = 10*sregs.DS + memory[0].values[(sregs.IP + 10*sregs.CS + 1) & 0xFFFF] + 0x10*memory[0].values[(sregs.IP + 10*sregs.CS + 2) & 0xFFFF];
+    uint32_t address = 0x10*sregs.DS + memory[0].values[(sregs.IP + 0x10*sregs.CS + 1) & 0xFFFF] + 0x10*memory[0].values[(sregs.IP + 0x10*sregs.CS + 2) & 0xFFFF];
 
     uint16_t segment = (address & 0xFF0000) >> 16;
     if (segment != 0 && segment != survivor->stack_id && segment != shared_memory) {return false;}
@@ -705,9 +668,8 @@ bool op_A1(Survivor survivor[static 1], uint16_t shared_memory) // MOV AX, [imm1
 
 bool op_A2(Survivor survivor[static 1], uint16_t shared_memory) // MOV [imm16], AL
 {
-    debug_print_statement
 
-    uint32_t destination = 10*sregs.DS + memory[0].values[(sregs.IP + 10*sregs.CS + 1) & 0xFFFF] + 0x10*memory[0].values[(sregs.IP + 10*sregs.CS + 2) & 0xFFFF];
+    uint32_t destination =0x10*sregs.DS + memory[0].values[(sregs.IP + 0x10*sregs.CS + 1) & 0xFFFF] + 0x10*memory[0].values[(sregs.IP + 0x10*sregs.CS + 2) & 0xFFFF];
 
     uint16_t segment = (destination & 0xFF0000) >> 16;
     if (segment != 0 && segment != survivor->stack_id && segment != shared_memory) {return false;}
@@ -721,9 +683,8 @@ bool op_A2(Survivor survivor[static 1], uint16_t shared_memory) // MOV [imm16], 
 
 bool op_A3(Survivor survivor[static 1], uint16_t shared_memory) // MOV [imm16], AX
 {
-    debug_print_statement
 
-    uint32_t destination = 10*sregs.DS + memory[0].values[(sregs.IP + 10*sregs.CS + 1) & 0xFFFF] + 0x10*memory[0].values[(sregs.IP + 10*sregs.CS + 2) & 0xFFFF];
+    uint32_t destination = 0x10*sregs.DS + memory[0].values[(sregs.IP + 0x10*sregs.CS + 1) & 0xFFFF] + 0x10*memory[0].values[(sregs.IP + 0x10*sregs.CS + 2) & 0xFFFF];
 
     uint16_t segment = (destination & 0xFF0000) >> 16;
     if (segment != 0 && segment != survivor->stack_id && segment != shared_memory) {return false;}
@@ -738,7 +699,6 @@ bool op_A3(Survivor survivor[static 1], uint16_t shared_memory) // MOV [imm16], 
 // Might be a diference in implementation, here we assume the opcode keeps the text in the same page.
 bool op_A4(Survivor survivor[static 1], uint16_t shared_memory) // MOVSB
 {
-    debug_print_statement
 
     uint32_t address = sregs.SI + 0x10*sregs.DS;
 
@@ -765,7 +725,6 @@ bool op_A4(Survivor survivor[static 1], uint16_t shared_memory) // MOVSB
 
 bool op_A5(Survivor survivor[static 1], uint16_t shared_memory) // MOVSW
 {
-    debug_print_statement
 
     uint32_t address = sregs.SI + 0x10*sregs.DS;
 
@@ -793,7 +752,6 @@ bool op_A5(Survivor survivor[static 1], uint16_t shared_memory) // MOVSW
 
 bool op_A6(Survivor survivor[static 1], uint16_t shared_memory) // CMPSB
 {
-    debug_print_statement
 
     uint32_t address = sregs.SI + 0x10*sregs.DS;
 
@@ -820,7 +778,6 @@ bool op_A6(Survivor survivor[static 1], uint16_t shared_memory) // CMPSB
 
 bool op_A7(Survivor survivor[static 1], uint16_t shared_memory) // CMPSW
 {
-    debug_print_statement
 
     uint32_t address = sregs.SI + 0x10*sregs.DS;
 
@@ -848,7 +805,6 @@ bool op_A7(Survivor survivor[static 1], uint16_t shared_memory) // CMPSW
 
 bool op_A8(Survivor survivor[static 1], uint16_t shared_memory) // TEST AL, imm8
 {
-    debug_print_statement
 
     operation_ptr operation = general_test;
     op_generalizer generalizer = general_op_4;
@@ -858,7 +814,6 @@ bool op_A8(Survivor survivor[static 1], uint16_t shared_memory) // TEST AL, imm8
 
 bool op_A9(Survivor survivor[static 1], uint16_t shared_memory) // TEST AX, imm16
 {
-    debug_print_statement
 
     operation_ptr operation = general_test;
     op_generalizer generalizer = general_op_4;
@@ -868,7 +823,6 @@ bool op_A9(Survivor survivor[static 1], uint16_t shared_memory) // TEST AX, imm1
 
 bool op_AA(Survivor survivor[static 1], uint16_t shared_memory) // STOSB
 {
-    debug_print_statement
 
     uint8_t address_value = (uint8_t)sregs.AX;
 
@@ -889,7 +843,6 @@ bool op_AA(Survivor survivor[static 1], uint16_t shared_memory) // STOSB
 
 bool op_AB(Survivor survivor[static 1], uint16_t shared_memory) // STOSW
 {
-    debug_print_statement
 
     uint8_t* address = (uint8_t*) &sregs.AX;
 
@@ -912,7 +865,6 @@ bool op_AB(Survivor survivor[static 1], uint16_t shared_memory) // STOSW
 
 bool op_AC(Survivor survivor[static 1], uint16_t shared_memory) // LODSB
 {
-    debug_print_statement
 
     uint32_t address = sregs.SI + 0x10*sregs.DS;
 
@@ -934,7 +886,6 @@ bool op_AC(Survivor survivor[static 1], uint16_t shared_memory) // LODSB
 
 bool op_AD(Survivor survivor[static 1], uint16_t shared_memory) // LODSW
 {
-    debug_print_statement
 
     uint32_t address = sregs.SI + 0x10*sregs.DS;
 
@@ -957,7 +908,6 @@ bool op_AD(Survivor survivor[static 1], uint16_t shared_memory) // LODSW
 
 bool op_AE(Survivor survivor[static 1], uint16_t shared_memory) // SCASB
 {
-    debug_print_statement
 
     uint8_t* address = (uint8_t*) &sregs.AX;
 
@@ -978,7 +928,6 @@ bool op_AE(Survivor survivor[static 1], uint16_t shared_memory) // SCASB
 
 bool op_AF(Survivor survivor[static 1], uint16_t shared_memory) // SCASW
 {
-    debug_print_statement
 
     uint8_t* address = (uint8_t*) &sregs.AX;
 
@@ -1000,7 +949,6 @@ bool op_AF(Survivor survivor[static 1], uint16_t shared_memory) // SCASW
 
 bool op_B0to7(Survivor survivor[static 1], uint16_t shared_memory) // MOV reg8, imm8
 {
-    debug_print_statement
 
     operation_ptr operation = general_mov;
     op_generalizer generalizer = general_op_11;
@@ -1010,7 +958,6 @@ bool op_B0to7(Survivor survivor[static 1], uint16_t shared_memory) // MOV reg8, 
 
 bool op_B8toF(Survivor survivor[static 1], uint16_t shared_memory) // MOV reg16, imm16
 {
-    debug_print_statement
 
     operation_ptr operation = general_mov;
     op_generalizer generalizer = general_op_12;
@@ -1020,7 +967,6 @@ bool op_B8toF(Survivor survivor[static 1], uint16_t shared_memory) // MOV reg16,
 
 bool op_C2(Survivor survivor[static 1], uint16_t shared_memory) // RETN [imm16]
 {
-    debug_print_statement
 
     uint16_t size_to_pop = memory[0].values[sregs.IP + 0x10*sregs.CS] + 0x10*memory[0].values[(sregs.IP + 0x10*sregs.CS + 1) & 0xFFFF];
 
@@ -1035,7 +981,6 @@ bool op_C2(Survivor survivor[static 1], uint16_t shared_memory) // RETN [imm16]
 
 bool op_C3(Survivor survivor[static 1], uint16_t shared_memory) // RETN
 {
-    debug_print_statement
 
     return general_pop(survivor, shared_memory, &sregs.IP);
 
@@ -1044,10 +989,9 @@ bool op_C3(Survivor survivor[static 1], uint16_t shared_memory) // RETN
 
 bool op_C4(Survivor survivor[static 1], uint16_t shared_memory) // LES reg16, [X]
 {
-    debug_print_statement
 
-    uint8_t address_byte = memory[0].values[(sregs.IP + 10*sregs.CS + 1) & 0xFFFF];
-    uint16_t pos = sregs.IP + 10*sregs.CS + 2;
+    uint8_t address_byte = memory[0].values[(sregs.IP + 0x10*sregs.CS + 1) & 0xFFFF];
+    uint16_t pos = sregs.IP + 0x10*sregs.CS + 2;
 
     uint8_t ip_progress = 0;
 
@@ -1080,10 +1024,9 @@ bool op_C4(Survivor survivor[static 1], uint16_t shared_memory) // LES reg16, [X
 
 bool op_C5(Survivor survivor[static 1], uint16_t shared_memory) // LDS reg16, [X]
 {
-    debug_print_statement
 
-    uint8_t address_byte = memory[0].values[(sregs.IP + 10*sregs.CS + 1) & 0xFFFF];
-    uint16_t pos = sregs.IP + 10*sregs.CS + 2;
+    uint8_t address_byte = memory[0].values[(sregs.IP + 0x10*sregs.CS + 1) & 0xFFFF];
+    uint16_t pos = sregs.IP + 0x10*sregs.CS + 2;
 
     uint8_t ip_progress = 0;
 
@@ -1116,7 +1059,6 @@ bool op_C5(Survivor survivor[static 1], uint16_t shared_memory) // LDS reg16, [X
 
 bool op_C6(Survivor survivor[static 1], uint16_t shared_memory) // MOV [X], imm8
 {
-    debug_print_statement
 
     operation_ptr operation = general_mov;
     op_generalizer generalizer = general_op_6;
@@ -1126,7 +1068,6 @@ bool op_C6(Survivor survivor[static 1], uint16_t shared_memory) // MOV [X], imm8
 
 bool op_C7(Survivor survivor[static 1], uint16_t shared_memory) // MOV [X], imm16
 {
-    debug_print_statement
 
     operation_ptr operation = general_mov;
     op_generalizer generalizer = general_op_7;
@@ -1136,7 +1077,6 @@ bool op_C7(Survivor survivor[static 1], uint16_t shared_memory) // MOV [X], imm1
 
 bool op_CA(Survivor survivor[static 1], uint16_t shared_memory) //RETF [imm16]
 {
-    debug_print_statement
 
     uint16_t size_to_pop = memory[0].values[sregs.IP + 0x10*sregs.CS] + 0x10*memory[0].values[(sregs.IP + 0x10*sregs.CS + 1) & 0xFFFF];
 
@@ -1152,7 +1092,6 @@ bool op_CA(Survivor survivor[static 1], uint16_t shared_memory) //RETF [imm16]
 
 bool op_CB(Survivor survivor[static 1], uint16_t shared_memory) // RETN
 {
-    debug_print_statement
 
     if (!general_pop(survivor, shared_memory, &sregs.IP)) {return false;}
     return general_pop(survivor, shared_memory, &sregs.CS);
@@ -1163,7 +1102,6 @@ bool op_CB(Survivor survivor[static 1], uint16_t shared_memory) // RETN
 
 bool op_CD(Survivor survivor[static 1], uint16_t shared_memory) // INT [imm8]
 {
-    debug_print_statement
 
     uint8_t interrupt_number = memory[0].values[sregs.IP + 0x10*sregs.CS];
     if (interrupt_number == 0x86) {
@@ -1207,7 +1145,6 @@ bool op_CD(Survivor survivor[static 1], uint16_t shared_memory) // INT [imm8]
 
 bool op_CF(Survivor survivor[static 1], uint16_t shared_memory) // IRET
 {
-    debug_print_statement
 
     if (!general_pop(survivor, shared_memory, &sregs.IP)) {return false;}
     if (!general_pop(survivor, shared_memory, &sregs.CS)) {return false;}
@@ -1216,3 +1153,233 @@ bool op_CF(Survivor survivor[static 1], uint16_t shared_memory) // IRET
     // TODO: no incrementing IP?
 }
 
+bool op_D0(Survivor survivor[static 1], uint16_t shared_memory) // <?> byte ptr [X], 1
+{
+
+    static operation_ptr ops[] = {general_rol,
+                                  general_ror,
+                                  general_rcl,
+                                  general_rcr,
+                                  general_shl,
+                                  general_shr,
+                                  0,
+                                  general_sar};
+    uint8_t op_byte = (memory[0].values[sregs.IP + 0x10*sregs.CS] >> 3) & 0b111;
+
+    operation_ptr operation;
+    if ((operation = ops[op_byte]) == 0) {return false;}
+
+    op_generalizer generalizer = general_op_13;
+
+    return generalizer(survivor, shared_memory, operation);
+}
+
+bool op_D1(Survivor survivor[static 1], uint16_t shared_memory) // <?> word ptr [X], 1
+{
+
+    static operation_ptr ops[] = {general_rol,
+                                  general_ror,
+                                  general_rcl,
+                                  general_rcr,
+                                  general_shl,
+                                  general_shr,
+                                  0,
+                                  general_sar};
+    uint8_t op_byte = (memory[0].values[sregs.IP +0x10*sregs.CS] >> 3) & 0b111;
+
+    operation_ptr operation;
+    if ((operation = ops[op_byte]) == 0) {return false;}
+
+    op_generalizer generalizer = general_op_14;
+
+    return generalizer(survivor, shared_memory, operation);
+}
+
+bool op_D2(Survivor survivor[static 1], uint16_t shared_memory) // <?> byte ptr [X], CL
+{
+
+    static operation_ptr ops[] = {general_rol,
+                                  general_ror,
+                                  general_rcl,
+                                  general_rcr,
+                                  general_shl,
+                                  general_shr,
+                                  0,
+                                  general_sar};
+    uint8_t op_byte = (memory[0].values[sregs.IP + 0x10*sregs.CS] >> 3) & 0b111;
+
+    operation_ptr operation;
+    if ((operation = ops[op_byte]) == 0) {return false;}
+
+    op_generalizer generalizer = general_op_15;
+
+    return generalizer(survivor, shared_memory, operation);
+}
+
+bool op_D3(Survivor survivor[static 1], uint16_t shared_memory) // <?> word ptr [X], CL
+{
+
+    static operation_ptr ops[] = {general_rol,
+                                  general_ror,
+                                  general_rcl,
+                                  general_rcr,
+                                  general_shl,
+                                  general_shr,
+                                  0,
+                                  general_sar};
+    uint8_t op_byte = (memory[0].values[sregs.IP + 0x10*sregs.CS] >> 3) & 0b111;
+
+    operation_ptr operation;
+    if ((operation = ops[op_byte]) == 0) {return false;}
+
+    op_generalizer generalizer = general_op_16;
+
+    return generalizer(survivor, shared_memory, operation);
+}
+
+bool op_D7(Survivor survivor[static 1], uint16_t shared_memory) // XLAT, XLATB
+{
+
+    uint16_t address_virtual_addr = memory[0].values[(sregs.IP + 0x10*sregs.CS + 2) & 0xFFFF] + 0x100*memory[0].values[(sregs.IP + 0x10*sregs.CS + 3) & 0xFFFF];
+    uint16_t segment_register_virtual_addr = sregs.DS;
+    uint32_t real_address = (uint32_t) address_virtual_addr + 0x10 * segment_register_virtual_addr;
+
+    uint16_t segment = (real_address >> 16);
+    if (segment != 0 && segment != survivor->stack_id && segment != shared_memory) {return false;}
+
+    *(uint8_t*) &sregs.AX = memory[0].values[real_address];
+
+    sregs.IP += 1;
+    return true;
+}
+
+bool op_E0(Survivor survivor[static 1], uint16_t shared_memory) // LOOPNZ, LOOPNE
+{
+
+    bool condition = (--sregs.CX) && (sregs.Flags & 0x0040);
+    if (condition) general_jmp_near_2B_opcode(survivor);
+
+    else sregs.IP += 2;
+    return true;
+}
+
+bool op_E1(Survivor survivor[static 1], uint16_t shared_memory) // LOOPZ, LOOPE
+{
+
+    bool condition = (--sregs.CX) && !(sregs.Flags & 0x0040);
+    if (condition) general_jmp_near_2B_opcode(survivor);
+
+    else sregs.IP += 2;
+    return true;
+}
+
+bool op_E2(Survivor survivor[static 1], uint16_t shared_memory) // LOOP
+{
+
+    bool condition = (--sregs.CX);
+    if (condition) general_jmp_near_2B_opcode(survivor);
+
+    else sregs.IP += 2;
+    return true;
+}
+
+bool op_E3(Survivor survivor[static 1], uint16_t shared_memory) // JCXZ
+{
+
+    bool condition = !sregs.CX;
+    if (condition) general_jmp_near_2B_opcode(survivor);
+
+    else sregs.IP += 2;
+    return true;
+}
+
+bool op_E8(Survivor survivor[static 1], uint16_t shared_memory) // CALL near imm16
+{
+
+    uint16_t new_IP = sregs.IP + memory[0].values[(sregs.IP + 0x10*sregs.CS + 1) & 0xFFFF]  + 0x100*memory[0].values[(sregs.IP + 0x10*sregs.CS + 2) & 0xFFFF];
+
+    sregs.IP += 3;
+
+    general_push(survivor, shared_memory, &sregs.IP);
+
+    sregs.IP = new_IP;
+
+    return true;
+}
+
+bool op_E9(Survivor survivor[static 1], uint16_t shared_memory) // JMP near imm16
+{
+
+    uint16_t new_IP = memory[0].values[(sregs.IP + 0x10*sregs.CS + 1) & 0xFFFF]  + 0x100*memory[0].values[(sregs.IP + 0x10*sregs.CS + 2) & 0xFFFF];
+    sregs.IP = new_IP;
+
+    return true;
+}
+
+bool op_EA(Survivor survivor[static 1], uint16_t shared_memory) // JMP FAR imm16:imm16
+{
+
+    uint16_t new_CS = memory[0].values[(sregs.IP + 0x10*sregs.CS + 1) & 0xFFFF]  + 0x100*memory[0].values[(sregs.IP + 0x10*sregs.CS + 2) & 0xFFFF];
+    uint16_t new_IP = memory[0].values[(sregs.IP + 0x10*sregs.CS + 3) & 0xFFFF]  + 0x100*memory[0].values[(sregs.IP + 0x10*sregs.CS + 4) & 0xFFFF];
+
+    sregs.CS = new_CS;
+    sregs.IP = new_IP;
+
+    return true;
+}
+
+bool op_EB(Survivor survivor[static 1], uint16_t shared_memory) // JMP short imm8
+{
+
+    int8_t IP_offset = memory[0].values[(sregs.IP + 0x10*sregs.CS + 1) & 0xFFFF];
+    sregs.IP += IP_offset;
+
+    return true;
+}
+
+bool op_F2(Survivor survivor[static 1], uint16_t shared_memory) // REPNZ
+{
+    uint8_t operation_byte = memory[0].values[(sregs.IP + 0x10*sregs.CS + 1) & 0xFFFF];
+    opcode_ptr operation_arr[] = {[0xA6] = op_A6, [0xA7] = op_A7, [0xAE] = op_AE, [0xAF] = op_AF, [0xFF] = 0};
+    opcode_ptr operation = operation_arr[operation_byte];
+    if (operation == 0) {return false;}
+
+    if (sregs.CX && (sregs.Flags & 0x0040)) {
+        if (!operation(survivor, shared_memory)) {return false;}
+        sregs.IP--;
+        sregs.CX--;
+    }
+    else {
+        sregs.IP += 2;
+    }
+
+    return true;
+}
+
+bool op_F3(Survivor survivor[static 1], uint16_t shared_memory) // REP, REPZ
+{
+    uint8_t operation_byte = memory[0].values[(sregs.IP + 0x10*sregs.CS + 1) & 0xFFFF];
+    opcode_ptr operation_arr[] = {[0xA4] = op_A4, [0xA5] = op_A5, [0xA6] = op_A6, [0xA7] = op_A7, [0xAA] = op_AA,
+                            [0xAB] = op_AB, [0xAC] = op_AC, [0xAD] = op_AD, [0xAE] = op_AE, [0xAF] = op_AF, [0xFF] = 0};
+    opcode_ptr operation = operation_arr[operation_byte];
+    if (operation == 0) {return false;}
+    sregs.IP++;
+
+    if (sregs.CX && (sregs.Flags & 0x0040)) {
+        if (!operation(survivor, shared_memory)) {return false;}
+        sregs.IP--;
+        sregs.CX--;
+    }
+    else {
+        sregs.IP += 2;
+    }
+
+    return true;
+}
+
+bool op_F5(Survivor survivor[static 1], uint16_t shared_memory) // CMC
+{
+    sregs.Flags ^= 0x1;
+    sregs.IP += 1;
+    return true;
+}

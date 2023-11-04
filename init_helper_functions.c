@@ -288,8 +288,36 @@ void init_opcode_table(void) {
             [0xcd] = op_CD,
             [0xcf] = op_CF,
 
+            [0xd0] = op_D0,
+            [0xd1] = op_D1,
+            [0xd2] = op_D2,
+            [0xd3] = op_D3,
 
+            [0xd7] = op_D7,
 
+            [0xe0] = op_E0,
+            [0xe1] = op_E1,
+            [0xe2] = op_E2,
+            [0xe3] = op_E3,
+
+            [0xe8] = op_E8,
+            [0xe9] = op_E9,
+            [0xea] = op_EA,
+            [0xeb] = op_EB,
+
+            [0xf2] = op_F2,
+            [0xf3] = op_F3,
+
+            [0xf5] = op_F5,
+            [0xf6] = 0,
+            [0xf7] = 0,
+            [0xf8] = 0,
+            [0xf9] = 0,
+            [0xfa] = 0,
+            [0xfb] = 0,
+            [0xfc] = 0,
+            [0xfd] = 0,
+            [0xfe] = 0,
             [0xff] = 0
             };
 

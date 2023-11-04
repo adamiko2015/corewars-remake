@@ -711,6 +711,335 @@ void general_test(Survivor survivor[static 1], bool is_16_bit, uint8_t significa
     }
 }
 
+void general_rol(Survivor survivor[static 1], bool is_16_bit, uint8_t significant_from[static 1], uint8_t* insignificant_from,
+                  uint8_t significant_to[static 1], uint8_t* insignificant_to)
+{
+    if (is_16_bit) {
+        uint8_t num_a = (*significant_from<<8) + *insignificant_from;
+        uint16_t num_b = (*significant_to<<8) + *insignificant_to;
+
+        uint16_t result;
+        uint_fast16_t flags_to_update;
+
+        asm (   "mov cl, %2\r\n\t"
+                "rol %3, cl\r\n\t"
+                "mov %0, %3\r\n\t"
+                "pushf\r\n\t"
+                "pop %1"
+                : "=r" (result), "=r" (flags_to_update)
+                : "r" (num_a), "r" (num_b)
+                : "cl"
+                );
+
+        update_specific_flags(survivor, sregs.Flags, flags_to_update, 0x08D5);
+
+        *significant_to = (result&0xFF00)>>8;
+        *insignificant_to = result&0x00FF;
+
+    }
+    else {
+        uint8_t result;
+        uint_fast16_t flags_to_update;
+
+        asm (   "mov cl, %2\r\n\t"
+                "rol %3, cl\r\n\t"
+                "mov %0, %3\r\n\t"
+                "pushf\r\n\t"
+                "pop %1"
+
+                : "=r" (result), "=r" (flags_to_update)
+                : "r" (*significant_from), "r" (*significant_to)
+                : "cl"
+                );
+
+        *significant_to = result;
+
+        update_specific_flags(survivor, sregs.Flags, flags_to_update, 0x08D5);
+    }
+}
+
+void general_ror(Survivor survivor[static 1], bool is_16_bit, uint8_t significant_from[static 1], uint8_t* insignificant_from,
+                 uint8_t significant_to[static 1], uint8_t* insignificant_to)
+{
+    if (is_16_bit) {
+        uint8_t num_a = (*significant_from<<8) + *insignificant_from;
+        uint16_t num_b = (*significant_to<<8) + *insignificant_to;
+
+        uint16_t result;
+        uint_fast16_t flags_to_update;
+
+        asm (   "mov cl, %2\r\n\t"
+                "ror %3, cl\r\n\t"
+                "mov %0, %3\r\n\t"
+                "pushf\r\n\t"
+                "pop %1"
+                : "=r" (result), "=r" (flags_to_update)
+                : "r" (num_a), "r" (num_b)
+                : "cl"
+                );
+
+        update_specific_flags(survivor, sregs.Flags, flags_to_update, 0x08D5);
+
+        *significant_to = (result&0xFF00)>>8;
+        *insignificant_to = result&0x00FF;
+
+    }
+    else {
+        uint8_t result;
+        uint_fast16_t flags_to_update;
+
+        asm (   "mov cl, %2\r\n\t"
+                "ror %3, cl\r\n\t"
+                "mov %0, %3\r\n\t"
+                "pushf\r\n\t"
+                "pop %1"
+
+                : "=r" (result), "=r" (flags_to_update)
+                : "r" (*significant_from), "r" (*significant_to)
+                : "cl"
+                );
+
+        *significant_to = result;
+
+        update_specific_flags(survivor, sregs.Flags, flags_to_update, 0x08D5);
+    }
+}
+
+void general_rcl(Survivor survivor[static 1], bool is_16_bit, uint8_t significant_from[static 1], uint8_t* insignificant_from,
+                 uint8_t significant_to[static 1], uint8_t* insignificant_to)
+{
+    if (is_16_bit) {
+        uint8_t num_a = (*significant_from<<8) + *insignificant_from;
+        uint16_t num_b = (*significant_to<<8) + *insignificant_to;
+
+        uint16_t result;
+        uint_fast16_t flags_to_update;
+
+        asm (   "mov cl, %2\r\n\t"
+                "rcl %3, cl\r\n\t"
+                "mov %0, %3\r\n\t"
+                "pushf\r\n\t"
+                "pop %1"
+                : "=r" (result), "=r" (flags_to_update)
+                : "r" (num_a), "r" (num_b)
+                : "cl"
+                );
+
+        update_specific_flags(survivor, sregs.Flags, flags_to_update, 0x08D5);
+
+        *significant_to = (result&0xFF00)>>8;
+        *insignificant_to = result&0x00FF;
+
+    }
+    else {
+        uint8_t result;
+        uint_fast16_t flags_to_update;
+
+        asm (   "mov cl, %2\r\n\t"
+                "rcl %3, cl\r\n\t"
+                "mov %0, %3\r\n\t"
+                "pushf\r\n\t"
+                "pop %1"
+
+                : "=r" (result), "=r" (flags_to_update)
+                : "r" (*significant_from), "r" (*significant_to)
+                : "cl"
+                );
+
+        *significant_to = result;
+
+        update_specific_flags(survivor, sregs.Flags, flags_to_update, 0x08D5);
+    }
+}
+
+void general_rcr(Survivor survivor[static 1], bool is_16_bit, uint8_t significant_from[static 1], uint8_t* insignificant_from,
+                 uint8_t significant_to[static 1], uint8_t* insignificant_to)
+{
+    if (is_16_bit) {
+        uint8_t num_a = (*significant_from<<8) + *insignificant_from;
+        uint16_t num_b = (*significant_to<<8) + *insignificant_to;
+
+        uint16_t result;
+        uint_fast16_t flags_to_update;
+
+        asm (   "mov cl, %2\r\n\t"
+                "rcr %3, cl\r\n\t"
+                "mov %0, %3\r\n\t"
+                "pushf\r\n\t"
+                "pop %1"
+                : "=r" (result), "=r" (flags_to_update)
+                : "r" (num_a), "r" (num_b)
+                : "cl"
+                );
+
+        update_specific_flags(survivor, sregs.Flags, flags_to_update, 0x08D5);
+
+        *significant_to = (result&0xFF00)>>8;
+        *insignificant_to = result&0x00FF;
+
+    }
+    else {
+        uint8_t result;
+        uint_fast16_t flags_to_update;
+
+        asm (   "mov cl, %2\r\n\t"
+                "rcr %3, cl\r\n\t"
+                "mov %0, %3\r\n\t"
+                "pushf\r\n\t"
+                "pop %1"
+
+                : "=r" (result), "=r" (flags_to_update)
+                : "r" (*significant_from), "r" (*significant_to)
+                : "cl"
+                );
+
+        *significant_to = result;
+
+        update_specific_flags(survivor, sregs.Flags, flags_to_update, 0x08D5);
+    }
+}
+
+void general_shl(Survivor survivor[static 1], bool is_16_bit, uint8_t significant_from[static 1], uint8_t* insignificant_from,
+                 uint8_t significant_to[static 1], uint8_t* insignificant_to)
+{
+    if (is_16_bit) {
+        uint8_t num_a = (*significant_from<<8) + *insignificant_from;
+        uint16_t num_b = (*significant_to<<8) + *insignificant_to;
+
+        uint16_t result;
+        uint_fast16_t flags_to_update;
+
+        asm (   "mov cl, %2\r\n\t"
+                "shl %3, cl\r\n\t"
+                "mov %0, %3\r\n\t"
+                "pushf\r\n\t"
+                "pop %1"
+                : "=r" (result), "=r" (flags_to_update)
+                : "r" (num_a), "r" (num_b)
+                : "cl"
+                );
+
+        update_specific_flags(survivor, sregs.Flags, flags_to_update, 0x08D5);
+
+        *significant_to = (result&0xFF00)>>8;
+        *insignificant_to = result&0x00FF;
+
+    }
+    else {
+        uint8_t result;
+        uint_fast16_t flags_to_update;
+
+        asm (   "mov cl, %2\r\n\t"
+                "shl %3, cl\r\n\t"
+                "mov %0, %3\r\n\t"
+                "pushf\r\n\t"
+                "pop %1"
+
+                : "=r" (result), "=r" (flags_to_update)
+                : "r" (*significant_from), "r" (*significant_to)
+                : "cl"
+                );
+
+        *significant_to = result;
+
+        update_specific_flags(survivor, sregs.Flags, flags_to_update, 0x08D5);
+    }
+}
+
+void general_shr(Survivor survivor[static 1], bool is_16_bit, uint8_t significant_from[static 1], uint8_t* insignificant_from,
+                 uint8_t significant_to[static 1], uint8_t* insignificant_to)
+{
+    if (is_16_bit) {
+        uint8_t num_a = (*significant_from<<8) + *insignificant_from;
+        uint16_t num_b = (*significant_to<<8) + *insignificant_to;
+
+        uint16_t result;
+        uint_fast16_t flags_to_update;
+
+        asm (   "mov cl, %2\r\n\t"
+                "shr %3, cl\r\n\t"
+                "mov %0, %3\r\n\t"
+                "pushf\r\n\t"
+                "pop %1"
+                : "=r" (result), "=r" (flags_to_update)
+                : "r" (num_a), "r" (num_b)
+                : "cl"
+                );
+
+        update_specific_flags(survivor, sregs.Flags, flags_to_update, 0x08D5);
+
+        *significant_to = (result&0xFF00)>>8;
+        *insignificant_to = result&0x00FF;
+
+    }
+    else {
+        uint8_t result;
+        uint_fast16_t flags_to_update;
+
+        asm (   "mov cl, %2\r\n\t"
+                "shr %3, cl\r\n\t"
+                "mov %0, %3\r\n\t"
+                "pushf\r\n\t"
+                "pop %1"
+
+                : "=r" (result), "=r" (flags_to_update)
+                : "r" (*significant_from), "r" (*significant_to)
+                : "cl"
+                );
+
+        *significant_to = result;
+
+        update_specific_flags(survivor, sregs.Flags, flags_to_update, 0x08D5);
+    }
+}
+
+void general_sar(Survivor survivor[static 1], bool is_16_bit, uint8_t significant_from[static 1], uint8_t* insignificant_from,
+                 uint8_t significant_to[static 1], uint8_t* insignificant_to)
+{
+    if (is_16_bit) {
+        uint8_t num_a = (*significant_from<<8) + *insignificant_from;
+        uint16_t num_b = (*significant_to<<8) + *insignificant_to;
+
+        uint16_t result;
+        uint_fast16_t flags_to_update;
+
+        asm (   "mov cl, %2\r\n\t"
+                "sar %3, cl\r\n\t"
+                "mov %0, %3\r\n\t"
+                "pushf\r\n\t"
+                "pop %1"
+                : "=r" (result), "=r" (flags_to_update)
+                : "r" (num_a), "r" (num_b)
+                : "cl"
+                );
+
+        update_specific_flags(survivor, sregs.Flags, flags_to_update, 0x08D5);
+
+        *significant_to = (result&0xFF00)>>8;
+        *insignificant_to = result&0x00FF;
+
+    }
+    else {
+        uint8_t result;
+        uint_fast16_t flags_to_update;
+
+        asm (   "mov cl, %2\r\n\t"
+                "sar %3, cl\r\n\t"
+                "mov %0, %3\r\n\t"
+                "pushf\r\n\t"
+                "pop %1"
+
+                : "=r" (result), "=r" (flags_to_update)
+                : "r" (*significant_from), "r" (*significant_to)
+                : "cl"
+                );
+
+        *significant_to = result;
+
+        update_specific_flags(survivor, sregs.Flags, flags_to_update, 0x08D5);
+    }
+}
+
 void general_xchg(Survivor survivor[static 1], bool is_16_bit, uint8_t significant_from[static 1], uint8_t* insignificant_from,
                   uint8_t significant_to[static 1], uint8_t* insignificant_to)
 {
@@ -740,7 +1069,7 @@ bool general_push(Survivor survivor[static 1], uint16_t shared_memory, uint16_t 
     sregs.SP -= 2;
     uint16_t destination = sregs.SP;
 
-    uint16_t segment = ((uint32_t) (destination+0x10*sregs.SS) & 0xF0000) >> 16; // stores the actual segment that will be written to, making sure it is legal
+    uint16_t segment = ((uint32_t) (destination+0x10*sregs.SS) >> 16); // stores the actual segment that will be written to, making sure it is legal
     if (segment != 0 && segment != survivor->stack_id && segment != shared_memory) {return false;}
 
     ((uint8_t*) memory)[(uint32_t) destination + 0x10*sregs.SS] = *reg & 0xFF; // set first byte
@@ -758,7 +1087,7 @@ bool general_pop(Survivor survivor[static 1], uint16_t shared_memory, uint16_t r
 {
     uint16_t address = sregs.SP;
 
-    uint16_t segment = ((uint32_t) (address+0x10*sregs.SS) & 0xF0000) >> 16;
+    uint16_t segment = ((uint32_t) (address+0x10*sregs.SS) >> 16);
     if (segment != 0 && segment != survivor->stack_id && segment != shared_memory) {return false;}
 
     address++;
@@ -789,7 +1118,7 @@ bool general_op_0(Survivor survivor[static 1], uint16_t shared_memory, operation
     if (!get_virtual_address(&ip_progress, &destination, &destination_virtual_addr, survivor, &address_byte, pos, &segment_register_virtual_addr)) {return false;}
 
     if (destination == 0) {
-        uint16_t segment = ((uint32_t) (destination_virtual_addr + 0x10 * segment_register_virtual_addr) & 0xF0000) >> 16;
+        uint16_t segment = ((uint32_t) (destination_virtual_addr + 0x10 * segment_register_virtual_addr) >> 16);
         if (segment != 0 && segment != survivor->stack_id && segment != shared_memory) {return false;}
 
        destination = (uint8_t*)&((uint8_t*) memory)[(uint32_t) destination_virtual_addr + segment_register_virtual_addr * 0x10];
@@ -827,7 +1156,7 @@ bool general_op_1(Survivor survivor[static 1], uint16_t shared_memory, operation
     if (!get_virtual_address(&ip_progress, &insignificant_destination, &destination_virtual_addr, survivor, &address_byte, pos, &segment_register_virtual_addr)) {return false;}
 
     if (insignificant_destination == 0) {
-        uint16_t segment = ((uint32_t) (destination_virtual_addr + 0x10 * segment_register_virtual_addr) & 0xF0000) >> 16;
+        uint16_t segment = ((uint32_t) (destination_virtual_addr + 0x10 * segment_register_virtual_addr) >> 16);
         if (segment != 0 && segment != survivor->stack_id && segment != shared_memory) {return false;}
 
         insignificant_destination = &((uint8_t*) memory)[(uint32_t) destination_virtual_addr + segment_register_virtual_addr * 0x10];
@@ -859,7 +1188,7 @@ bool general_op_2(Survivor survivor[static 1], uint16_t shared_memory, operation
     if (!get_virtual_address(&ip_progress, &destination, &address_virtual_addr, survivor, &address_byte, pos, &segment_register_virtual_addr)) {return false;}
 
     if (address == 0) {
-        uint16_t segment = ((uint32_t) (address_virtual_addr + 0x10 * segment_register_virtual_addr) & 0xF0000) >> 16;
+        uint16_t segment = ((uint32_t) (address_virtual_addr + 0x10 * segment_register_virtual_addr) >> 16);
         if (segment != 0 && segment != survivor->stack_id && segment != shared_memory) {return false;}
 
         address = &((uint8_t*) memory)[(uint32_t) address_virtual_addr + segment_register_virtual_addr * 0x10];
@@ -897,7 +1226,7 @@ bool general_op_3(Survivor survivor[static 1], uint16_t shared_memory, operation
     if (!get_virtual_address(&ip_progress, &insignificant_destination, &address_virtual_addr, survivor, &address_byte, pos, &segment_register_virtual_addr)) {return false;}
 
     if (insignificant_address == 0) {
-        uint16_t segment = ((uint32_t) (address_virtual_addr + 0x10 * segment_register_virtual_addr) & 0xF0000) >> 16;
+        uint16_t segment = ((uint32_t) (address_virtual_addr + 0x10 * segment_register_virtual_addr) >> 16);
         if (segment != 0 && segment != survivor->stack_id && segment != shared_memory) {return false;}
 
         insignificant_address = &((uint8_t*) memory)[(uint32_t) address_virtual_addr + segment_register_virtual_addr * 0x10];
@@ -956,7 +1285,7 @@ bool general_op_6(Survivor survivor[static 1], uint16_t shared_memory, operation
     uint16_t destination_virtual_addr = memory[0].values[pos & 0xFFFF] + 0x100*memory[0].values[(pos + 1) & 0xFFFF];
     uint16_t segment_register_virtual_addr = sregs.DS;
 
-     uint16_t segment = ((uint32_t) (destination_virtual_addr + 0x10 * segment_register_virtual_addr) & 0xF0000) >> 16;
+     uint16_t segment = ((uint32_t) (destination_virtual_addr + 0x10 * segment_register_virtual_addr) >> 16);
      if (segment != 0 && segment != survivor->stack_id && segment != shared_memory) {return false;}
 
      uint8_t* destination = (uint8_t*)&((uint8_t*) memory)[(uint32_t) destination_virtual_addr + segment_register_virtual_addr * 0x10];
@@ -985,7 +1314,7 @@ bool general_op_7(Survivor survivor[static 1], uint16_t shared_memory, operation
     uint8_t* significant_destination;
 
 
-    uint16_t segment = ((uint32_t) (destination_virtual_addr + 0x10 * segment_register_virtual_addr) & 0xF0000) >> 16;
+    uint16_t segment = ((uint32_t) (destination_virtual_addr + 0x10 * segment_register_virtual_addr) >> 16);
     if (segment != 0 && segment != survivor->stack_id && segment != shared_memory) {return false;}
 
     insignificant_destination = &((uint8_t*) memory)[(uint32_t) destination_virtual_addr + segment_register_virtual_addr * 0x10];
@@ -1019,7 +1348,7 @@ bool general_op_8(Survivor survivor[static 1], uint16_t shared_memory, operation
     uint8_t* significant_destination;
 
 
-    uint16_t segment = ((uint32_t) (destination_virtual_addr + 0x10 * segment_register_virtual_addr) & 0xF0000) >> 16;
+    uint16_t segment = ((uint32_t) (destination_virtual_addr + 0x10 * segment_register_virtual_addr) >> 16);
     if (segment != 0 && segment != survivor->stack_id && segment != shared_memory) {return false;}
 
     insignificant_destination = &((uint8_t*) memory)[(uint32_t) destination_virtual_addr + segment_register_virtual_addr * 0x10];
@@ -1053,7 +1382,7 @@ bool general_op_9(Survivor survivor[static 1], uint16_t shared_memory, operation
     if (!get_virtual_address(&ip_progress, &insignificant_destination, &destination_virtual_addr, survivor, &address_byte, pos, &segment_register_virtual_addr)) {return false;}
 
     if (insignificant_destination == 0) {
-        uint16_t segment = ((uint32_t) (destination_virtual_addr + 0x10 * segment_register_virtual_addr) & 0xF0000) >> 16;
+        uint16_t segment = ((uint32_t) (destination_virtual_addr + 0x10 * segment_register_virtual_addr) >> 16);
         if (segment != 0 && segment != survivor->stack_id && segment != shared_memory) {return false;}
 
         insignificant_destination = &((uint8_t*) memory)[(uint32_t) destination_virtual_addr + segment_register_virtual_addr * 0x10];
@@ -1091,7 +1420,7 @@ bool general_op_10(Survivor survivor[static 1], uint16_t shared_memory, operatio
     if (!get_virtual_address(&ip_progress, &insignificant_address, &address_virtual_addr, survivor, &address_byte, pos, &segment_register_virtual_addr)) {return false;}
 
     if (insignificant_address == 0) {
-        uint16_t segment = ((uint32_t) (address_virtual_addr + 0x10 * segment_register_virtual_addr) & 0xF0000) >> 16;
+        uint16_t segment = ((uint32_t) (address_virtual_addr + 0x10 * segment_register_virtual_addr) >> 16);
         if (segment != 0 && segment != survivor->stack_id && segment != shared_memory) {return false;}
 
         insignificant_address = &((uint8_t*) memory)[(uint32_t) address_virtual_addr + segment_register_virtual_addr * 0x10];
@@ -1143,6 +1472,80 @@ bool general_op_12(Survivor survivor[static 1], uint16_t shared_memory, operatio
     return true;
 }
 
+
+// it might be the case that warriors can gain access to one byte of forbidden memory, but it is unlikely to not enable some crazy strategy that can win games.
+bool general_op_13(Survivor survivor[static 1], uint16_t shared_memory, operation_ptr general_op) // OP byte ptr [X], 1
+{
+    uint16_t destination_virtual_addr = memory[0].values[(sregs.IP + 10*sregs.CS + 2) & 0xFFFF] + 0x100*memory[0].values[(sregs.IP + 10*sregs.CS + 3) & 0xFFFF];
+    uint16_t segment_register_virtual_addr = sregs.DS;
+
+    uint16_t segment = ((uint32_t) (destination_virtual_addr + 0x10 * segment_register_virtual_addr) >> 16);
+    if (segment != 0 && segment != survivor->stack_id && segment != shared_memory) {return false;}
+
+    uint8_t* destination = &memory[0].values[(uint32_t) (destination_virtual_addr + 0x10 * segment_register_virtual_addr)];
+
+    uint8_t one = 1;
+
+    general_op(survivor, 0, &one, 0, destination, 0);
+
+    sregs.IP += 4;
+    return true;
+}
+
+bool general_op_14(Survivor survivor[static 1], uint16_t shared_memory, operation_ptr general_op) // OP word ptr [X], 1
+{
+    uint16_t destination_virtual_addr = memory[0].values[(sregs.IP + 10*sregs.CS + 2) & 0xFFFF] + 0x100*memory[0].values[(sregs.IP + 10*sregs.CS + 3) & 0xFFFF];
+    uint16_t segment_register_virtual_addr = sregs.DS;
+
+    uint16_t real_virtual_addr = (destination_virtual_addr + 0x10 * segment_register_virtual_addr);
+    uint16_t segment = ((uint32_t) (destination_virtual_addr + 0x10 * segment_register_virtual_addr) >> 16);
+    if (segment != 0 && segment != survivor->stack_id && segment != shared_memory) {return false;}
+
+    uint8_t* insignificant_destination = &memory[0].values[(uint32_t) real_virtual_addr + 0x10000*segment];
+    uint8_t* significant_destination = &memory[0].values[(uint32_t) ((real_virtual_addr+1) & 0xFFFF) + 0x10000*segment];
+
+    uint8_t one = 1;
+    uint8_t zero = 0;
+
+    general_op(survivor, 1, &zero, &one, significant_destination, insignificant_destination);
+
+    sregs.IP += 4;
+    return true;
+}
+
+bool general_op_15(Survivor survivor[static 1], uint16_t shared_memory, operation_ptr general_op) // OP byte ptr [X], CL
+{
+    uint16_t destination_virtual_addr = memory[0].values[(sregs.IP + 10*sregs.CS + 1) & 0xFFFF] + 0x100*memory[0].values[(sregs.IP + 10*sregs.CS + 2) & 0xFFFF];
+    uint16_t segment_register_virtual_addr = sregs.DS;
+
+    uint16_t segment = ((uint32_t) (destination_virtual_addr + 0x10 * segment_register_virtual_addr) >> 16);
+    if (segment != 0 && segment != survivor->stack_id && segment != shared_memory) {return false;}
+
+    uint8_t* destination = &memory[0].values[(uint32_t) (destination_virtual_addr + 0x10 * segment_register_virtual_addr)];
+
+    general_op(survivor, 0, (uint8_t*)&sregs.CX, 0, destination, 0);
+
+    sregs.IP += 4;
+    return true;
+}
+
+bool general_op_16(Survivor survivor[static 1], uint16_t shared_memory, operation_ptr general_op) // OP word ptr [X], 1
+{
+    uint16_t destination_virtual_addr = memory[0].values[(sregs.IP + 10*sregs.CS + 2) & 0xFFFF] + 0x100*memory[0].values[(sregs.IP + 10*sregs.CS + 3) & 0xFFFF];
+    uint16_t segment_register_virtual_addr = sregs.DS;
+
+    uint16_t real_virtual_addr = (destination_virtual_addr + 0x10 * segment_register_virtual_addr);
+    uint16_t segment = ((uint32_t) (destination_virtual_addr + 0x10 * segment_register_virtual_addr) >> 16);
+    if (segment != 0 && segment != survivor->stack_id && segment != shared_memory) {return false;}
+
+    uint8_t* insignificant_destination = &memory[0].values[(uint32_t) real_virtual_addr + 0x10000*segment];
+    uint8_t* significant_destination = &memory[0].values[(uint32_t) ((real_virtual_addr+1) & 0xFFFF) + 0x10000*segment];
+
+    general_op(survivor, 1, 0, (uint8_t*)&sregs.CX, significant_destination, insignificant_destination);
+
+    sregs.IP += 4;
+    return true;
+}
 
 void general_jmp_near_2B_opcode(Survivor survivor[static 1])
 {
